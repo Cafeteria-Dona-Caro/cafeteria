@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <titleCafetería Doña Caro - Café, Frappe, Smoothies y Tisanas</title>
+    <meta name="description" content="Descubre el menú completo de Cafetería Doña Caro. La cafetería más madrugadora, ubicada en calle Josefa Ortiz esquina con Zapata. Cafés calientes, frappes, sodas italianas y más.">
+    <meta name="keywords" content="cafetería doña caro, menú café, frappe, smoothies, tisanas, bebidas calientes, sodas italianas, café de olla, chamoyadas, horario cafetería, Josefa Ortiz, Zapata">
+    <meta name="author" content="Cafetería Doña Caro">
+    
+    <style>
+        :root {
+            --color-principal: #3a1d08; /* Café oscuro */
+            --color-secundario: #6f4e37; /* Café claro */
+            --color-acento: #e5b95d; /* Dorado/Crema */
+            --color-fondo: #f5f5dc; /* Beige */
+            --color-texto: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+        }
+
+        header {
+            background-color: var(--color-principal);
+            color: white;
+            padding: 25px 10px 15px;
+            text-align: center;
+            border-bottom: 5px solid var(--color-acento);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8em;
+            letter-spacing: 2px;
+            font-weight: 700;
+        }
+
+        header p {
+            margin: 5px 0 15px;
+            font-style: italic;
+            font-size: 1.1em;
+        }
+        
+        /* ESTILO PARA PROMOCIÓN Y UBICACIÓN */
+        .location-promo {
+            margin: 10px auto 10px;
+            padding: 10px;
+            background-color: var(--color-secundario); 
+            border-radius: 5px;
+            max-width: 450px;
+        }
+
+        .location-promo .slogan {
+            margin: 0;
+            font-size: 1.1em;
+            font-weight: 500;
+            font-style: normal;
+            color: white; 
+        }
+
+        .location-promo .address {
+            margin: 5px 0 0;
+            font-size: 1em;
+            font-style: normal;
+            font-weight: bold;
+            color: var(--color-acento); 
+        }
+
+        /* ESTILO PARA EL HORARIO */
+        .schedule {
+            color: var(--color-acento);
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 5px 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        .social-links {
+            margin-top: 15px;
+        }
+
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+            font-size: 0.9em;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+
+        .social-links a:hover {
+            color: var(--color-acento);
+        }
+
+        .menu-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .filter-button {
+            background-color: var(--color-secundario);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s, transform 0.1s;
+            flex-grow: 1;
+            max-width: 200px; 
+        }
+
+        .filter-button:hover, .filter-button.active {
+            background-color: var(--color-acento);
+            color: var(--color-principal);
+            font-weight: bold;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .category-section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-left: 5px solid var(--color-principal);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+        }
+        
+        .category-section.hidden {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        .category-section h2 {
+            color: var(--color-principal);
+            border-bottom: 2px solid var(--color-acento);
+            padding-bottom: 8px;
+            margin-top: 0;
+            font-size: 1.6em;
+            text-transform: uppercase;
+        }
+
+        .category-section h3 {
+             color: var(--color-secundario);
+             margin-top: 15px;
+             margin-bottom: 5px;
+             font-size: 1.3em;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+        
+        .menu-item.no-separator {
+            border-bottom: none;
+        }
+        
+        .item-name {
+            font-weight: 500;
+            flex-grow: 1;
+            line-height: 1.4;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: var(--color-principal);
+            font-size: 1.1em;
+            margin-left: 10px;
+            white-space: nowrap; 
+        }
+        
+        /* Responsividad Móvil */
+        @media (max-width: 650px) {
+            header h1 {
+                font-size: 2.2em;
+            }
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+            .filter-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .filter-button {
+                max-width: 100%;
+            }
+            .social-links a {
+                display: block;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>CAFETERÍA DOÑA CARO</h1>
+        <p>¡Tu lugar favorito de bebidas!</p>
+        
+        <div class="location-promo">
+            <p class="slogan">La cafetería más madrugadora, ¡vengan por su café!</p>
+            <p class="address">📍 Ubicados en: Calle Josefa Ortiz esquina con Zapata</p>
+        </div>
+        
+        <div class="schedule">Horario: De 7 am a 10 pm TODOS LOS DÍAS</div>
+        
+        <div class="social-links">
+            <a href="https://www.facebook.com/profile.php?id=61582088720241" target="_blank" rel="noopener noreferrer">FACEBOOK: CAFETERIA "DOÑA CARO"</a>
+            <a href="https://www.instagram.com/cafe_de_caro" target="_blank" rel="noopener noreferrer">INSTAGRAM: @cafe_de_caro</a>
+        </div>
+    </header>
+
+    <div class="menu-container">
+        
+        <div class="filter-buttons">
+            <button class="filter-button active" data-filter="all">Ver Menú Completo</button>
+            <button class="filter-button" data-filter="calientes-cafe">Cafés Calientes</button>
+            <button class="filter-button" data-filter="frias">Sodas Italianas & Frías</button>
+            <button class="filter-button" data-filter="frappe">Frappe</button>
+            <button class="filter-button" data-filter="smoothies">Smoothies</button>
+            <button class="filter-button" data-filter="chamoyadas">Chamoyadas</button>
+            <button class="filter-button" data-filter="tisanas">Tisanas (Frías y Calientes)</button>
+            <button class="filter-button" data-filter="otros">Embotellados y Helados</button>
+        </div>
+
+        <div class="menu-grid" id="menu-content">
+            
+            <div class="category-section" data-category="calientes-cafe">
+                <h2>BEBIDAS CALIENTES</h2>
+
+                <h3>Cafés Tradicionales</h3>
+                <div class="menu-item">
+                    <span class="item-name">Café de la casa</span>
+                    <span class="item-price">$35.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Café de olla</span>
+                    <span class="item-price">$35.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Café americano</span>
+                    <span class="item-price">$35.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Café americano doble</span>
+                    <span class="item-price">$40.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Expresso sencillo</span>
+                    <span class="item-price">$35.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Expresso doble</span>
+                    <span class="item-price">$45.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Expresso cortado</span>
+                    <span class="item-price">$40.00</span>
+                </div>
+
+                <h3>Especialidades y Sabores</h3>
+                 <div class="menu-item">
+                    <span class="item-name">Cappuccino</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Cappuccino con sabor (Avellana, Rol de canela, Crema irlandesa, Vainilla)</span>
+                    <span class="item-price">$70.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Moka</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Café latte</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Affogato</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Chocolate (agua o leche)</span>
+                    <span class="item-price">$55.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Chai caliente</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Café de anís</span>
+                    <span class="item-price">$40.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Café de clavo</span>
+                    <span class="item-price">$40.00</span>
+                </div>
+            </div>
+
+            <div class="category-section" data-category="tisanas">
+                <h2>TISANAS CALIENTES</h2>
+                <div class="menu-item">
+                    <span class="item-name">Frutos de la vida</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Maracuyá</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Frutos tropicales</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Frutos de la pasión</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Fruta caribeña</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+
+                <h2 style="margin-top: 25px;">TISANAS FRÍAS</h2>
+                <div class="menu-item">
+                    <span class="item-name">Frutos de la vida</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Maracuyá</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Frutos tropicales</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Frutos de la pasión</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Fruta caribeña</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+            </div>
+
+            <div class="category-section" data-category="frias">
+                <h2>SODAS ITALIANAS</h2>
+                <div class="menu-item">
+                    <span class="item-name">Frutos rojos</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Coco</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Mojito</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Conga</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Fruta del dragón</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Mora azul</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                
+                <h2 style="margin-top: 25px;">CAFÉS FRÍOS</h2>
+                <div class="menu-item">
+                    <span class="item-name">LATTE FRÍO</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">MOKA FRÍO</span>
+                    <span class="item-price">$60.00</span>
+                </div>
+            </div>
+
+            <div class="category-section" data-category="frappe">
+                <h2>FRAPPE</h2>
+                <div class="menu-item">
+                    <span class="item-name">Oreo</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Taro</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Algodón de azúcar</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Chocolate</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Chocolate blanco</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Caramelo</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Chai</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Cappuccino</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+            </div>
+
+            <div class="category-section" data-category="smoothies">
+                <h2>SMOOTHIES</h2>
+                <div class="menu-item">
+                    <span class="item-name">Limón</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Maracuyá</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Mango</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Moras</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Piña colada</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Fresa</span>
+                    <span class="item-price">$65.00</span>
+                </div>
+            </div>
+
+            <div class="category-section" data-category="chamoyadas">
+                <h2>CHAMOYADAS</h2>
+                <div class="menu-item">
+                    <span class="item-name">Limón</span>
+                    <span class="item-price">$55.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Maracuyá</span>
+                    <span class="item-price">$55.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Mango</span>
+                    <span class="item-price">$55.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Moras</span>
+                    <span class="item-price">$55.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Piña colada</span>
+                    <span class="item-price">$55.00
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Fresa</span>
+                    <span class="item-price">$55.00</span>
+                </div>
+            </div>
+
+            <div class="category-section" data-category="otros">
+                <h2>EMBOTELLADOS</h2>
+                <div class="menu-item">
+                    <span class="item-name">Agua Mineral 355ml</span>
+                    <span class="item-price">$30.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Agua Natural 600ml</span>
+                    <span class="item-price">$15.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Coca cola 500ml</span>
+                    <span class="item-price">$30.00</span>
+                </div>
+                <div class="menu-item">
+                    <span class="item-name">Coca cola Light 500ml</span>
+                    <span class="item-price">$25.00</span>
+                </div>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Boing</span>
+                    <span class="item-price">$25.00</span>
+                </div>
+
+                <h2 style="margin-top: 25px;">HELADO</h2>
+                <div class="menu-item no-separator">
+                    <span class="item-name">Vainilla</span>
+                    <span class="item-price">$40.00</span>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const filterButtons = document.querySelectorAll('.filter-button');
+            const menuSections = document.querySelectorAll('.category-section');
+
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filterValue = this.getAttribute('data-filter');
+
+                    // 1. Desactivar todos los botones y activar el actual
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // 2. Mostrar/Ocultar secciones
+                    menuSections.forEach(section => {
+                        const sectionCategory = section.getAttribute('data-category');
+                        
+                        // Si el filtro es 'all' o la categoría coincide, la mostramos
+                        if (filterValue === 'all' || sectionCategory === filterValue) {
+                            section.classList.remove('hidden');
+                        } else {
+                            // Si no coincide, la ocultamos
+                            section.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
