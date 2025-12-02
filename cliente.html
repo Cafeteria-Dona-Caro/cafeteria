@@ -2,27 +2,38 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Mi pedido – Cafecaro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cafecaro – Pedido del Cliente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
   <style>
-    * { box-sizing: border-box; }
+    /* === RESET === */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #222 0, #050505 55%);
-      color: #f5f5f5;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      font-family: system-ui, sans-serif;
+      background: #fafafa;
+      color: #222;
     }
+
+    /* === DETECCIÓN DE MÓVIL VS ESCRITORIO === */
+    @media (max-width: 768px) {
+      body { font-size: 14px; }
+    }
+    @media (min-width: 769px) {
+      body { font-size: 15px; }
+    }
+
+    /* === HEADER === */
     header {
-      padding: 14px 16px;
-      background: rgba(0,0,0,0.8);
-      border-bottom: 1px solid #333;
+      background: #ffffff;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e5e5e5;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      backdrop-filter: blur(10px);
       position: sticky;
       top: 0;
       z-index: 10;
@@ -30,1019 +41,206 @@
     header h1 {
       margin: 0;
       font-size: 18px;
+      font-weight: 700;
     }
-    header .sub {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-    header .branch {
+
+    #customerNameInput {
+      width: 140px;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
       font-size: 13px;
-      opacity: 0.9;
-      text-align: right;
     }
-    main {
-      flex: 1;
+
+    /* === GRID DE PRODUCTOS (UBER EATS STYLE) === */
+    .products-grid {
       padding: 16px;
-      max-width: 720px;
-      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (max-width: 768px) {
+      .products-grid { grid-template-columns: 1fr; }
+    }
+    @media (min-width: 769px) {
+      .products-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .product-card {
+      background: #ffffff;
+      border-radius: 14px;
+      border: 1px solid #eee;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+    .product-card:active {
+      transform: scale(0.98);
+    }
+
+    .product-img {
       width: 100%;
+      height: 150px;
+      object-fit: cover;
+      background: #ddd;
+    }
+
+    .product-body {
+      padding: 12px;
+    }
+    .product-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .product-price {
+      color: #00a650;
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    /* === CARRITO FLOTANTE === */
+    #cartButton {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      background: #00c853;
+      padding: 12px 20px;
+      border-radius: 30px;
+      color: #000;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      cursor: pointer;
+      z-index: 20;
+    }
+
+    /* === MODAL DEL PRODUCTO === */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 30;
+    }
+    .modal.active { display: flex; }
+
+    .modal-content {
+      background: #fff;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 12px;
     }
-    .card {
-      background: rgba(18,18,18,0.95);
-      border-radius: 16px;
-      border: 1px solid #333;
-      padding: 14px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+
+    .modal-content h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
     }
-    .section-title {
-      font-size: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      opacity: 0.8;
-      margin-bottom: 6px;
-    }
-    .mesa-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #1e272e;
-      font-size: 14px;
-    }
-    .mesa-chip span {
-      font-weight: 600;
-      font-size: 16px;
-    }
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 13px;
-      margin-top: 8px;
-    }
-    .status-abierta { background: #ffab00; color: #000; }
-    .status-en_preparacion { background: #2962ff; color: #fff; }
-    .status-lista { background: #00c853; color: #000; }
-    .status-cerrada { background: #757575; color: #fff; }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: currentColor;
-    }
-    .order-meta {
-      font-size: 12px;
-      opacity: 0.8;
-      margin-top: 4px;
-    }
-    .items-list {
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px solid #333;
+
+    .qty-row {
       display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .item {
-      display: flex;
+      align-items: center;
       justify-content: space-between;
-      align-items: center;
-      font-size: 14px;
-      padding: 6px 0;
-      border-bottom: 1px dashed #333;
-      gap: 10px;
     }
-    .item:last-child { border-bottom: none; }
-    .item-main { flex: 1; }
-    .item-name { font-weight: 500; }
-    .item-notes { font-size: 12px; opacity: 0.8; }
-    .item-qty { font-size: 12px; opacity: 0.9; margin-top: 2px; }
-    .item-status-pill {
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-    .item-pendiente { background: #ffab00; color: #000; }
-    .item-en_preparacion { background: #2962ff; color: #fff; }
-    .item-listo { background: #00c853; color: #000; }
-    .item-cancelado { background: #b71c1c; color: #fff; }
-    .total-row {
+    .qty-controls {
       display: flex;
-      justify-content: space-between;
+      gap: 12px;
       align-items: center;
-      margin-top: 10px;
+    }
+    .qty-controls button {
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 50%;
+      background: #eee;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-add-btn {
+      padding: 10px;
+      background: #00c853;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      color: #000;
+      cursor: pointer;
       font-size: 15px;
-      font-weight: 600;
     }
-    .status-text {
-      margin-top: 10px;
-      font-size: 13px;
-      opacity: 0.9;
+
+    /* CHAT CLIENTE */
+    #chatBox {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #ddd;
+      padding: 8px;
+      display: none;
+      flex-direction: column;
+      max-height: 50vh;
+      overflow-y: auto;
     }
-    .helper {
-      margin-top: 8px;
-      font-size: 12px;
-      opacity: 0.8;
-    }
-    .input-card {
-      padding: 12px;
-      border-radius: 12px;
-      background: rgba(18,18,18,0.95);
-      border: 1px solid #333;
-    }
-    .input-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 6px;
-      flex-wrap: wrap;
-    }
-    input {
-      border-radius: 8px;
-      border: none;
-      padding: 8px 10px;
-      font-size: 14px;
-      font-family: inherit;
-      background: #222;
-      color: #f5f5f5;
-    }
-    input[type="number"] { max-width: 90px; }
-    button {
+
+    .chat-message {
+      background: #e8f5e9;
       padding: 8px 12px;
-      border-radius: 999px;
-      border: none;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      background: #00c853;
-      color: #000;
-      white-space: nowrap;
-    }
-    .btn-secondary {
-      background: #333;
-      color: #eee;
-    }
-    .status-bar {
-      font-size: 12px;
-      opacity: 0.85;
-      padding: 6px 16px;
-      border-top: 1px solid #222;
-      background: #050505;
-      text-align: center;
-    }
-    /* Menú */
-    .menu-card { margin-top: 0; }
-    .categories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-    .cat-btn {
-      padding: 5px 10px;
-      border-radius: 999px;
-      border: 1px solid #444;
-      background: #1b1b1b;
-      font-size: 12px;
-      cursor: pointer;
-    }
-    .cat-btn.active {
-      background: #00c853;
-      color: #000;
-      border-color: #00c853;
-      font-weight: 600;
-    }
-    .products-grid {
-      margin-top: 8px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 8px;
-    }
-    .product-card {
-      background: #202020;
-      border-radius: 10px;
-      border: 1px solid #333;
-      padding: 8px;
-      font-size: 13px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .product-card:hover {
-      border-color: #00c853;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-    }
-    .product-name { font-weight: 500; }
-    .product-cat { font-size: 11px; opacity: 0.7; }
-    .product-price {
-      font-size: 13px;
-      color: #c8ffb3;
-      font-weight: 600;
-    }
-    .cart-list {
-      margin-top: 8px;
-      max-height: 180px;
-      overflow-y: auto;
-      border-top: 1px solid #333;
-      padding-top: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      padding-bottom: 4px;
-      border-bottom: 1px dashed #333;
-      gap: 8px;
-    }
-    .cart-item:last-child { border-bottom: none; }
-    .cart-main { flex: 1; }
-    .cart-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .cart-actions button {
-      padding: 3px 7px;
-      font-size: 11px;
-    }
-    .mini-total {
-      font-size: 13px;
-      font-weight: 600;
-      margin-top: 6px;
-      text-align: right;
-    }
-    /* Chat */
-    .chat-card { }
-    .chat-messages {
-      margin-top: 8px;
-      max-height: 200px;
-      overflow-y: auto;
-      border-radius: 10px;
-      background: #151515;
-      padding: 8px;
-      border: 1px solid #333;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .msg {
-      max-width: 80%;
-      padding: 6px 8px;
+      margin: 4px 0;
       border-radius: 10px;
       font-size: 13px;
-    }
-    .msg-cliente {
-      align-self: flex-end;
-      background: #00c853;
-      color: #000;
-      border-bottom-right-radius: 2px;
-    }
-    .msg-mesero {
-      align-self: flex-start;
-      background: #262626;
-      border-bottom-left-radius: 2px;
-    }
-    .msg-meta {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-top: 2px;
-    }
-    .chat-input-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 6px;
-    }
-    textarea {
-      flex: 1;
-      resize: none;
-      min-height: 40px;
-      max-height: 90px;
-      border-radius: 10px;
-      border: none;
-      padding: 6px 8px;
-      font-size: 13px;
-      font-family: inherit;
-      background: #222;
-      color: #f5f5f5;
     }
   </style>
 </head>
 <body>
-  <header>
-    <div>
-      <h1>Cafecaro</h1>
-      <div class="sub">Pedido, factura y chat con tu mesero</div>
-    </div>
-    <div class="branch" id="branchLabel"></div>
-  </header>
 
-  <main>
-    <!-- Selección de mesa + nombre -->
-    <div class="input-card" id="mesaInputCard">
-      <div class="section-title">Tu mesa</div>
-      <p style="font-size:13px;opacity:0.9;margin:0;">
-        Ingresa tu número de mesa y tu nombre (opcional, para factura o identificación).
-      </p>
-      <div class="input-row">
-        <input type="number" id="mesaInput" min="1" placeholder="Mesa (ej. 5)" />
-        <input type="text" id="nombreInput" placeholder="Tu nombre (opcional)" style="flex:1;" />
-        <button id="usarMesaBtn">Continuar</button>
+<header>
+  <h1>Cafecaro</h1>
+  <input type="text" id="customerNameInput" placeholder="Tu nombre (opcional)">
+</header>
+
+<div class="products-grid" id="productsGrid"></div>
+
+<!-- Botón de carrito -->
+<div id="cartButton">🛒 Carrito (0)</div>
+
+<!-- Modal producto -->
+<div id="productModal" class="modal">
+  <div class="modal-content">
+    <h3 id="modalTitle"></h3>
+    <div id="modalPrice" style="font-weight:bold; color:#00a650;"></div>
+    
+    <textarea id="modalNotes" placeholder="Notas (opcional)" 
+      style="width:100%; height:60px; border:1px solid #ccc; border-radius:8px; padding:6px;"></textarea>
+    
+    <div class="qty-row">
+      <div>Cantidad:</div>
+      <div class="qty-controls">
+        <button id="qtyMinus">-</button>
+        <span id="qtyValue">1</span>
+        <button id="qtyPlus">+</button>
       </div>
     </div>
 
-    <!-- Resumen del pedido actual -->
-    <div id="orderCard" class="card" style="display:none;">
-      <div class="section-title">Tu pedido</div>
-
-      <div class="mesa-chip">
-        Mesa <span id="mesaLabel">-</span>
-      </div>
-      <div style="font-size:13px;opacity:0.85;margin-top:4px;">
-        Cliente: <span id="customerNameLabel">Sin nombre</span>
-      </div>
-
-      <div id="orderStatusPill" class="status-pill status-abierta" style="display:none;">
-        <span class="status-dot"></span>
-        <span id="orderStatusText">Abierta</span>
-      </div>
-
-      <div class="order-meta" id="orderMeta"></div>
-
-      <div class="items-list" id="itemsList">
-        <!-- Items -->
-      </div>
-
-      <div class="total-row">
-        <span>Total estimado</span>
-        <span id="orderTotal">$0.00</span>
-      </div>
-
-      <div class="status-text" id="friendlyStatus"></div>
-      <div class="helper">
-        Puedes mostrar esta pantalla a tu mesero para factura o aclaraciones. 😊
-      </div>
-    </div>
-
-    <!-- Estado sin pedido -->
-    <div id="emptyState" class="card" style="display:none;">
-      <div class="section-title">Sin pedido activo</div>
-      <p style="font-size:14px;opacity:0.9;margin:0 0 6px;">
-        No encontramos un pedido activo para tu mesa.
-      </p>
-      <p style="font-size:13px;opacity:0.8;margin:0;">
-        Puedes hacer un pedido desde esta pantalla o usar el chat para llamar al mesero.
-      </p>
-    </div>
-
-    <!-- Chat con el mesero -->
-    <div id="chatCard" class="card chat-card" style="display:none;">
-      <div class="section-title">Habla con tu mesero</div>
-      <div class="chat-messages" id="messagesList">
-        <!-- mensajes -->
-      </div>
-      <div class="chat-input-row">
-        <textarea id="messageInput" placeholder="Escribe un mensaje (ej. '¿Me puede traer la cuenta?' )"></textarea>
-        <button id="sendMessageBtn">Enviar</button>
-      </div>
-      <div class="helper">
-        Tu mensaje llegará al sistema del mesero aunque no hayas hecho pedido todavía.
-      </div>
-    </div>
-
-    <!-- Menú para que el cliente pida -->
-    <div id="menuCard" class="card menu-card" style="display:none;">
-      <div class="section-title">Haz tu pedido</div>
-      <p style="font-size:13px;opacity:0.9;margin:0 0 6px;">
-        Toca un producto para agregarlo. Tu mesero verá tu pedido y lo confirmará.
-      </p>
-
-      <div class="categories" id="categoriesContainer"></div>
-      <div class="products-grid" id="productsContainer">
-        <!-- Productos -->
-      </div>
-
-      <div style="margin-top:10px;font-size:13px;opacity:0.9;">
-        <strong>Tu pedido nuevo:</strong>
-      </div>
-      <div class="cart-list" id="cartContainer">
-        Aún no has agregado productos.
-      </div>
-      <div class="mini-total" id="cartTotalText">$0.00</div>
-
-      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-        <button id="enviarPedidoBtn">Enviar pedido a la mesa</button>
-        <button id="limpiarCartBtn" class="btn-secondary">Limpiar selección</button>
-      </div>
-    </div>
-  </main>
-
-  <div class="status-bar" id="statusText">Escribe tu mesa y tu nombre para empezar.</div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      onSnapshot,
-      query,
-      orderBy,
-      addDoc,
-      writeBatch,
-      serverTimestamp,
-      getDocs,
-      updateDoc,
-    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
-      authDomain: "cafecaro-af23b.firebaseapp.com",
-      projectId: "cafecaro-af23b",
-      storageBucket: "cafecaro-af23b.firebasestorage.app",
-      messagingSenderId: "534231921780",
-      appId: "1:534231921780:web:f3702e23c024c14c0c8d21",
-      measurementId: "G-JC720XBF92"
-    };
-
-    const BRANCH_ID = "cafecaro-centro";
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const branchLabel = document.getElementById("branchLabel");
-    const statusText = document.getElementById("statusText");
-    const mesaInputCard = document.getElementById("mesaInputCard");
-    const mesaInput = document.getElementById("mesaInput");
-    const nombreInput = document.getElementById("nombreInput");
-    const usarMesaBtn = document.getElementById("usarMesaBtn");
-
-    const orderCard = document.getElementById("orderCard");
-    const mesaLabel = document.getElementById("mesaLabel");
-    const customerNameLabel = document.getElementById("customerNameLabel");
-    const orderStatusPill = document.getElementById("orderStatusPill");
-    const orderStatusText = document.getElementById("orderStatusText");
-    const orderMeta = document.getElementById("orderMeta");
-    const itemsList = document.getElementById("itemsList");
-    const orderTotalEl = document.getElementById("orderTotal");
-    const friendlyStatus = document.getElementById("friendlyStatus");
-    const emptyState = document.getElementById("emptyState");
-
-    const chatCard = document.getElementById("chatCard");
-    const messagesList = document.getElementById("messagesList");
-    const messageInput = document.getElementById("messageInput");
-    const sendMessageBtn = document.getElementById("sendMessageBtn");
-
-    const menuCard = document.getElementById("menuCard");
-    const categoriesContainer = document.getElementById("categoriesContainer");
-    const productsContainer = document.getElementById("productsContainer");
-    const cartContainer = document.getElementById("cartContainer");
-    const cartTotalText = document.getElementById("cartTotalText");
-    const enviarPedidoBtn = document.getElementById("enviarPedidoBtn");
-    const limpiarCartBtn = document.getElementById("limpiarCartBtn");
-
-    branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
-
-    let currentMesa = null;
-    let currentName = null;
-    let unsubscribeOrders = null;
-    let unsubscribeItems = null;
-    let unsubscribeMessages = null;
-    let currentOrderId = null;
-    let currentOrderStatus = null;
-
-    let allProducts = [];
-    let selectedCategory = null;
-    let cart = [];
-
-    function setStatus(msg) { statusText.textContent = msg; }
-    function formatCurrency(n) { return `$${(n || 0).toFixed(2)}`; }
-
-    function formatStatusLabel(status) {
-      switch (status) {
-        case "abierta": return "Pedido registrado";
-        case "en_preparacion": return "En preparación";
-        case "lista": return "Listo";
-        case "cerrada": return "Cuenta cerrada";
-        default: return status;
-      }
-    }
-    function formatFriendlyMessage(status) {
-      switch (status) {
-        case "abierta": return "Tu pedido ha sido registrado y se enviará a cocina en breve.";
-        case "en_preparacion": return "Tu pedido está siendo preparado en cocina. 🎯";
-        case "lista": return "¡Tu pedido está listo! En cualquier momento te lo llevan a la mesa. 🥤";
-        case "cerrada": return "Este pedido ya fue cerrado. Si haces uno nuevo, se generará otra orden.";
-        default: return "Tu pedido está siendo atendido.";
-      }
-    }
-    function applyStatusPill(status) {
-      orderStatusPill.className = "status-pill";
-      orderStatusPill.classList.add(`status-${status}`);
-      orderStatusText.textContent = formatStatusLabel(status);
-      orderStatusPill.style.display = "inline-flex";
-      friendlyStatus.textContent = formatFriendlyMessage(status);
-    }
-
-    // === MENÚ ===
-    function renderCategories() {
-      const cats = [...new Set(allProducts.map(p => p.category))].sort();
-      categoriesContainer.innerHTML = "";
-
-      const allBtn = document.createElement("button");
-      allBtn.textContent = "Todo";
-      allBtn.className = "cat-btn" + (selectedCategory === null ? " active" : "");
-      allBtn.addEventListener("click", () => {
-        selectedCategory = null;
-        renderCategories();
-        renderProducts();
-      });
-      categoriesContainer.appendChild(allBtn);
-
-      cats.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.textContent = cat;
-        btn.className = "cat-btn" + (selectedCategory === cat ? " active" : "");
-        btn.addEventListener("click", () => {
-          selectedCategory = cat;
-          renderCategories();
-          renderProducts();
-        });
-        categoriesContainer.appendChild(btn);
-      });
-    }
-
-    function renderProducts() {
-      productsContainer.innerHTML = "";
-      if (allProducts.length === 0) {
-        productsContainer.textContent = "Menú no disponible.";
-        return;
-      }
-      const filtered = selectedCategory
-        ? allProducts.filter(p => p.category === selectedCategory)
-        : allProducts;
-
-      if (filtered.length === 0) {
-        productsContainer.textContent = "No hay productos en esta categoría.";
-        return;
-      }
-      filtered.forEach(prod => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.innerHTML = `
-          <div class="product-name">${prod.name}</div>
-          <div class="product-cat">${prod.category}</div>
-          <div class="product-price">${formatCurrency(prod.basePrice || 0)}</div>
-        `;
-        card.addEventListener("click", () => {
-          addToCart(prod);
-        });
-        productsContainer.appendChild(card);
-      });
-    }
-
-    function addToCart(product) {
-      const idx = cart.findIndex(item => item.productId === product.id);
-      if (idx >= 0) cart[idx].qty += 1;
-      else {
-        cart.push({ productId: product.id, name: product.name, price: product.basePrice || 0, qty: 1 });
-      }
-      renderCart();
-    }
-
-    function renderCart() {
-      cartContainer.innerHTML = "";
-      if (cart.length === 0) {
-        cartContainer.textContent = "Aún no has agregado productos.";
-        cartTotalText.textContent = "$0.00";
-        return;
-      }
-      let total = 0;
-      cart.forEach((item, index) => {
-        total += item.price * item.qty;
-        const row = document.createElement("div");
-        row.className = "cart-item";
-        row.innerHTML = `
-          <div class="cart-main">
-            <div>${item.name}</div>
-            <div style="font-size:12px;opacity:0.8;">x${item.qty} · ${formatCurrency(item.price)}</div>
-          </div>
-          <div class="cart-actions">
-            <button data-action="minus">-</button>
-            <button data-action="plus">+</button>
-            <button data-action="remove">×</button>
-          </div>
-        `;
-        row.querySelector(".cart-actions").addEventListener("click", (e) => {
-          const action = e.target.getAttribute("data-action");
-          if (!action) return;
-          if (action === "minus") {
-            if (cart[index].qty > 1) cart[index].qty -= 1;
-            else cart.splice(index, 1);
-          } else if (action === "plus") {
-            cart[index].qty += 1;
-          } else if (action === "remove") {
-            cart.splice(index, 1);
-          }
-          renderCart();
-        });
-        cartContainer.appendChild(row);
-      });
-      cartTotalText.textContent = formatCurrency(total);
-    }
-
-    async function loadMenu() {
-      try {
-        const productsRef = collection(db, "branches", BRANCH_ID, "products");
-        const snap = await getDocs(productsRef);
-        allProducts = [];
-        snap.forEach(docSnap => {
-          allProducts.push({ id: docSnap.id, ...docSnap.data() });
-        });
-        renderCategories();
-        renderProducts();
-      } catch (err) {
-        console.error("Error cargando menú:", err);
-        productsContainer.textContent = "Error cargando menú.";
-      }
-    }
-
-    // === ITEMS DEL PEDIDO ===
-    function listenOrderItems(orderId) {
-      if (unsubscribeItems) { unsubscribeItems(); unsubscribeItems = null; }
-      if (!orderId) {
-        itemsList.innerHTML = "";
-        orderTotalEl.textContent = "$0.00";
-        return;
-      }
-      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
-      const qItems = query(itemsRef, orderBy("createdAt", "asc"));
-
-      unsubscribeItems = onSnapshot(
-        qItems,
-        snapshot => {
-          itemsList.innerHTML = "";
-          if (snapshot.size === 0) {
-            itemsList.innerHTML = "<em style='font-size:13px;opacity:0.8;'>Tu pedido aún no tiene productos.</em>";
-            orderTotalEl.textContent = "$0.00";
-            return;
-          }
-          let subtotal = 0;
-          snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const lineTotal = (data.totalPrice ?? (data.unitPrice ?? 0) * (data.qty ?? 1));
-            subtotal += lineTotal;
-            const itemEl = document.createElement("div");
-            const statusClass = `item-${data.status || "pendiente"}`;
-            itemEl.className = "item";
-            itemEl.innerHTML = `
-              <div class="item-main">
-                <div class="item-name">${data.productName ?? "Producto"}</div>
-                <div class="item-qty">x${data.qty ?? 1}</div>
-                ${data.notes ? `<div class="item-notes">Nota: ${data.notes}</div>` : ""}
-              </div>
-              <div>
-                <div class="item-status-pill ${statusClass}">
-                  ${data.status ?? "pendiente"}
-                </div>
-                <div style="font-size:12px;margin-top:4px;text-align:right;opacity:0.9;">
-                  ${formatCurrency(lineTotal)}
-                </div>
-              </div>
-            `;
-            itemsList.appendChild(itemEl);
-          });
-          orderTotalEl.textContent = formatCurrency(subtotal);
-        },
-        err => { console.error("Error escuchando items:", err); }
-      );
-    }
-
-    // === CHAT ===
-    function renderMessagesEmpty() {
-      messagesList.innerHTML = "<span style='font-size:12px;opacity:0.8;'>Sin mensajes aún.</span>";
-    }
-
-    function listenMessages(orderId) {
-      if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
-      if (!orderId) {
-        renderMessagesEmpty();
-        return;
-      }
-      const msgsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "messages");
-      const qMsgs = query(msgsRef, orderBy("createdAt", "asc"));
-
-      unsubscribeMessages = onSnapshot(
-        qMsgs,
-        snapshot => {
-          messagesList.innerHTML = "";
-          if (snapshot.size === 0) {
-            renderMessagesEmpty();
-            return;
-          }
-          snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const msgDiv = document.createElement("div");
-            msgDiv.className = "msg " + (data.sender === "cliente" ? "msg-cliente" : "msg-mesero");
-            msgDiv.innerHTML = `
-              <div>${data.text}</div>
-            `;
-            messagesList.appendChild(msgDiv);
-          });
-          messagesList.scrollTop = messagesList.scrollHeight;
-        },
-        err => { console.error("Error escuchando mensajes:", err); }
-      );
-    }
-
-    async function ensureOrderForChatOrCart() {
-      const branchRef = doc(collection(db, "branches"), BRANCH_ID);
-      const ordersRef = collection(branchRef, "orders");
-
-      // si ya hay orden vigente y no está cerrada, úsala
-      if (currentOrderId && currentOrderStatus !== "cerrada") {
-        return doc(ordersRef, currentOrderId);
-      }
-
-      // buscar orden existente reciente para esta mesa
-      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
-      const snap = await getDocs(qOrders);
-      let found = null;
-      snap.forEach(d => {
-        if (found) return;
-        const data = d.data();
-        if (data.tableNumber === currentMesa && data.status !== "cerrada") {
-          found = { id: d.id, data };
-        }
-      });
-
-      if (found) {
-        currentOrderId = found.id;
-        currentOrderStatus = found.data.status;
-        // actualizar nombre si viene vacío
-        if (currentName && !found.data.customerName) {
-          await updateDoc(doc(ordersRef, found.id), {
-            customerName: currentName,
-            updatedAt: serverTimestamp(),
-          });
-        }
-        return doc(ordersRef, found.id);
-      }
-
-      // si no hay nada: crear nueva orden vacía
-      const newDoc = await addDoc(ordersRef, {
-        tableNumber: currentMesa,
-        tableId: null,
-        status: "abierta",
-        source: "cliente",
-        customerName: currentName || null,
-        subtotal: 0,
-        tax: 0,
-        discount: 0,
-        total: 0,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      });
-      currentOrderId = newDoc.id;
-      currentOrderStatus = "abierta";
-      return newDoc;
-    }
-
-    // === ÓRDENES DE LA MESA ===
-    function listenOrdersForMesa(mesaNumber) {
-      if (unsubscribeOrders) { unsubscribeOrders(); unsubscribeOrders = null; }
-      if (unsubscribeItems) { unsubscribeItems(); unsubscribeItems = null; }
-      if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
-
-      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
-
-      setStatus("Buscando pedido para tu mesa...");
-
-      unsubscribeOrders = onSnapshot(
-        qOrders,
-        snapshot => {
-          const relevantStatuses = ["abierta", "en_preparacion", "lista", "cerrada"];
-          const docs = snapshot.docs.filter(d => {
-            const data = d.data();
-            return data.tableNumber === mesaNumber && relevantStatuses.includes(data.status);
-          });
-
-          if (docs.length === 0) {
-            currentOrderId = null;
-            currentOrderStatus = null;
-            orderCard.style.display = "none";
-            emptyState.style.display = "block";
-            renderMessagesEmpty();
-            setStatus("Sin pedido activo para esta mesa. Puedes chatear o pedir.");
-            return;
-          }
-
-          const docSnap = docs[0];
-          const data = docSnap.data();
-          currentOrderId = docSnap.id;
-          currentOrderStatus = data.status;
-
-          mesaLabel.textContent = mesaNumber;
-          customerNameLabel.textContent = data.customerName || (currentName || "Sin nombre");
-          orderMeta.innerHTML = `
-            Pedido: <strong>${currentOrderId}</strong><br>
-            Estado interno: ${data.status ?? "desconocido"}
-          `;
-
-          orderCard.style.display = "block";
-          emptyState.style.display = "none";
-
-          if (!data.customerName && currentName) {
-            // sincronizar nombre
-            const branchRef = doc(collection(db, "branches"), BRANCH_ID);
-            const ordersRef = collection(branchRef, "orders");
-            updateDoc(doc(ordersRef, currentOrderId), {
-              customerName: currentName,
-              updatedAt: serverTimestamp(),
-            }).catch(() => {});
-          }
-
-          applyStatusPill(data.status || "abierta");
-          setStatus("Actualizando tu pedido y mensajes en tiempo real...");
-          listenOrderItems(currentOrderId);
-          listenMessages(currentOrderId);
-        },
-        err => {
-          console.error("Error escuchando órdenes:", err);
-          setStatus("Error al consultar tu pedido. Intenta más tarde.");
-        }
-      );
-    }
-
-    function startForMesa(mesaNumber, name) {
-      currentMesa = mesaNumber;
-      currentName = (name || "").trim() || null;
-      mesaLabel.textContent = mesaNumber;
-      customerNameLabel.textContent = currentName || "Sin nombre";
-
-      // guardamos el nombre en localStorage
-      if (currentName) localStorage.setItem("cafecaro_customerName", currentName);
-
-      mesaInput.value = mesaNumber;
-      nombreInput.value = currentName || "";
-      mesaInputCard.style.display = "none";
-
-      menuCard.style.display = "block";
-      chatCard.style.display = "block";
-      loadMenu();
-      listenOrdersForMesa(mesaNumber);
-      setStatus("Mesa configurada. Puedes hacer pedido o hablar con tu mesero.");
-    }
-
-    function getMesaFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const mesaStr = params.get("mesa");
-      if (!mesaStr) return null;
-      const num = parseInt(mesaStr, 10);
-      return Number.isFinite(num) && num > 0 ? num : null;
-    }
-
-    usarMesaBtn.addEventListener("click", () => {
-      const mesaVal = parseInt(mesaInput.value, 10);
-      const nameVal = nombreInput.value;
-      if (!mesaVal || mesaVal <= 0) {
-        alert("Escribe un número de mesa válido.");
-        return;
-      }
-      startForMesa(mesaVal, nameVal);
-    });
-
-    // === Enviar pedido del cliente ===
-    async function enviarPedidoCliente() {
-      if (!currentMesa) {
-        alert("Primero selecciona tu mesa.");
-        return;
-      }
-      if (cart.length === 0) {
-        alert("Tu selección está vacía.");
-        return;
-      }
-
-      enviarPedidoBtn.disabled = true;
-      enviarPedidoBtn.textContent = "Enviando...";
-      setStatus("Enviando tu pedido...");
-
-      try {
-        const orderRefDoc = await ensureOrderForChatOrCart();
-        const itemsCol = collection(orderRefDoc, "items");
-        const batch = writeBatch(db);
-        let subtotal = 0;
-
-        cart.forEach(item => {
-          const lineTotal = item.price * item.qty;
-          subtotal += lineTotal;
-          const itemDoc = doc(itemsCol);
-          batch.set(itemDoc, {
-            productId: item.productId,
-            productName: item.name,
-            qty: item.qty,
-            basePrice: item.price,
-            unitPrice: item.price,
-            totalPrice: lineTotal,
-            status: "pendiente",
-            notes: null,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          });
-        });
-
-        batch.set(orderRefDoc, {
-          updatedAt: serverTimestamp(),
-          customerName: currentName || null,
-        }, { merge: true });
-
-        await batch.commit();
-
-        setStatus("✅ Tu pedido fue enviado. El mesero lo verá en el sistema.");
-        cart = [];
-        renderCart();
-      } catch (err) {
-        console.error("Error enviando pedido del cliente:", err);
-        alert("Ocurrió un error al enviar tu pedido. Intenta nuevamente.");
-        setStatus("Error al enviar tu pedido.");
-      } finally {
-        enviarPedidoBtn.disabled = false;
-        enviarPedidoBtn.textContent = "Enviar pedido a la mesa";
-      }
-    }
-
-    function limpiarCart() {
-      cart = [];
-      renderCart();
-      setStatus("Tu selección fue limpiada. Puedes elegir de nuevo.");
-    }
-
-    enviarPedidoBtn.addEventListener("click", enviarPedidoCliente);
-    limpiarCartBtn.addEventListener("click", limpiarCart);
-
-    // === Enviar mensaje al mesero ===
-    async function enviarMensaje() {
-      const text = messageInput.value.trim();
-      if (!currentMesa) {
-        alert("Primero selecciona tu mesa.");
-        return;
-      }
-      if (!text) return;
-
-      sendMessageBtn.disabled = true;
-      setStatus("Enviando mensaje al mesero...");
-
-      try {
-        const orderRefDoc = await ensureOrderForChatOrCart();
-        const msgsCol = collection(orderRefDoc, "messages");
-        await addDoc(msgsCol, {
-          sender: "cliente",
-          text,
-          createdAt: serverTimestamp(),
-        });
-        messageInput.value = "";
-        setStatus("Mensaje enviado. Tu mesero lo verá en su sistema.");
-        listenMessages(orderRefDoc.id);
-      } catch (err) {
-        console.error("Error enviando mensaje:", err);
-        alert("No se pudo enviar el mensaje. Intenta de nuevo.");
-        setStatus("Error al enviar el mensaje.");
-      } finally {
-        sendMessageBtn.disabled = false;
-      }
-    }
-
-    sendMessageBtn.addEventListener("click", enviarMensaje);
-    messageInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        enviarMensaje();
-      }
-    });
-
-    // Auto-inicio: mesa + nombre previo
-    const mesaFromUrl = getMesaFromUrl();
-    const savedName = localStorage.getItem("cafecaro_customerName") || "";
-    if (savedName) nombreInput.value = savedName;
-
-    if (mesaFromUrl) {
-      startForMesa(mesaFromUrl, savedName);
-    } else {
-      setStatus("Escribe tu mesa y tu nombre (opcional) para consultar o pedir.");
-    }
-  </script>
-</body>
-</html>
+    <button class="modal-add-btn" id="addToCartBtn">Agregar al carrito</button>
+  </div>
+</div>
+
+<!-- Chat cliente -->
+<div id="chatBox"></div>
