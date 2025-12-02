@@ -1,33 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-
-    // ✅ Permitir leer el menú a cualquiera (productos)
-    match /branches/{branchId}/products/{productId} {
-      allow read: if true;
-    }
-
-    // ✅ Permitir leer/escribir órdenes e ítems (mesero + KDS)
-    match /branches/{branchId}/orders/{orderId} {
-      allow read, write: if true;
-
-      match /items/{itemId} {
-        allow read, write: if true;
-      }
-    }
-
-    // (Opcional) Resto bloqueado por defecto:
-    match /{document=**} {
-      allow read, write: if false;
-    }
-  }
-}
-
-  
-  
-  
   <head>
   <meta charset="UTF-8" />
   <title>Mesero POS – Cafecaro</title>
