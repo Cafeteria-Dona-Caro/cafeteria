@@ -511,3 +511,163 @@
 
   loadCartLocal();
 </script>
+
+<!-- ============================= -->
+<!--  C H A T   +   E S T A D O    -->
+<!-- ============================= -->
+<script type="module">
+import { 
+  collection, doc, addDoc, onSnapshot, serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { db } from "./firebaseInit.js"; // IGNORAR ESTA LÍNEA SI YA USASTE EL CONFIG DE PARTE 2
+
+
+/* ====================================
+   ORDEN ACTIVA PARA EL CLIENTE
+==================================== */
+let activeOrderId = localStorage.getItem("cafecaro_active_order_" + mesa) || null;
+const chatBox = document.getElementById("chatBox");
+
+/* ====================================
+   DETECTAR CAMBIOS EN LA ORDEN
+==================================== */
+function watchOrderStatus(orderId) {
+  const ref = doc(db, "branches", BRANCH_ID, "orders", orderId);
+
+  onSnapshot(ref, (snap) => {
+    if (!snap.exists()) return;
+
+    const data = snap.data();
+
+    // Mostrar estado al cliente
+    showClientNotification(`Estado de tu pedido: ${data.status}`);
+
+    // Notificación especial cuando queda listo
+    if (data.status === "lista") {
+      alert("🍽 Tu pedido está listo. El mesero lo llevará a tu mesa.");
+    }
+  });
+}
+
+/* ====================================
+   CHAT EN TIEMPO REAL
+==================================== */
+function startChatListener(orderId) {
+  const msgsRef = collection(
+    db,
+    "branches",
+    BRANCH_ID,
+    "orders",
+    orderId,
+    "messages"
+  );
+
+  chatBox.style.display = "flex";
+  
+  onSnapshot(msgsRef, (snap) => {
+    chatBox.innerHTML = "";
+
+    if (snap.size === 0) {
+      chatBox.innerHTML = "<p style='opacity:0.6;'>No hay mensajes aún.</p>";
+      return;
+    }
+
+    snap.forEach((docSnap) => {
+      const m = docSnap.data();
+      const div = document.createElement("div");
+      div.className = "chat-message";
+      div.innerHTML = m.text;
+      chatBox.appendChild(div);
+    });
+
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+
+/* ====================================
+   ENVIAR MENSAJE DEL CLIENTE AL MESERO
+==================================== */
+window.clientSendMessage = async function () {
+  if (!activeOrderId) return alert("Aún no has enviado un pedido.");
+
+  const text = prompt("Escribe tu mensaje para el mesero:");
+  if (!text || text.trim() === "") return;
+
+  await addDoc(
+    collection(db, "branches", BRANCH_ID, "orders", activeOrderId, "messages"),
+    {
+      sender: "cliente",
+      text,
+      createdAt: serverTimestamp(),
+    }
+  );
+};
+
+/* ====================================
+   NOTIFICACIONES AL CLIENTE
+==================================== */
+function showClientNotification(message) {
+  const alertDiv = document.createElement("div");
+  alertDiv.style.position = "fixed";
+  alertDiv.style.bottom = "80px";
+  alertDiv.style.right = "20px";
+  alertDiv.style.background = "#00c853";
+  alertDiv.style.color = "#000";
+  alertDiv.style.padding = "12px 16px";
+  alertDiv.style.borderRadius = "12px";
+  alertDiv.style.fontWeight = "700";
+  alertDiv.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+  alertDiv.textContent = message;
+
+  document.body.appendChild(alertDiv);
+
+  setTimeout(() => {
+    alertDiv.style.opacity = "0";
+    alertDiv.style.transition = "opacity 0.5s";
+
+    setTimeout(() => alertDiv.remove(), 500);
+  }, 2000);
+}
+
+/* ====================================
+   CONECTAR ORDEN CREADA DESDE PARTE 2
+==================================== */
+window.afterOrderCreated = function(orderId) {
+  activeOrderId = orderId;
+  localStorage.setItem("cafecaro_active_order_" + mesa, orderId);
+
+  watchOrderStatus(orderId);
+  startChatListener(orderId);
+};
+
+/* ====================================
+   RE-CONEXIÓN AUTOMÁTICA
+   (si el cliente recarga la página)
+==================================== */
+if (activeOrderId) {
+  watchOrderStatus(activeOrderId);
+  startChatListener(activeOrderId);
+  showClientNotification("Reconectado al pedido activo.");
+}
+</script>
+
+<!-- BOTÓN PARA HABLAR CON EL MESERO -->
+<div style="
+  position:fixed;
+  bottom:80px;
+  left:20px;
+  background:#2962ff;
+  color:#fff;
+  padding:12px 16px;
+  border-radius:30px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+" onclick="clientSendMessage()">
+  🗨 Hablar con mesero
+</div>
+
+
+</body>
+</html>
