@@ -244,3 +244,270 @@
 
 <!-- Chat cliente -->
 <div id="chatBox"></div>
+<!-- ============================= -->
+<!--  F   I   R   E   B   A   S   E -->
+<!-- ============================= -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import {
+    getFirestore, collection, getDocs, addDoc,
+    doc, updateDoc, serverTimestamp, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+  /* ===============================
+     CONFIGURACIÓN FIREBASE
+  =============================== */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+    authDomain: "cafecaro-af23b.firebaseapp.com",
+    projectId: "cafecaro-af23b",
+    storageBucket: "cafecaro-af23b.firebasestorage.app",
+    messagingSenderId: "534231921780",
+    appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  /* ===============================
+     VARIABLES GLOBALES
+  =============================== */
+  const BRANCH_ID = "cafecaro-centro"; // sucursal
+  const urlParams = new URLSearchParams(window.location.search);
+  const mesa = urlParams.get("mesa") || "sin_mesa";
+
+  let cart = [];     // [{id,name,price,qty,notes}]
+  let selectedProduct = null;
+
+  const productsGrid = document.getElementById("productsGrid");
+  const productModal = document.getElementById("productModal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalPrice = document.getElementById("modalPrice");
+  const modalNotes = document.getElementById("modalNotes");
+  const qtyMinus = document.getElementById("qtyMinus");
+  const qtyPlus = document.getElementById("qtyPlus");
+  const qtyValue = document.getElementById("qtyValue");
+  const addToCartBtn = document.getElementById("addToCartBtn");
+  const cartButton = document.getElementById("cartButton");
+
+  /* ===============================
+     CARGAR PRODUCTOS DESDE FIREBASE
+  =============================== */
+  async function loadProducts() {
+    productsGrid.innerHTML = "<p style='opacity:0.6;'>Cargando menú...</p>";
+
+    const ref = collection(db, "branches", BRANCH_ID, "products");
+    const snap = await getDocs(ref);
+
+    productsGrid.innerHTML = "";
+
+    snap.forEach(docSnap => {
+      const p = docSnap.data();
+      const id = docSnap.id;
+
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.onclick = () => openProduct(id, p);
+
+      card.innerHTML = `
+        <img src="${p.imgUrl || "https://via.placeholder.com/300"}" class="product-img">
+        <div class="product-body">
+          <div class="product-title">${p.name}</div>
+          <div class="product-price">$${(p.basePrice || 0).toFixed(2)}</div>
+        </div>
+      `;
+
+      productsGrid.appendChild(card);
+    });
+  }
+
+  loadProducts();
+
+  /* ===============================
+     MODAL DEL PRODUCTO
+  =============================== */
+  function openProduct(id, p) {
+    selectedProduct = { id, ...p };
+    modalTitle.textContent = p.name;
+    modalPrice.textContent = `$${p.basePrice.toFixed(2)}`;
+    modalNotes.value = "";
+    qtyValue.textContent = "1";
+    productModal.classList.add("active");
+  }
+
+  productModal.onclick = (e) => {
+    if (e.target === productModal) {
+      productModal.classList.remove("active");
+    }
+  };
+
+  qtyMinus.onclick = () => {
+    let v = parseInt(qtyValue.textContent);
+    if (v > 1) qtyValue.textContent = v - 1;
+  };
+  qtyPlus.onclick = () => {
+    let v = parseInt(qtyValue.textContent);
+    qtyValue.textContent = v + 1;
+  };
+
+  addToCartBtn.onclick = () => {
+    const qty = parseInt(qtyValue.textContent);
+    const notes = modalNotes.value.trim();
+
+    cart.push({
+      id: selectedProduct.id,
+      productName: selectedProduct.name,
+      unitPrice: selectedProduct.basePrice,
+      qty,
+      notes
+    });
+
+    productModal.classList.remove("active");
+    updateCartButton();
+    saveCartLocal();
+  };
+
+  /* ===============================
+     CARRITO FLOTANTE
+  =============================== */
+  function updateCartButton() {
+    let totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+    cartButton.textContent = `🛒 Carrito (${totalQty})`;
+  }
+
+  cartButton.onclick = () => openCart();
+
+  /* ===============================
+     CARRITO POPUP
+  =============================== */
+  function openCart() {
+    let html = `
+      <div style="padding:20px;background:#fff;position:fixed;top:0;left:0;right:0;bottom:0;overflow:auto;">
+        <h2>Tu pedido – Mesa ${mesa}</h2>
+    `;
+
+    if (cart.length === 0) {
+      html += "<p>No has agregado productos.</p>";
+    } else {
+      cart.forEach((item, idx) => {
+        html += `
+          <div style="padding:10px 0;border-bottom:1px solid #eee;">
+            <strong>${item.productName}</strong><br>
+            Cant: ${item.qty} – $${(item.unitPrice * item.qty).toFixed(2)}<br>
+            ${item.notes ? "Nota: " + item.notes : ""}
+            <br><button onclick="removeItem(${idx})" style="margin-top:5px;">Eliminar</button>
+          </div>
+        `;
+      });
+
+      const total = cart.reduce((acc, i) => acc + i.unitPrice * i.qty, 0);
+      html += `
+        <h3>Total: $${total.toFixed(2)}</h3>
+        <button onclick="sendOrder()" style="
+          background:#00c853;
+          padding:12px 20px;
+          border:none;
+          border-radius:10px;
+          font-size:16px;
+          font-weight:700;
+        ">Enviar pedido</button>
+      `;
+    }
+
+    html += `
+      <br><br>
+      <button onclick="closeCart()" style="margin-top:10px;">Cerrar</button>
+      </div>
+    `;
+
+    const div = document.createElement("div");
+    div.id = "cartView";
+    div.style.position = "fixed";
+    div.style.inset = "0";
+    div.style.background = "rgba(0,0,0,0.45)";
+    div.innerHTML = html;
+
+    document.body.appendChild(div);
+  }
+
+  window.closeCart = function () {
+    const v = document.getElementById("cartView");
+    if (v) v.remove();
+  };
+
+  window.removeItem = function (idx) {
+    cart.splice(idx, 1);
+    saveCartLocal();
+    closeCart();
+    openCart();
+    updateCartButton();
+  };
+
+  /* ===============================
+     ENVIAR PEDIDO A FIREBASE
+  =============================== */
+  window.sendOrder = async function () {
+    if (cart.length === 0) return alert("Tu carrito está vacío.");
+
+    const customer = document.getElementById("customerNameInput").value.trim();
+
+    // Crear orden
+    const orderRef = await addDoc(
+      collection(db, "branches", BRANCH_ID, "orders"),
+      {
+        tableNumber: mesa,
+        customerName: customer || "",
+        status: "abierta",
+        source: "cliente",
+        subtotal: 0,
+        tax: 0,
+        discount: 0,
+        total: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }
+    );
+
+    // Insertar items
+    for (let item of cart) {
+      await addDoc(
+        collection(db, "branches", BRANCH_ID, "orders", orderRef.id, "items"),
+        {
+          productId: item.id,
+          productName: item.productName,
+          unitPrice: item.unitPrice,
+          qty: item.qty,
+          notes: item.notes,
+          status: "pendiente",
+          createdAt: serverTimestamp()
+        }
+      );
+    }
+
+    // Alertar KDS → sonido se reproducirá allá
+    await updateDoc(orderRef, { updatedAt: serverTimestamp() });
+
+    cart = [];
+    saveCartLocal();
+    updateCartButton();
+    closeCart();
+
+    alert("Pedido enviado. El mesero está preparando tu orden.");
+  };
+
+  /* ===============================
+     GUARDADO LOCAL DEL CARRITO
+  =============================== */
+  function saveCartLocal() {
+    localStorage.setItem("cafecaro_cart_" + mesa, JSON.stringify(cart));
+  }
+  function loadCartLocal() {
+    const s = localStorage.getItem("cafecaro_cart_" + mesa);
+    if (s) {
+      cart = JSON.parse(s);
+      updateCartButton();
+    }
+  }
+
+  loadCartLocal();
+</script>
