@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Panel admin | Cafecaro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+    header .sub {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    header .right {
+      text-align: right;
+      font-size: 12px;
+    }
+    .role-pill {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #00c853;
+      color: #000;
+    }
+
+    main {
+      flex: 1;
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+    }
+
+    @media (min-width: 900px) {
+      main {
+        grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 12px;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .small {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    @media (min-width: 600px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .stat {
+      padding: 10px;
+      border-radius: 10px;
+      background: #f7f7f7;
+      border: 1px solid #e0e0e0;
+    }
+    .stat-label {
+      font-size: 11px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .stat-value {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .quick-links {
+      display: grid;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    @media (min-width: 600px) {
+      .quick-links {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .quick-btn {
+      padding: 14px 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .quick-btn span {
+      font-size: 22px;
+    }
+
+    .btn-caja { background: #e3f2fd; color: #0d47a1; }
+    .btn-mesero { background: #fff3e0; color: #e65100; }
+    .btn-cocina { background: #ffebee; color: #b71c1c; }
+    .btn-users { background: #e8f5e9; color: #1b5e20; }
+
+    .status-bar {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Panel administrador</h1>
+      <div class="sub" id="branchLabel">Sucursal: —</div>
+    </div>
+    <div class="right">
+      <div id="currentUserEmail">—</div>
+      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
+      <button id="logoutBtn" class="quick-btn btn-users" style="padding:6px 10px; border-radius:20px; font-size:12px; margin-top:4px;">
+        Salir
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Resumen del día -->
+    <section class="card">
+      <h2>Resumen de hoy</h2>
+      <p class="small">Basado en las órdenes de la sucursal en la fecha actual (hora del navegador).</p>
+
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-label">Órdenes totales</div>
+          <div class="stat-value" id="statTotalOrders">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Órdenes abiertas</div>
+          <div class="stat-value" id="statOpenOrders">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Órdenes cerradas</div>
+          <div class="stat-value" id="statClosedOrders">0</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Ventas del día</div>
+          <div class="stat-value" id="statTotalSales">$0.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Atajos -->
+    <section class="card">
+      <h2>Accesos rápidos</h2>
+      <p class="small">Navega a los módulos clave del sistema Cafecaro.</p>
+
+      <div class="quick-links">
+        <button class="quick-btn btn-caja" id="goCajaBtn">
+          Caja / Corte <span>💵</span>
+        </button>
+        <button class="quick-btn btn-mesero" id="goMeseroBtn">
+          Mesero / Salón <span>🧑‍🍽️</span>
+        </button>
+        <button class="quick-btn btn-cocina" id="goCocinaBtn">
+          Cocina / KDS <span>🍳</span>
+        </button>
+        <button class="quick-btn btn-users" id="goUsersBtn">
+          Usuarios / Roles <span>👥</span>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div id="globalStatus" class="status-bar">Conectando...</div>
+
+  <!-- ============================= -->
+  <!--    FIREBASE + LÓGICA ADMIN   -->
+  <!-- ============================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      collection,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // === CONFIG FIREBASE ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // === DOM ===
+    const branchLabel = document.getElementById("branchLabel");
+    const currentUserEmailEl = document.getElementById("currentUserEmail");
+    const currentUserRoleEl = document.getElementById("currentUserRole");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalStatus = document.getElementById("globalStatus");
+
+    const statTotalOrders = document.getElementById("statTotalOrders");
+    const statOpenOrders = document.getElementById("statOpenOrders");
+    const statClosedOrders = document.getElementById("statClosedOrders");
+    const statTotalSales = document.getElementById("statTotalSales");
+
+    const goCajaBtn = document.getElementById("goCajaBtn");
+    const goMeseroBtn = document.getElementById("goMeseroBtn");
+    const goCocinaBtn = document.getElementById("goCocinaBtn");
+    const goUsersBtn = document.getElementById("goUsersBtn");
+
+    branchLabel.textContent = "Sucursal: " + BRANCH_ID;
+
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg;
+    }
+
+    // === PROTECCIÓN: SOLO ADMIN ===
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUserEmailEl.textContent = user.email || "(sin correo)";
+
+      try {
+        const roleDoc = await getDoc(doc(db, "users", user.uid));
+        if (!roleDoc.exists()) {
+          currentUserRoleEl.textContent = "Sin rol";
+          setGlobalStatus("Tu usuario no tiene rol asignado.");
+          alert("Tu usuario no tiene rol asignado en Firestore.");
+          return;
+        }
+
+        const data = roleDoc.data();
+        const role = data.role || "sin_rol";
+        currentUserRoleEl.textContent = "Rol: " + role;
+
+        if (role !== "admin") {
+          alert("Acceso restringido. Esta página es solo para admin.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        setGlobalStatus("Conectado como admin.");
+        listenTodayStats();
+
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Error verificando rol.");
+      }
+    });
+
+    // === LOGOUT ===
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // === NAVEGACIÓN RÁPIDA ===
+    goCajaBtn.onclick = () => window.location.href = "caja.html";
+    goMeseroBtn.onclick = () => window.location.href = "mesero.html";
+    goCocinaBtn.onclick = () => window.location.href = "kds-cocina.html";
+    goUsersBtn.onclick = () => window.location.href = "admin-usuarios.html";
+
+    // === ESTADÍSTICAS DEL DÍA ===
+    function listenTodayStats() {
+      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+
+      onSnapshot(ordersRef, (snap) => {
+        let totalOrders = 0;
+        let openOrders = 0;
+        let closedOrders = 0;
+        let totalSales = 0;
+
+        const today = new Date();
+        const y = today.getFullYear();
+        const m = today.getMonth();
+        const d = today.getDate();
+
+        const start = new Date(y, m, d, 0, 0, 0);
+        const end = new Date(y, m, d, 23, 59, 59);
+
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const ts = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+          if (!ts) return;
+
+          if (ts < start || ts > end) return; // solo hoy
+
+          totalOrders++;
+
+          const status = data.status || "abierta";
+          if (status === "cerrada") closedOrders++;
+          else openOrders++;
+
+          const amount = data.total ?? data.subtotal ?? 0;
+          totalSales += amount;
+        });
+
+        statTotalOrders.textContent = totalOrders;
+        statOpenOrders.textContent = openOrders;
+        statClosedOrders.textContent = closedOrders;
+        statTotalSales.textContent = "$" + totalSales.toFixed(2);
+      }, (err) => {
+        console.error(err);
+        setGlobalStatus("Error leyendo órdenes para estadísticas.");
+      });
+    }
+  </script>
+</body>
+</html>
