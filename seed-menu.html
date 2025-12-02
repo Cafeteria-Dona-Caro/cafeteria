@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Seeder Menú Cafecaro – Firestore</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #111;
+      color: #f5f5f5;
+      margin: 0;
+      padding: 24px;
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .card {
+      max-width: 720px;
+      margin: 0 auto;
+      background: #1b1b1b;
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid #333;
+    }
+    button {
+      padding: 10px 18px;
+      border-radius: 8px;
+      border: none;
+      background: #00c853;
+      color: #000;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:disabled {
+      background: #555;
+      color: #999;
+      cursor: not-allowed;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 14px;
+      white-space: pre-line;
+    }
+    code {
+      background: #222;
+      padding: 2px 4px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Seeder Menú – Cafecaro ☕</h1>
+    <p>
+      Este archivo insertará el menú completo en:<br />
+      <code>branches/cafecaro-centro/products</code>
+    </p>
+    <p>
+      Úsalo sólo para inicializar datos. Después puedes borrarlo o protegerlo.
+    </p>
+
+    <button id="seedBtn">Sembrar menú en Firestore</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <!-- Firebase SDK v9 (modular) desde CDN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      writeBatch,
+      serverTimestamp,
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // === Configuración de tu proyecto CAFECARO ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21",
+      measurementId: "G-JC720XBF92"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    // === Menú completo de Cafecaro ===
+    const products = [
+      // CAFÉS CALIENTES - TRADICIONALES
+      {
+        name: "Café de la casa",
+        category: "Cafés calientes",
+        basePrice: 35,
+        printableName: "Café de la casa",
+        isActive: true,
+      },
+      {
+        name: "Café de olla",
+        category: "Cafés calientes",
+        basePrice: 35,
+        printableName: "Café de olla",
+        isActive: true,
+      },
+      {
+        name: "Café americano",
+        category: "Cafés calientes",
+        basePrice: 35,
+        printableName: "Americano",
+        isActive: true,
+      },
+      {
+        name: "Café americano doble",
+        category: "Cafés calientes",
+        basePrice: 40,
+        printableName: "Americano doble",
+        isActive: true,
+      },
+      {
+        name: "Expresso sencillo",
+        category: "Cafés calientes",
+        basePrice: 35,
+        printableName: "Expresso sencillo",
+        isActive: true,
+      },
+      {
+        name: "Expresso doble",
+        category: "Cafés calientes",
+        basePrice: 45,
+        printableName: "Expresso doble",
+        isActive: true,
+      },
+      {
+        name: "Expresso cortado",
+        category: "Cafés calientes",
+        basePrice: 40,
+        printableName: "Expresso cortado",
+        isActive: true,
+      },
+
+      // CAFÉS CALIENTES - ESPECIALIDADES Y SABORES
+      {
+        name: "Cappuccino",
+        category: "Cafés calientes",
+        basePrice: 60,
+        printableName: "Cappuccino",
+        isActive: true,
+      },
+      {
+        name: "Cappuccino con sabor (Avellana, Rol de canela, Crema irlandesa, Vainilla)",
+        category: "Cafés calientes",
+        basePrice: 70,
+        printableName: "Cappuccino sabor",
+        isActive: true,
+      },
+      {
+        name: "Moka",
+        category: "Cafés calientes",
+        basePrice: 60,
+        printableName: "Moka",
+        isActive: true,
+      },
+      {
+        name: "Café latte",
+        category: "Cafés calientes",
+        basePrice: 65,
+        printableName: "Latte",
+        isActive: true,
+      },
+      {
+        name: "Affogato",
+        category: "Cafés calientes",
+        basePrice: 65,
+        printableName: "Affogato",
+        isActive: true,
+      },
+      {
+        name: "Chocolate (agua o leche)",
+        category: "Cafés calientes",
+        basePrice: 55,
+        printableName: "Chocolate",
+        isActive: true,
+      },
+      {
+        name: "Chai caliente",
+        category: "Cafés calientes",
+        basePrice: 60,
+        printableName: "Chai caliente",
+        isActive: true,
+      },
+      {
+        name: "Café de anís",
+        category: "Cafés calientes",
+        basePrice: 40,
+        printableName: "Café de anís",
+        isActive: true,
+      },
+      {
+        name: "Café de clavo",
+        category: "Cafés calientes",
+        basePrice: 40,
+        printableName: "Café de clavo",
+        isActive: true,
+      },
+
+      // TISANAS CALIENTES
+      {
+        name: "Frutos de la vida",
+        category: "Tisanas calientes",
+        basePrice: 60,
+        printableName: "Tisana frutos de la vida",
+        isActive: true,
+      },
+      {
+        name: "Maracuyá",
+        category: "Tisanas calientes",
+        basePrice: 60,
+        printableName: "Tisana maracuyá",
+        isActive: true,
+      },
+      {
+        name: "Frutos tropicales",
+        category: "Tisanas calientes",
+        basePrice: 60,
+        printableName: "Tisana frutos tropicales",
+        isActive: true,
+      },
+      {
+        name: "Frutos de la pasión",
+        category: "Tisanas calientes",
+        basePrice: 60,
+        printableName: "Tisana frutos de la pasión",
+        isActive: true,
+      },
+      {
+        name: "Fruta caribeña",
+        category: "Tisanas calientes",
+        basePrice: 60,
+        printableName: "Tisana fruta caribeña",
+        isActive: true,
+      },
+
+      // TISANAS FRÍAS
+      {
+        name: "Frutos de la vida",
+        category: "Tisanas frías",
+        basePrice: 65,
+        printableName: "Tisana fría frutos de la vida",
+        isActive: true,
+      },
+      {
+        name: "Maracuyá",
+        category: "Tisanas frías",
+        basePrice: 65,
+        printableName: "Tisana fría maracuyá",
+        isActive: true,
+      },
+      {
+        name: "Frutos tropicales",
+        category: "Tisanas frías",
+        basePrice: 65,
+        printableName: "Tisana fría frutos tropicales",
+        isActive: true,
+      },
+      {
+        name: "Frutos de la pasión",
+        category: "Tisanas frías",
+        basePrice: 65,
+        printableName: "Tisana fría frutos de la pasión",
+        isActive: true,
+      },
+      {
+        name: "Fruta caribeña",
+        category: "Tisanas frías",
+        basePrice: 65,
+        printableName: "Tisana fría fruta caribeña",
+        isActive: true,
+      },
+
+      // SODAS ITALIANAS
+      {
+        name: "Frutos rojos",
+        category: "Sodas italianas",
+        basePrice: 65,
+        printableName: "Soda frutos rojos",
+        isActive: true,
+      },
+      {
+        name: "Coco",
+        category: "Sodas italianas",
+        basePrice: 65,
+        printableName: "Soda coco",
+        isActive: true,
+      },
+      {
+        name: "Mojito",
+        category: "Sodas italianas",
+        basePrice: 65,
+        printableName: "Soda mojito",
+        isActive: true,
+      },
+      {
+        name: "Conga",
+        category: "Sodas italianas",
+        basePrice: 65,
+        printableName: "Soda conga",
+        isActive: true,
+      },
+      {
+        name: "Fruta del dragón",
+        category: "Sodas italianas",
+        basePrice: 65,
+        printableName: "Soda fruta del dragón",
+        isActive: true,
+      },
+      {
+        name: "Mora azul",
+        category: "Sodas italianas",
+        basePrice: 65,
+        printableName: "Soda mora azul",
+        isActive: true,
+      },
+
+      // CAFÉS FRÍOS
+      {
+        name: "Latte frío",
+        category: "Cafés fríos",
+        basePrice: 65,
+        printableName: "Latte frío",
+        isActive: true,
+      },
+      {
+        name: "Moka frío",
+        category: "Cafés fríos",
+        basePrice: 60,
+        printableName: "Moka frío",
+        isActive: true,
+      },
+
+      // FRAPPE
+      {
+        name: "Oreo",
+        category: "Frappe",
+        basePrice: 65,
+        printableName: "Frappe Oreo",
+        isActive: true,
+      },
+      {
+        name: "Mazapán",
+        category: "Frappe",
+        basePrice: 65,
+        printableName: "Frappe Mazapán",
+        isActive: true,
+      },
+      {
+        name: "Moka",
+        category: "Frappe",
+        basePrice: 65,
+        printableName: "Frappe Moka",
+        isActive: true,
+      },
+      {
+        name: "Vainilla",
+        category: "Frappe",
+        basePrice: 60,
+        printableName: "Frappe Vainilla",
+        isActive: true,
+      },
+      {
+        name: "Caramelo",
+        category: "Frappe",
+        basePrice: 60,
+        printableName: "Frappe Caramelo",
+        isActive: true,
+      },
+      {
+        name: "Chocolate",
+        category: "Frappe",
+        basePrice: 65,
+        printableName: "Frappe Chocolate",
+        isActive: true,
+      },
+
+      // SMOOTHIES
+      {
+        name: "Fresa",
+        category: "Smoothies",
+        basePrice: 55,
+        printableName: "Smoothie fresa",
+        isActive: true,
+      },
+      {
+        name: "Plátano",
+        category: "Smoothies",
+        basePrice: 55,
+        printableName: "Smoothie plátano",
+        isActive: true,
+      },
+      {
+        name: "Mango",
+        category: "Smoothies",
+        basePrice: 55,
+        printableName: "Smoothie mango",
+        isActive: true,
+      },
+
+      // CHAMOYADAS
+      {
+        name: "Mango",
+        category: "Chamoyadas",
+        basePrice: 60,
+        printableName: "Chamoyada mango",
+        isActive: true,
+      },
+      {
+        name: "Tamarindo",
+        category: "Chamoyadas",
+        basePrice: 60,
+        printableName: "Chamoyada tamarindo",
+        isActive: true,
+      },
+      {
+        name: "Fresa",
+        category: "Chamoyadas",
+        basePrice: 60,
+        printableName: "Chamoyada fresa",
+        isActive: true,
+      },
+
+      // EMBOTELLADOS Y HELADOS
+      {
+        name: "Agua embotellada",
+        category: "Embotellados y helados",
+        basePrice: 18,
+        printableName: "Agua embotellada",
+        isActive: true,
+      },
+      {
+        name: "Pepsi",
+        category: "Embotellados y helados",
+        basePrice: 20,
+        printableName: "Pepsi",
+        isActive: true,
+      },
+      {
+        name: "Mirinda",
+        category: "Embotellados y helados",
+        basePrice: 20,
+        printableName: "Mirinda",
+        isActive: true,
+      },
+      {
+        name: "7UP",
+        category: "Embotellados y helados",
+        basePrice: 20,
+        printableName: "7UP",
+        isActive: true,
+      },
+      {
+        name: "Helado bola",
+        category: "Embotellados y helados",
+        basePrice: 20,
+        printableName: "Helado bola",
+        isActive: true,
+      },
+    ];
+
+    const seedBtn = document.getElementById("seedBtn");
+    const statusEl = document.getElementById("status");
+
+    async function seedMenu() {
+      seedBtn.disabled = true;
+      statusEl.textContent = "Sembrando menú en Firestore...\n";
+
+      try {
+        const branchRef = doc(collection(db, "branches"), BRANCH_ID);
+        const batch = writeBatch(db);
+
+        // Asegurar que la sucursal exista
+        batch.set(branchRef, {
+          name: "Cafecaro Centro",
+          code: BRANCH_ID,
+          updatedAt: serverTimestamp(),
+          createdAt: serverTimestamp(),
+        }, { merge: true });
+
+        const productsCol = collection(branchRef, "products");
+
+        products.forEach((product) => {
+          const productDoc = doc(productsCol); // ID automático
+          batch.set(productDoc, {
+            ...product,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+        });
+
+        await batch.commit();
+
+        statusEl.textContent += `✅ Menú subido correctamente.\nTotal productos: ${products.length}\nRuta: branches/${BRANCH_ID}/products`;
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent += `❌ Error subiendo el menú: ${err.message}`;
+        seedBtn.disabled = false;
+      }
+    }
+
+    seedBtn.addEventListener("click", seedMenu);
+  </script>
+</body>
+</html>
