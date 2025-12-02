@@ -18,7 +18,6 @@
       color: #222;
     }
 
-    /* === DETECCIÓN DE MÓVIL VS ESCRITORIO (solo visual) === */
     @media (max-width: 768px) {
       body { font-size: 14px; }
     }
@@ -26,7 +25,7 @@
       body { font-size: 15px; }
     }
 
-    /* === HEADER === */
+    /* HEADER */
     header {
       background: #ffffff;
       padding: 12px 16px;
@@ -43,22 +42,20 @@
       font-size: 18px;
       font-weight: 700;
     }
-
     #customerNameInput {
-      width: 140px;
+      width: 150px;
       padding: 6px 8px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 13px;
     }
 
-    /* === GRID DE PRODUCTOS (UBER EATS STYLE) === */
+    /* GRID DE PRODUCTOS */
     .products-grid {
       padding: 16px;
       display: grid;
       gap: 16px;
     }
-
     @media (max-width: 768px) {
       .products-grid { grid-template-columns: 1fr; }
     }
@@ -80,14 +77,12 @@
     .product-card:active {
       transform: scale(0.98);
     }
-
     .product-img {
       width: 100%;
       height: 150px;
       object-fit: cover;
       background: #ddd;
     }
-
     .product-body {
       padding: 12px;
     }
@@ -103,7 +98,7 @@
       margin-top: 6px;
     }
 
-    /* === CARRITO FLOTANTE === */
+    /* CARRITO FLOTANTE */
     #cartButton {
       position: fixed;
       right: 20px;
@@ -122,7 +117,7 @@
       z-index: 20;
     }
 
-    /* === MODAL DEL PRODUCTO === */
+    /* MODAL DE PRODUCTO */
     .modal {
       position: fixed;
       inset: 0;
@@ -145,13 +140,11 @@
       flex-direction: column;
       gap: 12px;
     }
-
     .modal-content h3 {
       margin: 0;
       font-size: 18px;
       font-weight: 700;
     }
-
     .qty-row {
       display: flex;
       align-items: center;
@@ -172,7 +165,6 @@
       font-weight: 700;
       cursor: pointer;
     }
-
     .modal-add-btn {
       padding: 10px;
       background: #00c853;
@@ -199,7 +191,6 @@
       overflow-y: auto;
       z-index: 15;
     }
-
     .chat-message {
       background: #e8f5e9;
       padding: 8px 12px;
@@ -213,7 +204,7 @@
 
 <header>
   <h1>Cafecaro</h1>
-  <input type="text" id="customerNameInput" placeholder="Tu nombre (opcional)">
+  <input type="text" id="customerNameInput" placeholder="Tu nombre (opcional)" />
 </header>
 
 <div class="products-grid" id="productsGrid"></div>
@@ -265,7 +256,7 @@
 </div>
 
 <!-- ============================= -->
-<!--  FIREBASE + LÓGICA COMPLETA  -->
+<!--  FIREBASE + LÓGICA CLIENTE   -->
 <!-- ============================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
@@ -278,9 +269,7 @@
     signInAnonymously
   } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
-  /* ===============================
-     CONFIGURACIÓN FIREBASE
-  =============================== */
+  // === CONFIG FIREBASE ===
   const firebaseConfig = {
     apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
     authDomain: "cafecaro-af23b.firebaseapp.com",
@@ -290,24 +279,31 @@
     appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
   };
 
-  const BRANCH_ID = "cafecaro-centro"; // sucursal
+  const BRANCH_ID = "cafecaro-centro";
+
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const auth = getAuth(app);
 
-  // Cliente se autentica de forma anónima para pasar reglas
+  // Login anónimo inicial
   signInAnonymously(auth).catch((err) => {
-    console.error("Error en auth anónima:", err);
+    console.error("Error en auth anónima inicial:", err);
   });
 
-  /* ===============================
-     VARIABLES GLOBALES
-  =============================== */
+  // Asegurar sesión antes de escribir
+  async function ensureSignedIn() {
+    if (!auth.currentUser) {
+      await signInAnonymously(auth);
+    }
+  }
+
+  // === VARIABLES GLOBALES ===
   const urlParams = new URLSearchParams(window.location.search);
   const mesa = urlParams.get("mesa") || "sin_mesa";
 
   let cart = [];     // [{id, productName, unitPrice, qty, notes}]
   let selectedProduct = null;
+  let activeOrderId = localStorage.getItem("cafecaro_active_order_" + mesa) || null;
 
   const productsGrid = document.getElementById("productsGrid");
   const productModal = document.getElementById("productModal");
@@ -321,17 +317,12 @@
   const cartButton = document.getElementById("cartButton");
   const chatBox = document.getElementById("chatBox");
 
-  let activeOrderId = localStorage.getItem("cafecaro_active_order_" + mesa) || null;
-
-  /* ===============================
-     UTILIDAD
-  =============================== */
   function formatCurrency(n) {
     return `$${(n || 0).toFixed(2)}`;
   }
 
   /* ===============================
-     CARGAR PRODUCTOS DESDE FIREBASE
+     CARGAR PRODUCTOS
   =============================== */
   async function loadProducts() {
     productsGrid.innerHTML = "<p style='opacity:0.6;'>Cargando menú...</p>";
@@ -369,7 +360,7 @@
   loadProducts();
 
   /* ===============================
-     MODAL DEL PRODUCTO
+     MODAL PRODUCTO
   =============================== */
   function openProduct(id, p) {
     selectedProduct = { id, ...p };
@@ -413,7 +404,7 @@
   };
 
   /* ===============================
-     CARRITO FLOTANTE
+     CARRITO
   =============================== */
   function updateCartButton() {
     let totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
@@ -422,9 +413,6 @@
 
   cartButton.onclick = () => openCart();
 
-  /* ===============================
-     CARRITO POPUP
-  =============================== */
   function openCart() {
     let html = `
       <div style="padding:20px;background:#fff;position:fixed;top:0;left:0;right:0;bottom:0;overflow:auto;">
@@ -489,22 +477,22 @@
   };
 
   /* ===============================
-     ENVIAR PEDIDO A FIREBASE
+     ENVIAR PEDIDO
   =============================== */
   window.sendOrder = async function () {
     if (cart.length === 0) return alert("Tu carrito está vacío.");
 
-    const customer = document.getElementById("customerNameInput").value.trim();
-    const user = auth.currentUser; // de auth anónima
-
     try {
-      // Crear orden
+      await ensureSignedIn();
+      const user = auth.currentUser;
+      const customer = document.getElementById("customerNameInput").value.trim();
+
       const orderRef = await addDoc(
         collection(db, "branches", BRANCH_ID, "orders"),
         {
           tableNumber: mesa,
           customerName: customer || "",
-          customerUid: user ? user.uid : null,  // 🔑 para reglas
+          customerUid: user ? user.uid : null,
           status: "abierta",
           source: "cliente",
           subtotal: 0,
@@ -516,7 +504,6 @@
         }
       );
 
-      // Insertar items
       for (let item of cart) {
         await addDoc(
           collection(db, "branches", BRANCH_ID, "orders", orderRef.id, "items"),
@@ -532,10 +519,8 @@
         );
       }
 
-      // Actualizar timestamp (dispara listeners KDS/caja)
       await updateDoc(orderRef, { updatedAt: serverTimestamp() });
 
-      // Guardar orden activa y enganchar listeners
       afterOrderCreated(orderRef.id);
 
       cart = [];
@@ -546,28 +531,26 @@
       alert("Pedido enviado. El mesero está preparando tu orden.");
     } catch (err) {
       console.error("Error al enviar pedido:", err);
-      alert("Hubo un problema al enviar tu pedido. Intenta de nuevo.");
+      alert("Hubo un problema al enviar tu pedido. Revisa tu conexión o inténtalo de nuevo.");
     }
   };
 
   /* ===============================
-     GUARDADO LOCAL DEL CARRITO
+     LOCALSTORAGE CARRITO
   =============================== */
   function saveCartLocal() {
     localStorage.setItem("cafecaro_cart_" + mesa, JSON.stringify(cart));
   }
   function loadCartLocal() {
     const s = localStorage.getItem("cafecaro_cart_" + mesa);
-    if (s) {
-      cart = JSON.parse(s);
-    }
+    if (s) cart = JSON.parse(s);
     updateCartButton();
   }
 
   loadCartLocal();
 
   /* ===============================
-     NOTIFICACIONES AL CLIENTE
+     NOTIFICACIONES CLIENTE
   =============================== */
   function showClientNotification(message) {
     const alertDiv = document.createElement("div");
@@ -588,13 +571,12 @@
     setTimeout(() => {
       alertDiv.style.opacity = "0";
       alertDiv.style.transition = "opacity 0.5s";
-
       setTimeout(() => alertDiv.remove(), 500);
     }, 2000);
   }
 
   /* ===============================
-     ORDEN ACTIVA & ESTADO EN TIEMPO REAL
+     ESTADO EN TIEMPO REAL + CHAT
   =============================== */
   function watchOrderStatus(orderId) {
     const ref = doc(db, "branches", BRANCH_ID, "orders", orderId);
@@ -654,7 +636,7 @@
     startChatListener(orderId);
   }
 
-  // Re-conexión automática si hay orden activa
+  // Reconexión si ya había pedido activo
   if (activeOrderId) {
     watchOrderStatus(activeOrderId);
     startChatListener(activeOrderId);
@@ -662,14 +644,13 @@
   }
 
   /* ===============================
-     ENVIAR MENSAJE DEL CLIENTE AL MESERO
+     MENSAJE DEL CLIENTE AL MESERO
   =============================== */
   window.clientSendMessage = async function () {
     if (!activeOrderId) {
       alert("Primero envía un pedido para poder hablar con el mesero.");
       return;
     }
-
     const text = prompt("Escribe tu mensaje para el mesero:");
     if (!text || text.trim() === "") return;
 
