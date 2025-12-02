@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Caja – Cafecaro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050505;
+      color: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    header {
+      padding: 10px 16px;
+      background: #111;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+    header .sub {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    header .right {
+      text-align: right;
+      font-size: 12px;
+    }
+    .role-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    .role-admin { background: #00c853; color: #000; }
+    .role-caja { background: #2962ff; color: #fff; }
+
+    .toolbar {
+      padding: 8px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    select, input[type="date"] {
+      background: #222;
+      color: #f5f5f5;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      font-family: inherit;
+    }
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+      gap: 0;
+      min-height: 0;
+    }
+    .panel-left {
+      border-right: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .orders-list {
+      padding: 8px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .order-row {
+      background: #121212;
+      border-radius: 10px;
+      border: 1px solid #333;
+      padding: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .order-row.selected {
+      border-color: #00c853;
+      box-shadow: 0 0 0 1px #00c85344;
+    }
+    .order-row-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+    }
+    .order-row-title {
+      font-weight: 600;
+      font-size: 13px;
+    }
+    .order-row-meta {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    .status-chip {
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+      text-transform: uppercase;
+    }
+    .status-abierta { background: #ffab00; color: #000; }
+    .status-en_preparacion { background: #2962ff; color: #fff; }
+    .status-lista { background: #00c853; color: #000; }
+    .status-cerrada { background: #757575; color: #fff; }
+
+    .panel-right {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .detail-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      border-bottom: 1px solid #222;
+      padding-bottom: 8px;
+      margin-bottom: 8px;
+    }
+    .detail-main-title {
+      font-size: 16px;
+      margin: 0;
+    }
+    .detail-sub {
+      font-size: 12px;
+      opacity: 0.85;
+    }
+    .detail-meta {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 4px;
+    }
+    .detail-status-select {
+      margin-top: 4px;
+    }
+    .detail-status-select select {
+      width: 100%;
+    }
+    .items-table {
+      margin-top: 6px;
+      border-radius: 10px;
+      border: 1px solid #222;
+      overflow: hidden;
+      font-size: 12px;
+    }
+    .items-header, .items-row {
+      display: grid;
+      grid-template-columns: 2.5fr 0.8fr 0.9fr 1.1fr;
+      padding: 6px 8px;
+      gap: 6px;
+      align-items: center;
+    }
+    .items-header {
+      background: #151515;
+      font-weight: 600;
+      border-bottom: 1px solid #222;
+    }
+    .items-row:nth-child(odd) { background: #111; }
+    .items-row:nth-child(even) { background: #161616; }
+    .items-row-status {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      text-align: center;
+    }
+    .items-row-notes {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+    .items-row-qty input {
+      width: 50px;
+      text-align: center;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #f5f5f5;
+      font-size: 11px;
+      padding: 2px 4px;
+    }
+    .items-row-total {
+      text-align: right;
+    }
+
+    .totals-card {
+      margin-top: 8px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      padding: 8px;
+      font-size: 13px;
+      background: #101010;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+    .totals-labels {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .totals-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .totals-row input {
+      width: 80px;
+      text-align: right;
+      background: #222;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #f5f5f5;
+      font-size: 12px;
+      padding: 2px 4px;
+    }
+    .totals-grand {
+      font-size: 16px;
+      font-weight: 700;
+      text-align: right;
+    }
+
+    .actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+    button {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: #00c853;
+      color: #000;
+    }
+    .btn-danger {
+      background: #b71c1c;
+      color: #fff;
+    }
+    .btn-secondary {
+      background: #333;
+      color: #eee;
+    }
+    .readonly-note {
+      font-size: 11px;
+      opacity: 0.85;
+      margin-top: 4px;
+    }
+    .empty-detail {
+      font-size: 13px;
+      opacity: 0.85;
+      margin-top: 20px;
+      text-align: center;
+    }
+    .status-bar {
+      font-size: 12px;
+      opacity: 0.85;
+      padding: 6px 16px;
+      border-top: 1px solid #222;
+      background: #080808;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Caja – Cafecaro</h1>
+      <div class="sub">Control de ventas por orden</div>
+    </div>
+    <div class="right">
+      <div id="branchLabel"></div>
+      <div id="rolePill" class="role-pill role-caja">Modo caja (solo lectura)</div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div>
+      Fecha: <input type="date" id="dateFilter" />
+    </div>
+    <div>
+      Estado:
+      <select id="statusFilter">
+        <option value="todos">Todos</option>
+        <option value="abierta">Abierta</option>
+        <option value="en_preparacion">En preparación</option>
+        <option value="lista">Lista</option>
+        <option value="cerrada">Cerrada</option>
+      </select>
+    </div>
+    <div style="opacity:0.7;">
+      Tip: entra como admin con <code>?role=admin</code> en la URL.
+    </div>
+  </div>
+
+  <main>
+    <section class="panel-left">
+      <div class="orders-list" id="ordersList">
+        <!-- órdenes -->
+      </div>
+    </section>
+
+    <section class="panel-right">
+      <div id="detailContainer">
+        <p class="empty-detail">
+          Selecciona una orden en la lista izquierda para ver el detalle.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <div class="status-bar" id="statusText">Cargando órdenes...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      onSnapshot,
+      query,
+      orderBy,
+      updateDoc,
+      serverTimestamp,
+      getDocs,
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21",
+      measurementId: "G-JC720XBF92"
+    };
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const branchLabel = document.getElementById("branchLabel");
+    const rolePill = document.getElementById("rolePill");
+    const statusText = document.getElementById("statusText");
+    const ordersList = document.getElementById("ordersList");
+    const detailContainer = document.getElementById("detailContainer");
+    const dateFilter = document.getElementById("dateFilter");
+    const statusFilter = document.getElementById("statusFilter");
+
+    branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
+
+    // rol: admin o caja (solo lectura)
+    const params = new URLSearchParams(window.location.search);
+    const roleParam = params.get("role");
+    const isAdmin = roleParam === "admin";
+
+    if (isAdmin) {
+      rolePill.textContent = "Modo administrador (puede editar)";
+      rolePill.classList.remove("role-caja");
+      rolePill.classList.add("role-admin");
+    }
+
+    function setStatus(msg) {
+      statusText.textContent = msg;
+    }
+    function formatCurrency(n) {
+      return `$${(n || 0).toFixed(2)}`;
+    }
+    function formatDateTime(ts) {
+      if (!ts?.toDate) return "-";
+      const d = ts.toDate();
+      const pad = (x) => (x < 10 ? "0" + x : x);
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    let unsubscribeOrders = null;
+    let currentOrderId = null;
+    let currentOrders = new Map(); // orderId -> data
+
+    // === Escuchar órdenes (todas) y filtrar en cliente ===
+    function listenOrders() {
+      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
+
+      unsubscribeOrders = onSnapshot(
+        qOrders,
+        snapshot => {
+          currentOrders.clear();
+          snapshot.forEach(docSnap => {
+            currentOrders.set(docSnap.id, docSnap.data());
+          });
+          renderOrdersList();
+          setStatus(`Órdenes cargadas: ${snapshot.size}`);
+        },
+        err => {
+          console.error("Error escuchando órdenes:", err);
+          setStatus("Error cargando órdenes. Revisa la consola.");
+        }
+      );
+    }
+
+    function matchesFilters(orderData) {
+      const statusValue = statusFilter.value;
+      if (statusValue !== "todos" && orderData.status !== statusValue) return false;
+
+      const dateValue = dateFilter.value;
+      if (dateValue && orderData.createdAt?.toDate) {
+        const d = orderData.createdAt.toDate();
+        const yyyy = d.getFullYear();
+        const mm = (d.getMonth() + 1).toString().padStart(2, "0");
+        const dd = d.getDate().toString().padStart(2, "0");
+        const orderDateStr = `${yyyy}-${mm}-${dd}`;
+        if (orderDateStr !== dateValue) return false;
+      }
+
+      return true;
+    }
+
+    function renderOrdersList() {
+      ordersList.innerHTML = "";
+      const entries = Array.from(currentOrders.entries());
+
+      const filtered = entries.filter(([id, data]) => matchesFilters(data));
+
+      if (filtered.length === 0) {
+        ordersList.innerHTML = "<p style='font-size:12px;opacity:0.8;'>No hay órdenes con esos filtros.</p>";
+        return;
+      }
+
+      filtered.forEach(([id, data]) => {
+        const row = document.createElement("div");
+        row.className = "order-row" + (id === currentOrderId ? " selected" : "");
+        row.dataset.orderId = id;
+
+        const statusClass = `status-${data.status || "abierta"}`;
+        const mesa = data.tableNumber ?? "-";
+        const name = data.customerName || "";
+        const total = data.total ?? data.subtotal ?? 0;
+
+        row.innerHTML = `
+          <div class="order-row-header">
+            <div>
+              <div class="order-row-title">Mesa ${mesa}${name ? " – " + name : ""}</div>
+              <div class="order-row-meta">
+                #${id.substring(0, 6)} · ${formatDateTime(data.createdAt)} · ${data.source || "sistema"}
+              </div>
+            </div>
+            <div style="text-align:right;">
+              <div class="status-chip ${statusClass}">${data.status || "abierta"}</div>
+              <div style="font-size:12px;margin-top:2px;">${formatCurrency(total)}</div>
+            </div>
+          </div>
+        `;
+
+        row.addEventListener("click", () => {
+          currentOrderId = id;
+          renderOrdersList();
+          loadOrderDetail(id, data);
+        });
+
+        ordersList.appendChild(row);
+      });
+    }
+
+    dateFilter.addEventListener("change", renderOrdersList);
+    statusFilter.addEventListener("change", renderOrdersList);
+
+    // === Cargar detalle de orden (items + totales) ===
+    async function loadOrderDetail(orderId, orderData) {
+      detailContainer.innerHTML = `<p style="font-size:13px;opacity:0.8;">Cargando detalle de la orden...</p>`;
+
+      try {
+        const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
+        const snap = await getDocs(itemsRef);
+        const items = [];
+        snap.forEach(docSnap => {
+          items.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        renderOrderDetail(orderId, orderData, items);
+      } catch (err) {
+        console.error("Error cargando items:", err);
+        detailContainer.innerHTML = `<p style="font-size:13px;color:#ff6b6b;">Error cargando detalle de la orden.</p>`;
+      }
+    }
+
+    function renderOrderDetail(orderId, orderData, items) {
+      const isClosed = orderData.status === "cerrada";
+
+      const subtotal = orderData.subtotal || 0;
+      const tax = orderData.tax || 0;
+      const discount = orderData.discount || 0;
+      const total = orderData.total != null ? orderData.total : (subtotal + tax - discount);
+
+      detailContainer.innerHTML = "";
+
+      const wrapper = document.createElement("div");
+
+      wrapper.innerHTML = `
+        <div class="detail-header">
+          <div>
+            <h2 class="detail-main-title">
+              Mesa ${orderData.tableNumber ?? "-"}${orderData.customerName ? " – " + orderData.customerName : ""}
+            </h2>
+            <div class="detail-sub">
+              Pedido: <strong>${orderId}</strong><br>
+              Origen: ${orderData.source || "sistema"}
+            </div>
+            <div class="detail-meta">
+              Creado: ${formatDateTime(orderData.createdAt)}<br>
+              Actualizado: ${formatDateTime(orderData.updatedAt)}
+            </div>
+          </div>
+          <div style="min-width:140px;">
+            <div style="font-size:11px;opacity:0.8;">Estado de la orden</div>
+            <div class="detail-status-select">
+              <select id="orderStatusSelect" ${!isAdmin ? "disabled" : ""}>
+                <option value="abierta">abierta</option>
+                <option value="en_preparacion">en_preparacion</option>
+                <option value="lista">lista</option>
+                <option value="cerrada">cerrada</option>
+              </select>
+            </div>
+            ${!isAdmin ? `<div class="readonly-note">Solo lectura (modo caja).</div>` : ""}
+          </div>
+        </div>
+
+        <div class="items-table">
+          <div class="items-header">
+            <div>Producto</div>
+            <div>Cant.</div>
+            <div>P. unit</div>
+            <div>Total</div>
+          </div>
+          <div id="itemsBody"></div>
+        </div>
+
+        <div class="totals-card">
+          <div class="totals-labels">
+            <div class="totals-row">
+              <span>Subtotal</span>
+              <input type="number" step="0.01" id="subtotalInput" value="${subtotal.toFixed(2)}" ${!isAdmin ? "disabled" : ""} />
+            </div>
+            <div class="totals-row">
+              <span>Impuestos</span>
+              <input type="number" step="0.01" id="taxInput" value="${tax.toFixed(2)}" ${!isAdmin ? "disabled" : ""} />
+            </div>
+            <div class="totals-row">
+              <span>Descuento</span>
+              <input type="number" step="0.01" id="discountInput" value="${discount.toFixed(2)}" ${!isAdmin ? "disabled" : ""} />
+            </div>
+          </div>
+          <div class="totals-grand" id="totalDisplay">
+            ${formatCurrency(total)}
+          </div>
+        </div>
+
+        <div class="actions" id="actionsContainer">
+          ${isAdmin ? `
+          <button class="btn-primary" id="saveTotalsBtn">Guardar totales</button>
+          <button class="btn-danger" id="closeOrderBtn">Cerrar cuenta</button>
+          <button class="btn-secondary" id="recalcFromItemsBtn">Recalcular desde items</button>
+          ` : `
+          <span class="readonly-note">Modo caja: no puede modificar montos ni estado.</span>
+          `}
+        </div>
+      `;
+
+      detailContainer.appendChild(wrapper);
+
+      // Render items
+      const itemsBody = wrapper.querySelector("#itemsBody");
+      itemsBody.innerHTML = "";
+
+      items.forEach(item => {
+        const lineTotal = item.totalPrice ?? (item.unitPrice || 0) * (item.qty || 1);
+        const row = document.createElement("div");
+        row.className = "items-row";
+
+        row.innerHTML = `
+          <div>
+            <div>${item.productName || "Producto"}</div>
+            ${item.notes ? `<div class="items-row-notes">Nota: ${item.notes}</div>` : ""}
+            <div class="items-row-status ${"status-" + (item.status || "pendiente")}">
+              ${item.status || "pendiente"}
+            </div>
+          </div>
+          <div class="items-row-qty">
+            <input type="number" min="1" value="${item.qty || 1}" data-item-id="${item.id}" ${!isAdmin ? "disabled" : ""} />
+          </div>
+          <div class="items-row-unit">
+            ${formatCurrency(item.unitPrice || item.basePrice || 0)}
+          </div>
+          <div class="items-row-total">
+            ${formatCurrency(lineTotal)}
+          </div>
+        `;
+
+        itemsBody.appendChild(row);
+      });
+
+      const statusSelect = wrapper.querySelector("#orderStatusSelect");
+      if (statusSelect) {
+        statusSelect.value = orderData.status || "abierta";
+      }
+
+      const subtotalInput = wrapper.querySelector("#subtotalInput");
+      const taxInput = wrapper.querySelector("#taxInput");
+      const discountInput = wrapper.querySelector("#discountInput");
+      const totalDisplay = wrapper.querySelector("#totalDisplay");
+
+      function updateTotalDisplay() {
+        const sub = parseFloat(subtotalInput.value) || 0;
+        const tax = parseFloat(taxInput.value) || 0;
+        const disc = parseFloat(discountInput.value) || 0;
+        const t = sub + tax - disc;
+        totalDisplay.textContent = formatCurrency(t);
+      }
+
+      if (isAdmin) {
+        subtotalInput.addEventListener("input", updateTotalDisplay);
+        taxInput.addEventListener("input", updateTotalDisplay);
+        discountInput.addEventListener("input", updateTotalDisplay);
+      }
+
+      // === Acciones (solo admin) ===
+      if (isAdmin) {
+        const saveTotalsBtn = wrapper.querySelector("#saveTotalsBtn");
+        const closeOrderBtn = wrapper.querySelector("#closeOrderBtn");
+        const recalcFromItemsBtn = wrapper.querySelector("#recalcFromItemsBtn");
+
+        saveTotalsBtn.addEventListener("click", async () => {
+          const sub = parseFloat(subtotalInput.value) || 0;
+          const tax = parseFloat(taxInput.value) || 0;
+          const disc = parseFloat(discountInput.value) || 0;
+          const t = sub + tax - disc;
+
+          try {
+            const orderRef = doc(db, "branches", BRANCH_ID, "orders", orderId);
+            await updateDoc(orderRef, {
+              subtotal: sub,
+              tax: tax,
+              discount: disc,
+              total: t,
+              status: statusSelect.value,
+              updatedAt: serverTimestamp(),
+            });
+            setStatus("Totales guardados en la orden.");
+          } catch (err) {
+            console.error("Error guardando totales:", err);
+            setStatus("Error guardando totales.");
+          }
+        });
+
+        closeOrderBtn.addEventListener("click", async () => {
+          if (!confirm("¿Cerrar la cuenta de esta orden?")) return;
+          try {
+            const sub = parseFloat(subtotalInput.value) || 0;
+            const tax = parseFloat(taxInput.value) || 0;
+            const disc = parseFloat(discountInput.value) || 0;
+            const t = sub + tax - disc;
+
+            const orderRef = doc(db, "branches", BRANCH_ID, "orders", orderId);
+            await updateDoc(orderRef, {
+              status: "cerrada",
+              subtotal: sub,
+              tax: tax,
+              discount: disc,
+              total: t,
+              updatedAt: serverTimestamp(),
+            });
+            setStatus("Orden cerrada correctamente.");
+          } catch (err) {
+            console.error("Error cerrando orden:", err);
+            setStatus("Error al cerrar la orden.");
+          }
+        });
+
+        recalcFromItemsBtn.addEventListener("click", () => {
+          let newSub = 0;
+          items.forEach(item => {
+            const line = item.totalPrice ?? (item.unitPrice || 0) * (item.qty || 1);
+            newSub += line;
+          });
+          subtotalInput.value = newSub.toFixed(2);
+          updateTotalDisplay();
+          setStatus("Subtotal recalculado desde items (no guardado aún).");
+        });
+
+        // Cambiar estado sin tocar totales
+        statusSelect.addEventListener("change", async () => {
+          try {
+            const orderRef = doc(db, "branches", BRANCH_ID, "orders", orderId);
+            await updateDoc(orderRef, {
+              status: statusSelect.value,
+              updatedAt: serverTimestamp(),
+            });
+            setStatus("Estado de la orden actualizado.");
+          } catch (err) {
+            console.error("Error actualizando estado:", err);
+            setStatus("Error al actualizar el estado.");
+          }
+        });
+
+        // (opcional) permitir ajustar cantidad de item luego con lógica de recálculo y updateDoc por item
+        const qtyInputs = itemsBody.querySelectorAll("input[type='number']");
+        qtyInputs.forEach(input => {
+          input.addEventListener("change", async () => {
+            const newQty = parseInt(input.value, 10);
+            const itemId = input.dataset.itemId;
+            if (!itemId || !Number.isFinite(newQty) || newQty <= 0) return;
+
+            const item = items.find(it => it.id === itemId);
+            if (!item) return;
+
+            const unitPrice = item.unitPrice || item.basePrice || 0;
+            const newLineTotal = unitPrice * newQty;
+
+            try {
+              const itemRef = doc(db, "branches", BRANCH_ID, "orders", orderId, "items", itemId);
+              await updateDoc(itemRef, {
+                qty: newQty,
+                totalPrice: newLineTotal,
+                updatedAt: serverTimestamp(),
+              });
+              setStatus("Cantidad del producto actualizada. Recalcula subtotal si lo deseas.");
+            } catch (err) {
+              console.error("Error actualizando item:", err);
+              setStatus("Error al actualizar cantidad del producto.");
+            }
+          });
+        });
+      }
+    }
+
+    // ==== Inicio ====
+    // Por defecto, dateFilter = hoy
+    (function setTodayToDateFilter() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = (d.getMonth() + 1).toString().padStart(2, "0");
+      const dd = d.getDate().toString().padStart(2, "0");
+      dateFilter.value = `${yyyy}-${mm}-${dd}`;
+    })();
+
+    listenOrders();
+  </script>
+</body>
+</html>
