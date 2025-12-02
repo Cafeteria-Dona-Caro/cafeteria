@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Administrar usuarios | Cafecaro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+    header .sub {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+    header .right {
+      text-align: right;
+      font-size: 12px;
+    }
+    .role-pill {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #00c853;
+      color: #000;
+    }
+
+    main {
+      flex: 1;
+      padding: 12px;
+      display: grid;
+      gap: 12px;
+    }
+
+    @media (min-width: 900px) {
+      main {
+        grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 12px;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    label {
+      font-size: 12px;
+      display: block;
+      margin-top: 8px;
+      margin-bottom: 2px;
+      opacity: 0.8;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 13px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+
+    button {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background: #00c853;
+      color: #000;
+    }
+    .btn-secondary {
+      background: #eeeeee;
+      color: #333;
+    }
+    .btn-danger {
+      background: #d32f2f;
+      color: #fff;
+    }
+
+    .actions-row {
+      margin-top: 10px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .status-bar {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    /* Tabla de usuarios */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    thead {
+      background: #f0f0f0;
+    }
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e0e0e0;
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    .tag-role {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      display: inline-block;
+    }
+    .tag-admin { background: #00c85333; color: #006622; }
+    .tag-caja { background: #2962ff22; color: #0039cb; }
+    .tag-mesero { background: #ffab0022; color: #8d6e00; }
+    .tag-cocina { background: #ff525222; color: #b71c1c; }
+
+    .small {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Usuarios – Cafecaro</h1>
+      <div class="sub">Solo administrador</div>
+    </div>
+    <div class="right">
+      <div id="currentUserEmail">—</div>
+      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
+      <button id="logoutBtn" class="btn-secondary" style="margin-top:4px;">Cerrar sesión</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Panel para crear / actualizar usuario -->
+    <section class="card">
+      <h2>Crear / actualizar usuario</h2>
+      <p class="small">
+        1️⃣ Crea primero el usuario en <strong>Firebase Authentication</strong> (correo y contraseña).<br>
+        2️⃣ Copia el <strong>UID</strong> y pégalo aquí para asignarle rol.
+      </p>
+
+      <label for="uidInput">UID del usuario (desde Authentication)</label>
+      <input type="text" id="uidInput" placeholder="Ej. ZYxQwErTy123..." />
+
+      <label for="nameInput">Nombre del empleado</label>
+      <input type="text" id="nameInput" placeholder="Ej. Juan Pérez" />
+
+      <label for="emailInput">Correo del empleado</label>
+      <input type="email" id="emailInput" placeholder="ejemplo@cafecaro.com" />
+
+      <label for="roleSelect">Rol</label>
+      <select id="roleSelect">
+        <option value="mesero">Mesero</option>
+        <option value="caja">Caja</option>
+        <option value="cocina">Cocina</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <div class="actions-row">
+        <button id="saveUserBtn" class="btn-primary">Guardar / actualizar</button>
+        <button id="clearFormBtn" class="btn-secondary">Limpiar</button>
+      </div>
+
+      <div id="formStatus" class="small" style="margin-top:8px;"></div>
+    </section>
+
+    <!-- Panel con lista de usuarios -->
+    <section class="card">
+      <h2>Empleados registrados</h2>
+      <p class="small">
+        Esta lista se basa en la colección <code>users</code> de Firestore (UID → rol, nombre, correo).
+      </p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>UID</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="5" style="text-align:center; opacity:0.7;">Cargando usuarios...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="globalStatus" class="status-bar">Conectando...</div>
+
+  <!-- ============================= -->
+  <!--     FIREBASE + LÓGICA JS     -->
+  <!-- ============================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      setDoc,
+      collection,
+      onSnapshot,
+      serverTimestamp,
+      deleteDoc
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // === CONFIG FIREBASE ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // === REFERENCIAS DOM ===
+    const currentUserEmailEl = document.getElementById("currentUserEmail");
+    const currentUserRoleEl = document.getElementById("currentUserRole");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalStatus = document.getElementById("globalStatus");
+
+    const uidInput = document.getElementById("uidInput");
+    const nameInput = document.getElementById("nameInput");
+    const emailInput = document.getElementById("emailInput");
+    const roleSelect = document.getElementById("roleSelect");
+    const saveUserBtn = document.getElementById("saveUserBtn");
+    const clearFormBtn = document.getElementById("clearFormBtn");
+    const formStatus = document.getElementById("formStatus");
+    const usersTableBody = document.getElementById("usersTableBody");
+
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg;
+    }
+    function setFormStatus(msg) {
+      formStatus.textContent = msg;
+    }
+
+    // ==== VERIFICAR LOGIN Y ROL ADMIN ====
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUserEmailEl.textContent = user.email || "(sin correo)";
+
+      try {
+        const roleDoc = await getDoc(doc(db, "users", user.uid));
+        if (!roleDoc.exists()) {
+          currentUserRoleEl.textContent = "Sin rol";
+          setGlobalStatus("Tu usuario no tiene rol asignado.");
+          alert("Tu usuario no tiene rol asignado en Firestore.");
+          return;
+        }
+
+        const data = roleDoc.data();
+        const role = data.role || "sin_rol";
+        currentUserRoleEl.textContent = "Rol: " + role;
+
+        if (role !== "admin") {
+          alert("Acceso restringido. Esta página es solo para admin.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        // Si es admin, cargar lista de usuarios
+        listenUsersList();
+        setGlobalStatus("Conectado como admin.");
+
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Error verificando rol.");
+      }
+    });
+
+    // ==== LOGOUT ====
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // ==== GUARDAR / ACTUALIZAR USUARIO ====
+    saveUserBtn.onclick = async () => {
+      const uid = uidInput.value.trim();
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const role = roleSelect.value;
+
+      if (!uid || !role) {
+        setFormStatus("UID y rol son obligatorios.");
+        return;
+      }
+
+      try {
+        await setDoc(doc(db, "users", uid), {
+          name: name || "",
+          email: email || "",
+          role,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        setFormStatus("Usuario guardado/actualizado correctamente.");
+        uidInput.value = "";
+        // no borro todo por si quieres seguir editando
+      } catch (err) {
+        console.error(err);
+        setFormStatus("Error al guardar usuario.");
+      }
+    };
+
+    clearFormBtn.onclick = () => {
+      uidInput.value = "";
+      nameInput.value = "";
+      emailInput.value = "";
+      roleSelect.value = "mesero";
+      setFormStatus("");
+    };
+
+    // ==== ESCUCHAR LISTA DE USERS EN TIEMPO REAL (ADMIN) ====
+    function listenUsersList() {
+      const usersRef = collection(db, "users");
+      onSnapshot(usersRef, (snap) => {
+        usersTableBody.innerHTML = "";
+        if (snap.size === 0) {
+          usersTableBody.innerHTML = `
+            <tr><td colspan="5" style="text-align:center; opacity:.7;">No hay usuarios registrados aún.</td></tr>
+          `;
+          return;
+        }
+
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          const tr = document.createElement("tr");
+
+          const role = data.role || "sin_rol";
+          const tagClass =
+            role === "admin"  ? "tag-admin"  :
+            role === "caja"   ? "tag-caja"   :
+            role === "mesero" ? "tag-mesero" :
+            role === "cocina" ? "tag-cocina" : "";
+
+          tr.innerHTML = `
+            <td>${data.name || "(sin nombre)"}</td>
+            <td>${data.email || ""}</td>
+            <td><span class="tag-role ${tagClass}">${role}</span></td>
+            <td class="small">${docSnap.id}</td>
+            <td>
+              <button class="btn-secondary" data-action="edit" data-uid="${docSnap.id}">Editar</button>
+              <button class="btn-danger" data-action="delete" data-uid="${docSnap.id}">Borrar rol</button>
+            </td>
+          `;
+
+          usersTableBody.appendChild(tr);
+        });
+
+        // Delegar eventos de botones
+        usersTableBody.querySelectorAll("button").forEach(btn => {
+          btn.addEventListener("click", onUsersTableButtonClick);
+        });
+      }, (err) => {
+        console.error(err);
+        setGlobalStatus("Error escuchando usuarios.");
+      });
+    }
+
+    async function onUsersTableButtonClick(e) {
+      const btn = e.currentTarget;
+      const action = btn.dataset.action;
+      const uid = btn.dataset.uid;
+      if (!uid) return;
+
+      if (action === "edit") {
+        // Cargar datos en el formulario
+        const docRef = doc(db, "users", uid);
+        const snap = await getDoc(docRef);
+        if (!snap.exists()) return;
+
+        const data = snap.data();
+        uidInput.value = uid;
+        nameInput.value = data.name || "";
+        emailInput.value = data.email || "";
+        roleSelect.value = data.role || "mesero";
+        formStatus.textContent = "Editando usuario " + uid;
+
+      } else if (action === "delete") {
+        if (!confirm("¿Borrar solo el rol/registro de este usuario en Firestore? (NO borra la cuenta de Auth)")) return;
+        await deleteDoc(doc(db, "users", uid));
+        setFormStatus("Registro de usuario eliminado de Firestore (la cuenta Auth sigue existiendo).");
+      }
+    }
+  </script>
+</body>
+</html>
