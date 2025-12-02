@@ -43,9 +43,12 @@
     main {
       flex: 1;
       padding: 16px;
-      max-width: 640px;
+      max-width: 720px;
       margin: 0 auto;
       width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     .card {
       background: rgba(18,18,18,0.95);
@@ -83,22 +86,10 @@
       font-size: 13px;
       margin-top: 8px;
     }
-    .status-abierta {
-      background: #ffab00;
-      color: #000;
-    }
-    .status-en_preparacion {
-      background: #2962ff;
-      color: #fff;
-    }
-    .status-lista {
-      background: #00c853;
-      color: #000;
-    }
-    .status-cerrada {
-      background: #757575;
-      color: #fff;
-    }
+    .status-abierta { background: #ffab00; color: #000; }
+    .status-en_preparacion { background: #2962ff; color: #fff; }
+    .status-lista { background: #00c853; color: #000; }
+    .status-cerrada { background: #757575; color: #fff; }
     .status-dot {
       width: 8px;
       height: 8px;
@@ -127,24 +118,11 @@
       border-bottom: 1px dashed #333;
       gap: 10px;
     }
-    .item:last-child {
-      border-bottom: none;
-    }
-    .item-main {
-      flex: 1;
-    }
-    .item-name {
-      font-weight: 500;
-    }
-    .item-notes {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-    .item-qty {
-      font-size: 12px;
-      opacity: 0.9;
-      margin-top: 2px;
-    }
+    .item:last-child { border-bottom: none; }
+    .item-main { flex: 1; }
+    .item-name { font-weight: 500; }
+    .item-notes { font-size: 12px; opacity: 0.8; }
+    .item-qty { font-size: 12px; opacity: 0.9; margin-top: 2px; }
     .item-status-pill {
       font-size: 11px;
       padding: 3px 8px;
@@ -152,22 +130,10 @@
       text-transform: uppercase;
       white-space: nowrap;
     }
-    .item-pendiente {
-      background: #ffab00;
-      color: #000;
-    }
-    .item-en_preparacion {
-      background: #2962ff;
-      color: #fff;
-    }
-    .item-listo {
-      background: #00c853;
-      color: #000;
-    }
-    .item-cancelado {
-      background: #b71c1c;
-      color: #fff;
-    }
+    .item-pendiente { background: #ffab00; color: #000; }
+    .item-en_preparacion { background: #2962ff; color: #fff; }
+    .item-listo { background: #00c853; color: #000; }
+    .item-cancelado { background: #b71c1c; color: #fff; }
     .total-row {
       display: flex;
       justify-content: space-between;
@@ -181,16 +147,12 @@
       font-size: 13px;
       opacity: 0.9;
     }
-    .status-text strong {
-      font-weight: 600;
-    }
     .helper {
       margin-top: 8px;
       font-size: 12px;
       opacity: 0.8;
     }
     .input-card {
-      margin-bottom: 12px;
       padding: 12px;
       border-radius: 12px;
       background: rgba(18,18,18,0.95);
@@ -201,6 +163,7 @@
       align-items: center;
       gap: 8px;
       margin-top: 6px;
+      flex-wrap: wrap;
     }
     input {
       border-radius: 8px;
@@ -210,8 +173,8 @@
       font-family: inherit;
       background: #222;
       color: #f5f5f5;
-      flex: 1;
     }
+    input[type="number"] { max-width: 90px; }
     button {
       padding: 8px 12px;
       border-radius: 999px;
@@ -223,6 +186,10 @@
       color: #000;
       white-space: nowrap;
     }
+    .btn-secondary {
+      background: #333;
+      color: #eee;
+    }
     .status-bar {
       font-size: 12px;
       opacity: 0.85;
@@ -231,34 +198,180 @@
       background: #050505;
       text-align: center;
     }
+    /* Menú */
+    .menu-card { margin-top: 0; }
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .cat-btn {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #444;
+      background: #1b1b1b;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .cat-btn.active {
+      background: #00c853;
+      color: #000;
+      border-color: #00c853;
+      font-weight: 600;
+    }
+    .products-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+    }
+    .product-card {
+      background: #202020;
+      border-radius: 10px;
+      border: 1px solid #333;
+      padding: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .product-card:hover {
+      border-color: #00c853;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    }
+    .product-name { font-weight: 500; }
+    .product-cat { font-size: 11px; opacity: 0.7; }
+    .product-price {
+      font-size: 13px;
+      color: #c8ffb3;
+      font-weight: 600;
+    }
+    .cart-list {
+      margin-top: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+      border-top: 1px solid #333;
+      padding-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed #333;
+      gap: 8px;
+    }
+    .cart-item:last-child { border-bottom: none; }
+    .cart-main { flex: 1; }
+    .cart-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cart-actions button {
+      padding: 3px 7px;
+      font-size: 11px;
+    }
+    .mini-total {
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 6px;
+      text-align: right;
+    }
+    /* Chat */
+    .chat-card { }
+    .chat-messages {
+      margin-top: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+      border-radius: 10px;
+      background: #151515;
+      padding: 8px;
+      border: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .msg {
+      max-width: 80%;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-size: 13px;
+    }
+    .msg-cliente {
+      align-self: flex-end;
+      background: #00c853;
+      color: #000;
+      border-bottom-right-radius: 2px;
+    }
+    .msg-mesero {
+      align-self: flex-start;
+      background: #262626;
+      border-bottom-left-radius: 2px;
+    }
+    .msg-meta {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    textarea {
+      flex: 1;
+      resize: none;
+      min-height: 40px;
+      max-height: 90px;
+      border-radius: 10px;
+      border: none;
+      padding: 6px 8px;
+      font-size: 13px;
+      font-family: inherit;
+      background: #222;
+      color: #f5f5f5;
+    }
   </style>
 </head>
 <body>
   <header>
     <div>
       <h1>Cafecaro</h1>
-      <div class="sub">Seguimiento de tu pedido</div>
+      <div class="sub">Pedido, factura y chat con tu mesero</div>
     </div>
     <div class="branch" id="branchLabel"></div>
   </header>
 
   <main>
+    <!-- Selección de mesa + nombre -->
     <div class="input-card" id="mesaInputCard">
       <div class="section-title">Tu mesa</div>
       <p style="font-size:13px;opacity:0.9;margin:0;">
-        Ingresa tu número de mesa o escanea un QR que ya lo traiga en el enlace.
+        Ingresa tu número de mesa y tu nombre (opcional, para factura o identificación).
       </p>
       <div class="input-row">
-        <input type="number" id="mesaInput" min="1" placeholder="Ej. 5" />
-        <button id="usarMesaBtn">Ver pedido</button>
+        <input type="number" id="mesaInput" min="1" placeholder="Mesa (ej. 5)" />
+        <input type="text" id="nombreInput" placeholder="Tu nombre (opcional)" style="flex:1;" />
+        <button id="usarMesaBtn">Continuar</button>
       </div>
     </div>
 
+    <!-- Resumen del pedido actual -->
     <div id="orderCard" class="card" style="display:none;">
-      <div class="section-title">Resumen de tu pedido</div>
+      <div class="section-title">Tu pedido</div>
 
       <div class="mesa-chip">
         Mesa <span id="mesaLabel">-</span>
+      </div>
+      <div style="font-size:13px;opacity:0.85;margin-top:4px;">
+        Cliente: <span id="customerNameLabel">Sin nombre</span>
       </div>
 
       <div id="orderStatusPill" class="status-pill status-abierta" style="display:none;">
@@ -279,22 +392,64 @@
 
       <div class="status-text" id="friendlyStatus"></div>
       <div class="helper">
-        Si tienes dudas, puedes mostrar esta pantalla a tu mesero. 😊
+        Puedes mostrar esta pantalla a tu mesero para factura o aclaraciones. 😊
       </div>
     </div>
 
-    <div id="emptyState" class="card" style="margin-top:8px;display:none;">
+    <!-- Estado sin pedido -->
+    <div id="emptyState" class="card" style="display:none;">
       <div class="section-title">Sin pedido activo</div>
       <p style="font-size:14px;opacity:0.9;margin:0 0 6px;">
         No encontramos un pedido activo para tu mesa.
       </p>
       <p style="font-size:13px;opacity:0.8;margin:0;">
-        Si ya hiciste un pedido, espera unos segundos o confirma con tu mesero que haya registrado tu mesa correctamente.
+        Puedes hacer un pedido desde esta pantalla o usar el chat para llamar al mesero.
       </p>
+    </div>
+
+    <!-- Chat con el mesero -->
+    <div id="chatCard" class="card chat-card" style="display:none;">
+      <div class="section-title">Habla con tu mesero</div>
+      <div class="chat-messages" id="messagesList">
+        <!-- mensajes -->
+      </div>
+      <div class="chat-input-row">
+        <textarea id="messageInput" placeholder="Escribe un mensaje (ej. '¿Me puede traer la cuenta?' )"></textarea>
+        <button id="sendMessageBtn">Enviar</button>
+      </div>
+      <div class="helper">
+        Tu mensaje llegará al sistema del mesero aunque no hayas hecho pedido todavía.
+      </div>
+    </div>
+
+    <!-- Menú para que el cliente pida -->
+    <div id="menuCard" class="card menu-card" style="display:none;">
+      <div class="section-title">Haz tu pedido</div>
+      <p style="font-size:13px;opacity:0.9;margin:0 0 6px;">
+        Toca un producto para agregarlo. Tu mesero verá tu pedido y lo confirmará.
+      </p>
+
+      <div class="categories" id="categoriesContainer"></div>
+      <div class="products-grid" id="productsContainer">
+        <!-- Productos -->
+      </div>
+
+      <div style="margin-top:10px;font-size:13px;opacity:0.9;">
+        <strong>Tu pedido nuevo:</strong>
+      </div>
+      <div class="cart-list" id="cartContainer">
+        Aún no has agregado productos.
+      </div>
+      <div class="mini-total" id="cartTotalText">$0.00</div>
+
+      <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button id="enviarPedidoBtn">Enviar pedido a la mesa</button>
+        <button id="limpiarCartBtn" class="btn-secondary">Limpiar selección</button>
+      </div>
     </div>
   </main>
 
-  <div class="status-bar" id="statusText">Esperando número de mesa...</div>
+  <div class="status-bar" id="statusText">Escribe tu mesa y tu nombre para empezar.</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
@@ -305,9 +460,13 @@
       onSnapshot,
       query,
       orderBy,
+      addDoc,
+      writeBatch,
+      serverTimestamp,
+      getDocs,
+      updateDoc,
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // === Config de tu proyecto Cafecaro ===
     const firebaseConfig = {
       apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
       authDomain: "cafecaro-af23b.firebaseapp.com",
@@ -327,10 +486,12 @@
     const statusText = document.getElementById("statusText");
     const mesaInputCard = document.getElementById("mesaInputCard");
     const mesaInput = document.getElementById("mesaInput");
+    const nombreInput = document.getElementById("nombreInput");
     const usarMesaBtn = document.getElementById("usarMesaBtn");
 
     const orderCard = document.getElementById("orderCard");
     const mesaLabel = document.getElementById("mesaLabel");
+    const customerNameLabel = document.getElementById("customerNameLabel");
     const orderStatusPill = document.getElementById("orderStatusPill");
     const orderStatusText = document.getElementById("orderStatusText");
     const orderMeta = document.getElementById("orderMeta");
@@ -339,20 +500,35 @@
     const friendlyStatus = document.getElementById("friendlyStatus");
     const emptyState = document.getElementById("emptyState");
 
+    const chatCard = document.getElementById("chatCard");
+    const messagesList = document.getElementById("messagesList");
+    const messageInput = document.getElementById("messageInput");
+    const sendMessageBtn = document.getElementById("sendMessageBtn");
+
+    const menuCard = document.getElementById("menuCard");
+    const categoriesContainer = document.getElementById("categoriesContainer");
+    const productsContainer = document.getElementById("productsContainer");
+    const cartContainer = document.getElementById("cartContainer");
+    const cartTotalText = document.getElementById("cartTotalText");
+    const enviarPedidoBtn = document.getElementById("enviarPedidoBtn");
+    const limpiarCartBtn = document.getElementById("limpiarCartBtn");
+
     branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
 
     let currentMesa = null;
+    let currentName = null;
     let unsubscribeOrders = null;
     let unsubscribeItems = null;
+    let unsubscribeMessages = null;
     let currentOrderId = null;
+    let currentOrderStatus = null;
 
-    function setStatus(msg) {
-      statusText.textContent = msg;
-    }
+    let allProducts = [];
+    let selectedCategory = null;
+    let cart = [];
 
-    function formatCurrency(n) {
-      return `$${(n || 0).toFixed(2)}`;
-    }
+    function setStatus(msg) { statusText.textContent = msg; }
+    function formatCurrency(n) { return `$${(n || 0).toFixed(2)}`; }
 
     function formatStatusLabel(status) {
       switch (status) {
@@ -363,22 +539,15 @@
         default: return status;
       }
     }
-
     function formatFriendlyMessage(status) {
       switch (status) {
-        case "abierta":
-          return "Tu pedido ha sido registrado y se enviará a cocina en breve.";
-        case "en_preparacion":
-          return "Tu pedido está siendo preparado en cocina. 🎯";
-        case "lista":
-          return "¡Tu pedido está listo! En cualquier momento te lo llevan a la mesa. 🥤";
-        case "cerrada":
-          return "Este pedido ya fue cerrado. Gracias por tu visita. 💚";
-        default:
-          return "Tu pedido está siendo atendido.";
+        case "abierta": return "Tu pedido ha sido registrado y se enviará a cocina en breve.";
+        case "en_preparacion": return "Tu pedido está siendo preparado en cocina. 🎯";
+        case "lista": return "¡Tu pedido está listo! En cualquier momento te lo llevan a la mesa. 🥤";
+        case "cerrada": return "Este pedido ya fue cerrado. Si haces uno nuevo, se generará otra orden.";
+        default: return "Tu pedido está siendo atendido.";
       }
     }
-
     function applyStatusPill(status) {
       orderStatusPill.className = "status-pill";
       orderStatusPill.classList.add(`status-${status}`);
@@ -387,18 +556,137 @@
       friendlyStatus.textContent = formatFriendlyMessage(status);
     }
 
-    // Escuchar items en tiempo real
-    function listenOrderItems(orderId) {
-      if (unsubscribeItems) {
-        unsubscribeItems();
-        unsubscribeItems = null;
-      }
+    // === MENÚ ===
+    function renderCategories() {
+      const cats = [...new Set(allProducts.map(p => p.category))].sort();
+      categoriesContainer.innerHTML = "";
 
-      if (!orderId) {
-        itemsList.innerHTML = "";
+      const allBtn = document.createElement("button");
+      allBtn.textContent = "Todo";
+      allBtn.className = "cat-btn" + (selectedCategory === null ? " active" : "");
+      allBtn.addEventListener("click", () => {
+        selectedCategory = null;
+        renderCategories();
+        renderProducts();
+      });
+      categoriesContainer.appendChild(allBtn);
+
+      cats.forEach(cat => {
+        const btn = document.createElement("button");
+        btn.textContent = cat;
+        btn.className = "cat-btn" + (selectedCategory === cat ? " active" : "");
+        btn.addEventListener("click", () => {
+          selectedCategory = cat;
+          renderCategories();
+          renderProducts();
+        });
+        categoriesContainer.appendChild(btn);
+      });
+    }
+
+    function renderProducts() {
+      productsContainer.innerHTML = "";
+      if (allProducts.length === 0) {
+        productsContainer.textContent = "Menú no disponible.";
         return;
       }
+      const filtered = selectedCategory
+        ? allProducts.filter(p => p.category === selectedCategory)
+        : allProducts;
 
+      if (filtered.length === 0) {
+        productsContainer.textContent = "No hay productos en esta categoría.";
+        return;
+      }
+      filtered.forEach(prod => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.innerHTML = `
+          <div class="product-name">${prod.name}</div>
+          <div class="product-cat">${prod.category}</div>
+          <div class="product-price">${formatCurrency(prod.basePrice || 0)}</div>
+        `;
+        card.addEventListener("click", () => {
+          addToCart(prod);
+        });
+        productsContainer.appendChild(card);
+      });
+    }
+
+    function addToCart(product) {
+      const idx = cart.findIndex(item => item.productId === product.id);
+      if (idx >= 0) cart[idx].qty += 1;
+      else {
+        cart.push({ productId: product.id, name: product.name, price: product.basePrice || 0, qty: 1 });
+      }
+      renderCart();
+    }
+
+    function renderCart() {
+      cartContainer.innerHTML = "";
+      if (cart.length === 0) {
+        cartContainer.textContent = "Aún no has agregado productos.";
+        cartTotalText.textContent = "$0.00";
+        return;
+      }
+      let total = 0;
+      cart.forEach((item, index) => {
+        total += item.price * item.qty;
+        const row = document.createElement("div");
+        row.className = "cart-item";
+        row.innerHTML = `
+          <div class="cart-main">
+            <div>${item.name}</div>
+            <div style="font-size:12px;opacity:0.8;">x${item.qty} · ${formatCurrency(item.price)}</div>
+          </div>
+          <div class="cart-actions">
+            <button data-action="minus">-</button>
+            <button data-action="plus">+</button>
+            <button data-action="remove">×</button>
+          </div>
+        `;
+        row.querySelector(".cart-actions").addEventListener("click", (e) => {
+          const action = e.target.getAttribute("data-action");
+          if (!action) return;
+          if (action === "minus") {
+            if (cart[index].qty > 1) cart[index].qty -= 1;
+            else cart.splice(index, 1);
+          } else if (action === "plus") {
+            cart[index].qty += 1;
+          } else if (action === "remove") {
+            cart.splice(index, 1);
+          }
+          renderCart();
+        });
+        cartContainer.appendChild(row);
+      });
+      cartTotalText.textContent = formatCurrency(total);
+    }
+
+    async function loadMenu() {
+      try {
+        const productsRef = collection(db, "branches", BRANCH_ID, "products");
+        const snap = await getDocs(productsRef);
+        allProducts = [];
+        snap.forEach(docSnap => {
+          allProducts.push({ id: docSnap.id, ...docSnap.data() });
+        });
+        renderCategories();
+        renderProducts();
+      } catch (err) {
+        console.error("Error cargando menú:", err);
+        productsContainer.textContent = "Error cargando menú.";
+      }
+    }
+
+    // === ITEMS DEL PEDIDO ===
+    function listenOrderItems(orderId) {
+      if (unsubscribeItems) { unsubscribeItems(); unsubscribeItems = null; }
+      if (!orderId) {
+        itemsList.innerHTML = "";
+        orderTotalEl.textContent = "$0.00";
+        return;
+      }
       const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
       const qItems = query(itemsRef, orderBy("createdAt", "asc"));
 
@@ -408,21 +696,17 @@
           itemsList.innerHTML = "";
           if (snapshot.size === 0) {
             itemsList.innerHTML = "<em style='font-size:13px;opacity:0.8;'>Tu pedido aún no tiene productos.</em>";
+            orderTotalEl.textContent = "$0.00";
             return;
           }
-
           let subtotal = 0;
-
           snapshot.forEach(docSnap => {
             const data = docSnap.data();
             const lineTotal = (data.totalPrice ?? (data.unitPrice ?? 0) * (data.qty ?? 1));
             subtotal += lineTotal;
-
             const itemEl = document.createElement("div");
-            itemEl.className = "item";
-
             const statusClass = `item-${data.status || "pendiente"}`;
-
+            itemEl.className = "item";
             itemEl.innerHTML = `
               <div class="item-main">
                 <div class="item-name">${data.productName ?? "Producto"}</div>
@@ -438,61 +722,141 @@
                 </div>
               </div>
             `;
-
             itemsList.appendChild(itemEl);
           });
-
           orderTotalEl.textContent = formatCurrency(subtotal);
         },
-        err => {
-          console.error("Error escuchando items:", err);
-        }
+        err => { console.error("Error escuchando items:", err); }
       );
     }
 
-    // Escuchar órdenes y elegir la más reciente para esa mesa
-    function listenOrdersForMesa(mesaNumber) {
-      if (unsubscribeOrders) {
-        unsubscribeOrders();
-        unsubscribeOrders = null;
+    // === CHAT ===
+    function renderMessagesEmpty() {
+      messagesList.innerHTML = "<span style='font-size:12px;opacity:0.8;'>Sin mensajes aún.</span>";
+    }
+
+    function listenMessages(orderId) {
+      if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
+      if (!orderId) {
+        renderMessagesEmpty();
+        return;
       }
-      if (unsubscribeItems) {
-        unsubscribeItems();
-        unsubscribeItems = null;
+      const msgsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "messages");
+      const qMsgs = query(msgsRef, orderBy("createdAt", "asc"));
+
+      unsubscribeMessages = onSnapshot(
+        qMsgs,
+        snapshot => {
+          messagesList.innerHTML = "";
+          if (snapshot.size === 0) {
+            renderMessagesEmpty();
+            return;
+          }
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const msgDiv = document.createElement("div");
+            msgDiv.className = "msg " + (data.sender === "cliente" ? "msg-cliente" : "msg-mesero");
+            msgDiv.innerHTML = `
+              <div>${data.text}</div>
+            `;
+            messagesList.appendChild(msgDiv);
+          });
+          messagesList.scrollTop = messagesList.scrollHeight;
+        },
+        err => { console.error("Error escuchando mensajes:", err); }
+      );
+    }
+
+    async function ensureOrderForChatOrCart() {
+      const branchRef = doc(collection(db, "branches"), BRANCH_ID);
+      const ordersRef = collection(branchRef, "orders");
+
+      // si ya hay orden vigente y no está cerrada, úsala
+      if (currentOrderId && currentOrderStatus !== "cerrada") {
+        return doc(ordersRef, currentOrderId);
       }
 
+      // buscar orden existente reciente para esta mesa
+      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
+      const snap = await getDocs(qOrders);
+      let found = null;
+      snap.forEach(d => {
+        if (found) return;
+        const data = d.data();
+        if (data.tableNumber === currentMesa && data.status !== "cerrada") {
+          found = { id: d.id, data };
+        }
+      });
+
+      if (found) {
+        currentOrderId = found.id;
+        currentOrderStatus = found.data.status;
+        // actualizar nombre si viene vacío
+        if (currentName && !found.data.customerName) {
+          await updateDoc(doc(ordersRef, found.id), {
+            customerName: currentName,
+            updatedAt: serverTimestamp(),
+          });
+        }
+        return doc(ordersRef, found.id);
+      }
+
+      // si no hay nada: crear nueva orden vacía
+      const newDoc = await addDoc(ordersRef, {
+        tableNumber: currentMesa,
+        tableId: null,
+        status: "abierta",
+        source: "cliente",
+        customerName: currentName || null,
+        subtotal: 0,
+        tax: 0,
+        discount: 0,
+        total: 0,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+      currentOrderId = newDoc.id;
+      currentOrderStatus = "abierta";
+      return newDoc;
+    }
+
+    // === ÓRDENES DE LA MESA ===
+    function listenOrdersForMesa(mesaNumber) {
+      if (unsubscribeOrders) { unsubscribeOrders(); unsubscribeOrders = null; }
+      if (unsubscribeItems) { unsubscribeItems(); unsubscribeItems = null; }
+      if (unsubscribeMessages) { unsubscribeMessages(); unsubscribeMessages = null; }
+
       const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-      const qOrders = query(
-        ordersRef,
-        orderBy("createdAt", "desc")
-      );
+      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
 
       setStatus("Buscando pedido para tu mesa...");
 
       unsubscribeOrders = onSnapshot(
         qOrders,
         snapshot => {
-          const activeStatuses = ["abierta", "en_preparacion", "lista", "cerrada"];
-
+          const relevantStatuses = ["abierta", "en_preparacion", "lista", "cerrada"];
           const docs = snapshot.docs.filter(d => {
             const data = d.data();
-            return data.tableNumber === mesaNumber && activeStatuses.includes(data.status);
+            return data.tableNumber === mesaNumber && relevantStatuses.includes(data.status);
           });
 
           if (docs.length === 0) {
-            // Sin pedido
             currentOrderId = null;
+            currentOrderStatus = null;
             orderCard.style.display = "none";
             emptyState.style.display = "block";
-            setStatus("Sin pedido activo para esta mesa.");
+            renderMessagesEmpty();
+            setStatus("Sin pedido activo para esta mesa. Puedes chatear o pedir.");
             return;
           }
 
-          const docSnap = docs[0]; // el más reciente
+          const docSnap = docs[0];
           const data = docSnap.data();
           currentOrderId = docSnap.id;
+          currentOrderStatus = data.status;
 
           mesaLabel.textContent = mesaNumber;
+          customerNameLabel.textContent = data.customerName || (currentName || "Sin nombre");
           orderMeta.innerHTML = `
             Pedido: <strong>${currentOrderId}</strong><br>
             Estado interno: ${data.status ?? "desconocido"}
@@ -501,9 +865,20 @@
           orderCard.style.display = "block";
           emptyState.style.display = "none";
 
+          if (!data.customerName && currentName) {
+            // sincronizar nombre
+            const branchRef = doc(collection(db, "branches"), BRANCH_ID);
+            const ordersRef = collection(branchRef, "orders");
+            updateDoc(doc(ordersRef, currentOrderId), {
+              customerName: currentName,
+              updatedAt: serverTimestamp(),
+            }).catch(() => {});
+          }
+
           applyStatusPill(data.status || "abierta");
-          setStatus("Actualizando tu pedido en tiempo real...");
+          setStatus("Actualizando tu pedido y mensajes en tiempo real...");
           listenOrderItems(currentOrderId);
+          listenMessages(currentOrderId);
         },
         err => {
           console.error("Error escuchando órdenes:", err);
@@ -512,15 +887,26 @@
       );
     }
 
-    function startForMesa(mesaNumber) {
+    function startForMesa(mesaNumber, name) {
       currentMesa = mesaNumber;
+      currentName = (name || "").trim() || null;
       mesaLabel.textContent = mesaNumber;
+      customerNameLabel.textContent = currentName || "Sin nombre";
+
+      // guardamos el nombre en localStorage
+      if (currentName) localStorage.setItem("cafecaro_customerName", currentName);
+
       mesaInput.value = mesaNumber;
+      nombreInput.value = currentName || "";
       mesaInputCard.style.display = "none";
+
+      menuCard.style.display = "block";
+      chatCard.style.display = "block";
+      loadMenu();
       listenOrdersForMesa(mesaNumber);
+      setStatus("Mesa configurada. Puedes hacer pedido o hablar con tu mesero.");
     }
 
-    // Leer mesa desde la URL: ?mesa=5
     function getMesaFromUrl() {
       const params = new URLSearchParams(window.location.search);
       const mesaStr = params.get("mesa");
@@ -530,20 +916,132 @@
     }
 
     usarMesaBtn.addEventListener("click", () => {
-      const val = parseInt(mesaInput.value, 10);
-      if (!val || val <= 0) {
+      const mesaVal = parseInt(mesaInput.value, 10);
+      const nameVal = nombreInput.value;
+      if (!mesaVal || mesaVal <= 0) {
         alert("Escribe un número de mesa válido.");
         return;
       }
-      startForMesa(val);
+      startForMesa(mesaVal, nameVal);
     });
 
-    // Auto-inicio si la mesa viene en la URL
+    // === Enviar pedido del cliente ===
+    async function enviarPedidoCliente() {
+      if (!currentMesa) {
+        alert("Primero selecciona tu mesa.");
+        return;
+      }
+      if (cart.length === 0) {
+        alert("Tu selección está vacía.");
+        return;
+      }
+
+      enviarPedidoBtn.disabled = true;
+      enviarPedidoBtn.textContent = "Enviando...";
+      setStatus("Enviando tu pedido...");
+
+      try {
+        const orderRefDoc = await ensureOrderForChatOrCart();
+        const itemsCol = collection(orderRefDoc, "items");
+        const batch = writeBatch(db);
+        let subtotal = 0;
+
+        cart.forEach(item => {
+          const lineTotal = item.price * item.qty;
+          subtotal += lineTotal;
+          const itemDoc = doc(itemsCol);
+          batch.set(itemDoc, {
+            productId: item.productId,
+            productName: item.name,
+            qty: item.qty,
+            basePrice: item.price,
+            unitPrice: item.price,
+            totalPrice: lineTotal,
+            status: "pendiente",
+            notes: null,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+        });
+
+        batch.set(orderRefDoc, {
+          updatedAt: serverTimestamp(),
+          customerName: currentName || null,
+        }, { merge: true });
+
+        await batch.commit();
+
+        setStatus("✅ Tu pedido fue enviado. El mesero lo verá en el sistema.");
+        cart = [];
+        renderCart();
+      } catch (err) {
+        console.error("Error enviando pedido del cliente:", err);
+        alert("Ocurrió un error al enviar tu pedido. Intenta nuevamente.");
+        setStatus("Error al enviar tu pedido.");
+      } finally {
+        enviarPedidoBtn.disabled = false;
+        enviarPedidoBtn.textContent = "Enviar pedido a la mesa";
+      }
+    }
+
+    function limpiarCart() {
+      cart = [];
+      renderCart();
+      setStatus("Tu selección fue limpiada. Puedes elegir de nuevo.");
+    }
+
+    enviarPedidoBtn.addEventListener("click", enviarPedidoCliente);
+    limpiarCartBtn.addEventListener("click", limpiarCart);
+
+    // === Enviar mensaje al mesero ===
+    async function enviarMensaje() {
+      const text = messageInput.value.trim();
+      if (!currentMesa) {
+        alert("Primero selecciona tu mesa.");
+        return;
+      }
+      if (!text) return;
+
+      sendMessageBtn.disabled = true;
+      setStatus("Enviando mensaje al mesero...");
+
+      try {
+        const orderRefDoc = await ensureOrderForChatOrCart();
+        const msgsCol = collection(orderRefDoc, "messages");
+        await addDoc(msgsCol, {
+          sender: "cliente",
+          text,
+          createdAt: serverTimestamp(),
+        });
+        messageInput.value = "";
+        setStatus("Mensaje enviado. Tu mesero lo verá en su sistema.");
+        listenMessages(orderRefDoc.id);
+      } catch (err) {
+        console.error("Error enviando mensaje:", err);
+        alert("No se pudo enviar el mensaje. Intenta de nuevo.");
+        setStatus("Error al enviar el mensaje.");
+      } finally {
+        sendMessageBtn.disabled = false;
+      }
+    }
+
+    sendMessageBtn.addEventListener("click", enviarMensaje);
+    messageInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        enviarMensaje();
+      }
+    });
+
+    // Auto-inicio: mesa + nombre previo
     const mesaFromUrl = getMesaFromUrl();
+    const savedName = localStorage.getItem("cafecaro_customerName") || "";
+    if (savedName) nombreInput.value = savedName;
+
     if (mesaFromUrl) {
-      startForMesa(mesaFromUrl);
+      startForMesa(mesaFromUrl, savedName);
     } else {
-      setStatus("Escribe tu número de mesa para consultar el pedido.");
+      setStatus("Escribe tu mesa y tu nombre (opcional) para consultar o pedir.");
     }
   </script>
 </body>
