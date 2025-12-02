@@ -531,7 +531,12 @@
       alert("Pedido enviado. El mesero está preparando tu orden.");
     } catch (err) {
       console.error("Error al enviar pedido:", err);
-      alert("Hubo un problema al enviar tu pedido. Revisa tu conexión o inténtalo de nuevo.");
+
+      alert(
+        "Error al enviar pedido:\n" +
+        (err.code ? "code: " + err.code + "\n" : "") +
+        (err.message ? "message: " + err.message : "")
+      );
     }
   };
 
