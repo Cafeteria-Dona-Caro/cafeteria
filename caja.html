@@ -281,6 +281,75 @@
       margin-top: 20px;
       text-align: center;
     }
+
+    /* Chat */
+    .chat-card {
+      margin-top: 10px;
+      border-radius: 10px;
+      border: 1px solid #333;
+      padding: 8px;
+      background: #101010;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+    }
+    .chat-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      opacity: 0.8;
+    }
+    .chat-messages {
+      max-height: 180px;
+      overflow-y: auto;
+      border-radius: 8px;
+      background: #151515;
+      padding: 8px;
+      border: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .msg {
+      max-width: 80%;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-size: 12px;
+    }
+    .msg-cliente {
+      align-self: flex-start;
+      background: #263238;
+    }
+    .msg-mesero {
+      align-self: flex-end;
+      background: #00c853;
+      color: #000;
+    }
+    .msg-meta {
+      font-size: 10px;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+    .chat-input-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    textarea {
+      flex: 1;
+      resize: none;
+      min-height: 40px;
+      max-height: 90px;
+      border-radius: 10px;
+      border: none;
+      padding: 6px 8px;
+      font-size: 12px;
+      font-family: inherit;
+      background: #222;
+      color: #f5f5f5;
+    }
+
     .status-bar {
       font-size: 12px;
       opacity: 0.85;
@@ -294,7 +363,7 @@
   <header>
     <div>
       <h1>Caja – Cafecaro</h1>
-      <div class="sub">Control de ventas por orden</div>
+      <div class="sub">Control de ventas y comunicación por orden</div>
     </div>
     <div class="right">
       <div id="branchLabel"></div>
@@ -331,7 +400,7 @@
     <section class="panel-right">
       <div id="detailContainer">
         <p class="empty-detail">
-          Selecciona una orden en la lista izquierda para ver el detalle.
+          Selecciona una orden en la lista izquierda para ver el detalle y el chat con el cliente.
         </p>
       </div>
     </section>
@@ -351,10 +420,11 @@
       updateDoc,
       serverTimestamp,
       getDocs,
+      addDoc,
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8d21",
       authDomain: "cafecaro-af23b.firebaseapp.com",
       projectId: "cafecaro-af23b",
       storageBucket: "cafecaro-af23b.firebasestorage.app",
@@ -378,7 +448,7 @@
 
     branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
 
-    // rol: admin o caja (solo lectura)
+    // Rol vía URL: ?role=admin o ?role=caja
     const params = new URLSearchParams(window.location.search);
     const roleParam = params.get("role");
     const isAdmin = roleParam === "admin";
@@ -403,6 +473,7 @@
     }
 
     let unsubscribeOrders = null;
+    let unsubscribeMessages = null;
     let currentOrderId = null;
     let currentOrders = new Map(); // orderId -> data
 
@@ -494,7 +565,7 @@
     dateFilter.addEventListener("change", renderOrdersList);
     statusFilter.addEventListener("change", renderOrdersList);
 
-    // === Cargar detalle de orden (items + totales) ===
+    // === Cargar detalle de orden (items + totales + chat) ===
     async function loadOrderDetail(orderId, orderData) {
       detailContainer.innerHTML = `<p style="font-size:13px;opacity:0.8;">Cargando detalle de la orden...</p>`;
 
@@ -507,6 +578,7 @@
         });
 
         renderOrderDetail(orderId, orderData, items);
+        listenMessages(orderId); // chat en tiempo real
       } catch (err) {
         console.error("Error cargando items:", err);
         detailContainer.innerHTML = `<p style="font-size:13px;color:#ff6b6b;">Error cargando detalle de la orden.</p>`;
@@ -593,6 +665,18 @@
           <span class="readonly-note">Modo caja: no puede modificar montos ni estado.</span>
           `}
         </div>
+
+        <div class="chat-card">
+          <div class="chat-title">Chat con el cliente</div>
+          <div class="chat-messages" id="messagesList">
+            <span style="font-size:12px;opacity:0.8;">Sin mensajes aún.</span>
+          </div>
+          <div class="chat-input-row">
+            <textarea id="messageInput" placeholder="Escribe un mensaje al cliente (ej. 'Su cuenta está lista en caja')." ${!isAdmin ? "disabled" : ""}></textarea>
+            <button id="sendMessageBtn" class="btn-primary" ${!isAdmin ? "disabled" : ""}>Enviar</button>
+          </div>
+          ${!isAdmin ? `<div class="readonly-note">Solo lectura: este usuario no puede responder mensajes.</div>` : ""}
+        </div>
       `;
 
       detailContainer.appendChild(wrapper);
@@ -600,17 +684,7 @@
       // Render items
       const itemsBody = wrapper.querySelector("#itemsBody");
       itemsBody.innerHTML = "";
-
-      items.forEach(item => {
-        const lineTotal = item.totalPrice ?? (item.unitPrice || 0) * (item.qty || 1);
-        const row = document.createElement("div");
-        row.className = "items-row";
-
-        row.innerHTML = `
-          <div>
-            <div>${item.productName || "Producto"}</div>
-            ${item.notes ? `<div class="items-row-notes">Nota: ${item.notes}</div>` : ""}
-            <div class="items-row-status ${"status-" + (item.status || "pendiente")}">
+<div class="items-row-status ${"status-" + (item.status || "pendiente")}">
               ${item.status || "pendiente"}
             </div>
           </div>
@@ -624,7 +698,6 @@
             ${formatCurrency(lineTotal)}
           </div>
         `;
-
         itemsBody.appendChild(row);
       });
 
@@ -731,7 +804,7 @@
           }
         });
 
-        // (opcional) permitir ajustar cantidad de item luego con lógica de recálculo y updateDoc por item
+        // (opcional) permitir ajustar cantidad de item
         const qtyInputs = itemsBody.querySelectorAll("input[type='number']");
         qtyInputs.forEach(input => {
           input.addEventListener("change", async () => {
@@ -754,16 +827,110 @@
               });
               setStatus("Cantidad del producto actualizada. Recalcula subtotal si lo deseas.");
             } catch (err) {
-              console.error("Error actualizando item:", err);
+              console.error("Error actualizando cantidad:", err);
               setStatus("Error al actualizar cantidad del producto.");
             }
           });
         });
       }
+
+      // === CHAT (cliente ↔ caja/mesero) ===
+      const messagesList = wrapper.querySelector("#messagesList");
+      const messageInput = wrapper.querySelector("#messageInput");
+      const sendMessageBtn = wrapper.querySelector("#sendMessageBtn");
+
+      function renderMessagesEmpty() {
+        messagesList.innerHTML = "<span style='font-size:12px;opacity:0.8;'>Sin mensajes aún.</span>";
+      }
+
+      wrapper._chat = {
+        messagesList,
+        renderMessagesEmpty,
+        messageInput,
+        sendMessageBtn,
+        orderId,
+      };
+
+      if (isAdmin && sendMessageBtn) {
+        sendMessageBtn.addEventListener("click", () => enviarMensaje(wrapper._chat));
+        messageInput.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            enviarMensaje(wrapper._chat);
+          }
+        });
+      }
     }
 
-    // ==== Inicio ====
-    // Por defecto, dateFilter = hoy
+    function listenMessages(orderId) {
+      if (unsubscribeMessages) {
+        unsubscribeMessages();
+        unsubscribeMessages = null;
+      }
+      const currentWrapper = detailContainer.firstElementChild;
+      if (!currentWrapper || !orderId) return;
+
+      const chat = currentWrapper._chat;
+      if (!chat) return;
+
+      const { messagesList, renderMessagesEmpty } = chat;
+
+      const msgsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "messages");
+      const qMsgs = query(msgsRef, orderBy("createdAt", "asc"));
+
+      unsubscribeMessages = onSnapshot(
+        qMsgs,
+        snapshot => {
+          messagesList.innerHTML = "";
+          if (snapshot.size === 0) {
+            renderMessagesEmpty();
+            return;
+          }
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const msgDiv = document.createElement("div");
+            const sender = data.sender || "cliente";
+            const isCliente = sender === "cliente";
+
+            msgDiv.className = "msg " + (isCliente ? "msg-cliente" : "msg-mesero");
+            msgDiv.innerHTML = `
+              <div>${data.text}</div>
+              <div class="msg-meta">${isCliente ? "Cliente" : "Caja/Mesero"}</div>
+            `;
+            messagesList.appendChild(msgDiv);
+          });
+          messagesList.scrollTop = messagesList.scrollHeight;
+        },
+        err => {
+          console.error("Error escuchando mensajes:", err);
+        }
+      );
+    }
+
+    async function enviarMensaje(chat) {
+      const { messageInput, orderId } = chat;
+      const text = messageInput.value.trim();
+      if (!text) return;
+      if (!currentOrderId) {
+        alert("Primero selecciona una orden.");
+        return;
+      }
+
+      try {
+        const msgsRef = collection(db, "branches", BRANCH_ID, "orders", currentOrderId, "messages");
+        await addDoc(msgsRef, {
+          sender: "mesero",
+          text,
+          createdAt: serverTimestamp(),
+        });
+        messageInput.value = "";
+        setStatus("Mensaje enviado al cliente.");
+      } catch (err) {
+        console.error("Error enviando mensaje:", err);
+        setStatus("Error al enviar mensaje.");
+      }
+    }
+
     (function setTodayToDateFilter() {
       const d = new Date();
       const yyyy = d.getFullYear();
@@ -776,3 +943,13 @@
   </script>
 </body>
 </html>
+      items.forEach(item => {
+        const lineTotal = item.totalPrice ?? (item.unitPrice || 0) * (item.qty || 1);
+        const row = document.createElement("div");
+        row.className = "items-row";
+
+        row.innerHTML = `
+          <div>
+            <div>${item.productName || "Producto"}</div>
+            ${item.notes ? `<div class="items-row-notes">Nota: ${item.notes}</div>` : ""}
+           
