@@ -23,347 +23,136 @@
       justify-content: space-between;
       align-items: center;
     }
-    header h1 {
-      margin: 0;
-      font-size: 18px;
-    }
-    header .sub {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-    header .right {
-      text-align: right;
-      font-size: 12px;
-    }
+    header h1 { margin: 0; font-size: 18px; }
+    header .sub { font-size: 12px; opacity: 0.8; }
+    header .right { text-align: right; font-size: 12px; }
+
     .role-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: 11px;
-      margin-top: 4px;
+      padding: 4px 10px; border-radius: 999px; font-size: 11px; margin-top: 4px;
+      display: inline-block;
     }
     .role-admin { background: #00c853; color: #000; }
     .role-caja { background: #2962ff; color: #fff; }
 
     .toolbar {
-      padding: 8px 16px;
-      background: #111;
-      border-bottom: 1px solid #222;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      font-size: 12px;
-      opacity: 0.9;
+      padding: 8px 16px; background: #111; border-bottom: 1px solid #222;
+      display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px;
     }
+
     select, input[type="date"] {
-      background: #222;
-      color: #f5f5f5;
-      border: 1px solid #333;
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 12px;
-      font-family: inherit;
+      background: #222; color: #f5f5f5; border: 1px solid #333; border-radius: 6px;
+      padding: 4px 8px; font-size: 12px;
     }
+
     main {
       flex: 1;
       display: grid;
       grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
-      gap: 0;
-      min-height: 0;
     }
+
     .panel-left {
       border-right: 1px solid #222;
       display: flex;
       flex-direction: column;
-      min-height: 0;
     }
+
     .orders-list {
-      padding: 8px;
-      overflow-y: auto;
-      flex: 1;
+      padding: 8px; overflow-y: auto; flex: 1;
     }
+
     .order-row {
-      background: #121212;
-      border-radius: 10px;
-      border: 1px solid #333;
-      padding: 8px;
-      margin-bottom: 6px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+      background: #121212; border-radius: 10px; border: 1px solid #333;
+      padding: 8px; margin-bottom: 6px; cursor: pointer; font-size: 12px;
     }
-    .order-row.selected {
-      border-color: #00c853;
-      box-shadow: 0 0 0 1px #00c85344;
-    }
-    .order-row-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-    }
-    .order-row-title {
-      font-weight: 600;
-      font-size: 13px;
-    }
-    .order-row-meta {
-      font-size: 11px;
-      opacity: 0.8;
-    }
+    .order-row.selected { border-color: #00c853; }
+
+    .order-row-title { font-weight: 600; font-size: 13px; }
+    .order-row-meta { font-size: 11px; opacity: 0.8; }
+
     .status-chip {
-      padding: 2px 6px;
-      border-radius: 999px;
-      font-size: 10px;
-      text-transform: uppercase;
+      padding: 2px 6px; border-radius: 999px; font-size: 10px; text-transform: uppercase;
     }
     .status-abierta { background: #ffab00; color: #000; }
     .status-en_preparacion { background: #2962ff; color: #fff; }
     .status-lista { background: #00c853; color: #000; }
     .status-cerrada { background: #757575; color: #fff; }
 
-    .panel-right {
-      padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
+    .panel-right { padding: 10px 12px; display: flex; flex-direction: column; }
+
     .detail-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-      border-bottom: 1px solid #222;
-      padding-bottom: 8px;
-      margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+      border-bottom: 1px solid #222; padding-bottom: 8px; margin-bottom: 8px;
     }
-    .detail-main-title {
-      font-size: 16px;
-      margin: 0;
-    }
-    .detail-sub {
-      font-size: 12px;
-      opacity: 0.85;
-    }
-    .detail-meta {
-      font-size: 11px;
-      opacity: 0.8;
-      margin-top: 4px;
-    }
-    .detail-status-select {
-      margin-top: 4px;
-    }
-    .detail-status-select select {
-      width: 100%;
-    }
+
+    .detail-main-title { font-size: 16px; margin: 0; }
+    .detail-sub { font-size: 12px; opacity: 0.85; }
+    .detail-meta { font-size: 11px; opacity: 0.8; margin-top: 4px; }
+
     .items-table {
-      margin-top: 6px;
-      border-radius: 10px;
-      border: 1px solid #222;
-      overflow: hidden;
-      font-size: 12px;
+      margin-top: 6px; border-radius: 10px; border: 1px solid #222; overflow: hidden;
     }
-    .items-header, .items-row {
+
+    .items-header {
+      background: #151515; padding: 6px 8px; font-weight: 600;
+      display: grid; grid-template-columns: 2.5fr 0.8fr 0.9fr 1.1fr;
+    }
+
+    .items-row {
+      padding: 6px 8px;
       display: grid;
       grid-template-columns: 2.5fr 0.8fr 0.9fr 1.1fr;
-      padding: 6px 8px;
-      gap: 6px;
       align-items: center;
     }
-    .items-header {
-      background: #151515;
-      font-weight: 600;
-      border-bottom: 1px solid #222;
-    }
+
     .items-row:nth-child(odd) { background: #111; }
     .items-row:nth-child(even) { background: #161616; }
-    .items-row-status {
-      font-size: 11px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      text-align: center;
-    }
-    .items-row-notes {
-      font-size: 11px;
-      opacity: 0.8;
-    }
+
     .items-row-qty input {
-      width: 50px;
-      text-align: center;
-      background: #222;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #f5f5f5;
-      font-size: 11px;
-      padding: 2px 4px;
+      width: 50px; text-align: center; background: #222; border: 1px solid #333;
+      border-radius: 6px; color: #f5f5f5;
     }
-    .items-row-total {
-      text-align: right;
+
+    .items-row-status {
+      font-size: 11px; padding: 2px 6px; border-radius: 999px; text-align: center;
+    }
+
+    .items-row-notes {
+      font-size: 11px; opacity: 0.8;
     }
 
     .totals-card {
-      margin-top: 8px;
-      border-radius: 10px;
-      border: 1px solid #333;
-      padding: 8px;
-      font-size: 13px;
-      background: #101010;
-      display: grid;
-      grid-template-columns: 1.2fr 1fr;
-      gap: 6px;
-      align-items: center;
-    }
-    .totals-labels {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .totals-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .totals-row input {
-      width: 80px;
-      text-align: right;
-      background: #222;
-      border: 1px solid #333;
-      border-radius: 6px;
-      color: #f5f5f5;
-      font-size: 12px;
-      padding: 2px 4px;
-    }
-    .totals-grand {
-      font-size: 16px;
-      font-weight: 700;
-      text-align: right;
+      margin-top: 8px; padding: 8px; border-radius: 10px; background: #101010;
+      border: 1px solid #333; display: grid; grid-template-columns: 1.2fr 1fr;
     }
 
-    .actions {
-      margin-top: 8px;
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 13px;
-    }
-    button {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: none;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background: #00c853;
-      color: #000;
-    }
-    .btn-danger {
-      background: #b71c1c;
-      color: #fff;
-    }
-    .btn-secondary {
-      background: #333;
-      color: #eee;
-    }
-    .readonly-note {
-      font-size: 11px;
-      opacity: 0.85;
-      margin-top: 4px;
-    }
-    .empty-detail {
-      font-size: 13px;
-      opacity: 0.85;
-      margin-top: 20px;
-      text-align: center;
-    }
+    .actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-primary { background: #00c853; color: #000; }
+    .btn-danger { background: #b71c1c; color: #fff; }
+    .btn-secondary { background: #333; color: #eee; }
 
-    /* Chat */
     .chat-card {
-      margin-top: 10px;
-      border-radius: 10px;
-      border: 1px solid #333;
-      padding: 8px;
-      background: #101010;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 13px;
-    }
-    .chat-title {
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      opacity: 0.8;
-    }
-    .chat-messages {
-      max-height: 180px;
-      overflow-y: auto;
-      border-radius: 8px;
-      background: #151515;
-      padding: 8px;
-      border: 1px solid #333;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .msg {
-      max-width: 80%;
-      padding: 6px 8px;
-      border-radius: 10px;
-      font-size: 12px;
-    }
-    .msg-cliente {
-      align-self: flex-start;
-      background: #263238;
-    }
-    .msg-mesero {
-      align-self: flex-end;
-      background: #00c853;
-      color: #000;
-    }
-    .msg-meta {
-      font-size: 10px;
-      opacity: 0.7;
-      margin-top: 2px;
-    }
-    .chat-input-row {
-      display: flex;
-      gap: 6px;
-      margin-top: 4px;
-    }
-    textarea {
-      flex: 1;
-      resize: none;
-      min-height: 40px;
-      max-height: 90px;
-      border-radius: 10px;
-      border: none;
-      padding: 6px 8px;
-      font-size: 12px;
-      font-family: inherit;
-      background: #222;
-      color: #f5f5f5;
+      margin-top: 10px; padding: 8px; border-radius: 10px; background: #101010;
+      border: 1px solid #333; display: flex; flex-direction: column; gap: 6px;
     }
 
-    .status-bar {
-      font-size: 12px;
-      opacity: 0.85;
-      padding: 6px 16px;
-      border-top: 1px solid #222;
-      background: #080808;
+    .chat-messages {
+      max-height: 180px; overflow-y: auto; background: #151515;
+      padding: 8px; border-radius: 8px; display: flex; flex-direction: column; gap: 6px;
     }
+
+    .msg { padding: 6px 8px; border-radius: 10px; max-width: 80%; font-size: 12px; }
+    .msg-cliente { background: #263238; align-self: flex-start; }
+    .msg-mesero { background: #00c853; color: #000; align-self: flex-end; }
+
+    .status-bar { padding: 6px 16px; background: #080808; font-size: 12px; }
+
   </style>
 </head>
 <body>
   <header>
     <div>
       <h1>Caja – Cafecaro</h1>
-      <div class="sub">Control de ventas y comunicación por orden</div>
+      <div class="sub">Control de ventas y comunicación</div>
     </div>
     <div class="right">
       <div id="branchLabel"></div>
@@ -372,9 +161,7 @@
   </header>
 
   <div class="toolbar">
-    <div>
-      Fecha: <input type="date" id="dateFilter" />
-    </div>
+    <div>Fecha: <input type="date" id="dateFilter" /></div>
     <div>
       Estado:
       <select id="statusFilter">
@@ -385,52 +172,37 @@
         <option value="cerrada">Cerrada</option>
       </select>
     </div>
-    <div style="opacity:0.7;">
-      Tip: entra como admin con <code>?role=admin</code> en la URL.
-    </div>
+    <div style="opacity:0.6;">Entrar como admin: <code>?role=admin</code></div>
   </div>
 
   <main>
     <section class="panel-left">
-      <div class="orders-list" id="ordersList">
-        <!-- órdenes -->
-      </div>
+      <div id="ordersList" class="orders-list"></div>
     </section>
 
     <section class="panel-right">
       <div id="detailContainer">
-        <p class="empty-detail">
-          Selecciona una orden en la lista izquierda para ver el detalle y el chat con el cliente.
-        </p>
+        <p class="empty-detail">Selecciona una orden para ver su detalle.</p>
       </div>
     </section>
   </main>
 
-  <div class="status-bar" id="statusText">Cargando órdenes...</div>
+  <div id="statusText" class="status-bar">Cargando...</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import {
-      getFirestore,
-      collection,
-      doc,
-      onSnapshot,
-      query,
-      orderBy,
-      updateDoc,
-      serverTimestamp,
-      getDocs,
-      addDoc,
+      getFirestore, collection, doc, onSnapshot, query,
+      orderBy, updateDoc, serverTimestamp, getDocs, addDoc
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8d21",
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
       authDomain: "cafecaro-af23b.firebaseapp.com",
       projectId: "cafecaro-af23b",
       storageBucket: "cafecaro-af23b.firebasestorage.app",
       messagingSenderId: "534231921780",
-      appId: "1:534231921780:web:f3702e23c024c14c0c8d21",
-      measurementId: "G-JC720XBF92"
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
     };
 
     const BRANCH_ID = "cafecaro-centro";
@@ -439,161 +211,138 @@
     const db = getFirestore(app);
 
     const branchLabel = document.getElementById("branchLabel");
-    const rolePill = document.getElementById("rolePill");
-    const statusText = document.getElementById("statusText");
-    const ordersList = document.getElementById("ordersList");
-    const detailContainer = document.getElementById("detailContainer");
-    const dateFilter = document.getElementById("dateFilter");
-    const statusFilter = document.getElementById("statusFilter");
-
     branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
 
-    // Rol vía URL: ?role=admin o ?role=caja
     const params = new URLSearchParams(window.location.search);
-    const roleParam = params.get("role");
-    const isAdmin = roleParam === "admin";
+    const isAdmin = params.get("role") === "admin";
 
+    const rolePill = document.getElementById("rolePill");
     if (isAdmin) {
-      rolePill.textContent = "Modo administrador (puede editar)";
+      rolePill.textContent = "Modo administrador";
       rolePill.classList.remove("role-caja");
       rolePill.classList.add("role-admin");
     }
 
+    const ordersList = document.getElementById("ordersList");
+    const detailContainer = document.getElementById("detailContainer");
+    const dateFilter = document.getElementById("dateFilter");
+    const statusFilter = document.getElementById("statusFilter");
+    const statusText = document.getElementById("statusText");
+
     function setStatus(msg) {
       statusText.textContent = msg;
     }
+
     function formatCurrency(n) {
       return `$${(n || 0).toFixed(2)}`;
     }
+
     function formatDateTime(ts) {
       if (!ts?.toDate) return "-";
       const d = ts.toDate();
-      const pad = (x) => (x < 10 ? "0" + x : x);
-      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      const p = (x)=> (x<10?"0"+x:x);
+      return `${p(d.getDate())}/${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
     }
 
+    let currentOrderId = null;
+    let currentOrders = new Map();
     let unsubscribeOrders = null;
     let unsubscribeMessages = null;
-    let currentOrderId = null;
-    let currentOrders = new Map(); // orderId -> data
 
-    // === Escuchar órdenes (todas) y filtrar en cliente ===
+    (function setDefaultDate() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      dateFilter.value = `${yyyy}-${mm}-${dd}`;
+    })();
+
     function listenOrders() {
       const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
+      const qOrders = query(ordersRef, orderBy("createdAt","desc"));
 
-      unsubscribeOrders = onSnapshot(
-        qOrders,
-        snapshot => {
-          currentOrders.clear();
-          snapshot.forEach(docSnap => {
-            currentOrders.set(docSnap.id, docSnap.data());
-          });
-          renderOrdersList();
-          setStatus(`Órdenes cargadas: ${snapshot.size}`);
-        },
-        err => {
-          console.error("Error escuchando órdenes:", err);
-          setStatus("Error cargando órdenes. Revisa la consola.");
-        }
-      );
+      unsubscribeOrders = onSnapshot(qOrders, snap => {
+        currentOrders.clear();
+        snap.forEach(docSnap => currentOrders.set(docSnap.id, docSnap.data()));
+        renderOrdersList();
+      }, err => console.error(err));
     }
 
-    function matchesFilters(orderData) {
-      const statusValue = statusFilter.value;
-      if (statusValue !== "todos" && orderData.status !== statusValue) return false;
+    function matchesFilters(order) {
+      const s = statusFilter.value;
+      if (s !== "todos" && order.status !== s) return false;
 
-      const dateValue = dateFilter.value;
-      if (dateValue && orderData.createdAt?.toDate) {
-        const d = orderData.createdAt.toDate();
-        const yyyy = d.getFullYear();
-        const mm = (d.getMonth() + 1).toString().padStart(2, "0");
-        const dd = d.getDate().toString().padStart(2, "0");
-        const orderDateStr = `${yyyy}-${mm}-${dd}`;
-        if (orderDateStr !== dateValue) return false;
+      const dateVal = dateFilter.value;
+      if (dateVal && order.createdAt?.toDate) {
+        const d = order.createdAt.toDate();
+        const y = d.getFullYear();
+        const m = String(d.getMonth()+1).padStart(2,"0");
+        const day = String(d.getDate()).padStart(2,"0");
+        return `${y}-${m}-${day}` === dateVal;
       }
-
       return true;
     }
 
     function renderOrdersList() {
       ordersList.innerHTML = "";
-      const entries = Array.from(currentOrders.entries());
 
-      const filtered = entries.filter(([id, data]) => matchesFilters(data));
+      const filtered = [...currentOrders.entries()].filter(([id,data]) => matchesFilters(data));
 
       if (filtered.length === 0) {
-        ordersList.innerHTML = "<p style='font-size:12px;opacity:0.8;'>No hay órdenes con esos filtros.</p>";
+        ordersList.innerHTML = "<p style='opacity:0.8;font-size:12px;'>No hay órdenes.</p>";
         return;
       }
 
-      filtered.forEach(([id, data]) => {
+      filtered.forEach(([id,data]) => {
         const row = document.createElement("div");
         row.className = "order-row" + (id === currentOrderId ? " selected" : "");
         row.dataset.orderId = id;
 
-        const statusClass = `status-${data.status || "abierta"}`;
         const mesa = data.tableNumber ?? "-";
-        const name = data.customerName || "";
-        const total = data.total ?? data.subtotal ?? 0;
+        const name = data.customerName ? ` – ${data.customerName}` : "";
+        const statusClass = `status-${data.status}`;
 
         row.innerHTML = `
-          <div class="order-row-header">
-            <div>
-              <div class="order-row-title">Mesa ${mesa}${name ? " – " + name : ""}</div>
-              <div class="order-row-meta">
-                #${id.substring(0, 6)} · ${formatDateTime(data.createdAt)} · ${data.source || "sistema"}
-              </div>
-            </div>
-            <div style="text-align:right;">
-              <div class="status-chip ${statusClass}">${data.status || "abierta"}</div>
-              <div style="font-size:12px;margin-top:2px;">${formatCurrency(total)}</div>
-            </div>
+          <div class="order-row-title">Mesa ${mesa}${name}</div>
+          <div class="order-row-meta">
+            #${id.substring(0,6)} · ${formatDateTime(data.createdAt)} · ${formatCurrency(data.total || data.subtotal || 0)}
           </div>
+          <div class="status-chip ${statusClass}">${data.status}</div>
         `;
 
-        row.addEventListener("click", () => {
+        row.onclick = () => {
           currentOrderId = id;
           renderOrdersList();
           loadOrderDetail(id, data);
-        });
+        };
 
         ordersList.appendChild(row);
       });
     }
 
-    dateFilter.addEventListener("change", renderOrdersList);
-    statusFilter.addEventListener("change", renderOrdersList);
+    dateFilter.onchange = renderOrdersList;
+    statusFilter.onchange = renderOrdersList;
 
-    // === Cargar detalle de orden (items + totales + chat) ===
     async function loadOrderDetail(orderId, orderData) {
-      detailContainer.innerHTML = `<p style="font-size:13px;opacity:0.8;">Cargando detalle de la orden...</p>`;
+      detailContainer.innerHTML = `<p style="opacity:0.7;">Cargando detalle...</p>`;
 
-      try {
-        const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
-        const snap = await getDocs(itemsRef);
-        const items = [];
-        snap.forEach(docSnap => {
-          items.push({ id: docSnap.id, ...docSnap.data() });
-        });
+      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
+      const snap = await getDocs(itemsRef);
 
-        renderOrderDetail(orderId, orderData, items);
-        listenMessages(orderId); // chat en tiempo real
-      } catch (err) {
-        console.error("Error cargando items:", err);
-        detailContainer.innerHTML = `<p style="font-size:13px;color:#ff6b6b;">Error cargando detalle de la orden.</p>`;
-      }
+      const items = [];
+      snap.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
+
+      renderOrderDetail(orderId, orderData, items);
+      listenMessages(orderId);
     }
 
     function renderOrderDetail(orderId, orderData, items) {
-      const isClosed = orderData.status === "cerrada";
+      detailContainer.innerHTML = "";
 
       const subtotal = orderData.subtotal || 0;
       const tax = orderData.tax || 0;
-      const discount = orderData.discount || 0;
-      const total = orderData.total != null ? orderData.total : (subtotal + tax - discount);
-
-      detailContainer.innerHTML = "";
+      const disc = orderData.discount || 0;
+      const total = orderData.total != null ? orderData.total : subtotal + tax - disc;
 
       const wrapper = document.createElement("div");
 
@@ -603,26 +352,20 @@
             <h2 class="detail-main-title">
               Mesa ${orderData.tableNumber ?? "-"}${orderData.customerName ? " – " + orderData.customerName : ""}
             </h2>
-            <div class="detail-sub">
-              Pedido: <strong>${orderId}</strong><br>
-              Origen: ${orderData.source || "sistema"}
-            </div>
+            <div class="detail-sub">Pedido: <strong>${orderId}</strong></div>
             <div class="detail-meta">
               Creado: ${formatDateTime(orderData.createdAt)}<br>
               Actualizado: ${formatDateTime(orderData.updatedAt)}
             </div>
           </div>
           <div style="min-width:140px;">
-            <div style="font-size:11px;opacity:0.8;">Estado de la orden</div>
-            <div class="detail-status-select">
-              <select id="orderStatusSelect" ${!isAdmin ? "disabled" : ""}>
-                <option value="abierta">abierta</option>
-                <option value="en_preparacion">en_preparacion</option>
-                <option value="lista">lista</option>
-                <option value="cerrada">cerrada</option>
-              </select>
-            </div>
-            ${!isAdmin ? `<div class="readonly-note">Solo lectura (modo caja).</div>` : ""}
+            <div style="font-size:11px;opacity:0.8;">Estado</div>
+            <select id="orderStatusSelect" ${!isAdmin ? "disabled" : ""}>
+              <option value="abierta">abierta</option>
+              <option value="en_preparacion">en_preparacion</option>
+              <option value="lista">lista</option>
+              <option value="cerrada">cerrada</option>
+            </select>
           </div>
         </div>
 
@@ -635,316 +378,16 @@
           </div>
           <div id="itemsBody"></div>
         </div>
-
-        <div class="totals-card">
-          <div class="totals-labels">
-            <div class="totals-row">
-              <span>Subtotal</span>
-              <input type="number" step="0.01" id="subtotalInput" value="${subtotal.toFixed(2)}" ${!isAdmin ? "disabled" : ""} />
-            </div>
-            <div class="totals-row">
-              <span>Impuestos</span>
-              <input type="number" step="0.01" id="taxInput" value="${tax.toFixed(2)}" ${!isAdmin ? "disabled" : ""} />
-            </div>
-            <div class="totals-row">
-              <span>Descuento</span>
-              <input type="number" step="0.01" id="discountInput" value="${discount.toFixed(2)}" ${!isAdmin ? "disabled" : ""} />
-            </div>
-          </div>
-          <div class="totals-grand" id="totalDisplay">
-            ${formatCurrency(total)}
-          </div>
-        </div>
-
-        <div class="actions" id="actionsContainer">
-          ${isAdmin ? `
-          <button class="btn-primary" id="saveTotalsBtn">Guardar totales</button>
-          <button class="btn-danger" id="closeOrderBtn">Cerrar cuenta</button>
-          <button class="btn-secondary" id="recalcFromItemsBtn">Recalcular desde items</button>
-          ` : `
-          <span class="readonly-note">Modo caja: no puede modificar montos ni estado.</span>
-          `}
-        </div>
-
-        <div class="chat-card">
-          <div class="chat-title">Chat con el cliente</div>
-          <div class="chat-messages" id="messagesList">
-            <span style="font-size:12px;opacity:0.8;">Sin mensajes aún.</span>
-          </div>
-          <div class="chat-input-row">
-            <textarea id="messageInput" placeholder="Escribe un mensaje al cliente (ej. 'Su cuenta está lista en caja')." ${!isAdmin ? "disabled" : ""}></textarea>
-            <button id="sendMessageBtn" class="btn-primary" ${!isAdmin ? "disabled" : ""}>Enviar</button>
-          </div>
-          ${!isAdmin ? `<div class="readonly-note">Solo lectura: este usuario no puede responder mensajes.</div>` : ""}
-        </div>
       `;
 
       detailContainer.appendChild(wrapper);
 
-      // Render items
       const itemsBody = wrapper.querySelector("#itemsBody");
-      itemsBody.innerHTML = "";
-<div class="items-row-status ${"status-" + (item.status || "pendiente")}">
-              ${item.status || "pendiente"}
-            </div>
-          </div>
-          <div class="items-row-qty">
-            <input type="number" min="1" value="${item.qty || 1}" data-item-id="${item.id}" ${!isAdmin ? "disabled" : ""} />
-          </div>
-          <div class="items-row-unit">
-            ${formatCurrency(item.unitPrice || item.basePrice || 0)}
-          </div>
-          <div class="items-row-total">
-            ${formatCurrency(lineTotal)}
-          </div>
-        `;
-        itemsBody.appendChild(row);
-      });
 
-      const statusSelect = wrapper.querySelector("#orderStatusSelect");
-      if (statusSelect) {
-        statusSelect.value = orderData.status || "abierta";
-      }
-
-      const subtotalInput = wrapper.querySelector("#subtotalInput");
-      const taxInput = wrapper.querySelector("#taxInput");
-      const discountInput = wrapper.querySelector("#discountInput");
-      const totalDisplay = wrapper.querySelector("#totalDisplay");
-
-      function updateTotalDisplay() {
-        const sub = parseFloat(subtotalInput.value) || 0;
-        const tax = parseFloat(taxInput.value) || 0;
-        const disc = parseFloat(discountInput.value) || 0;
-        const t = sub + tax - disc;
-        totalDisplay.textContent = formatCurrency(t);
-      }
-
-      if (isAdmin) {
-        subtotalInput.addEventListener("input", updateTotalDisplay);
-        taxInput.addEventListener("input", updateTotalDisplay);
-        discountInput.addEventListener("input", updateTotalDisplay);
-      }
-
-      // === Acciones (solo admin) ===
-      if (isAdmin) {
-        const saveTotalsBtn = wrapper.querySelector("#saveTotalsBtn");
-        const closeOrderBtn = wrapper.querySelector("#closeOrderBtn");
-        const recalcFromItemsBtn = wrapper.querySelector("#recalcFromItemsBtn");
-
-        saveTotalsBtn.addEventListener("click", async () => {
-          const sub = parseFloat(subtotalInput.value) || 0;
-          const tax = parseFloat(taxInput.value) || 0;
-          const disc = parseFloat(discountInput.value) || 0;
-          const t = sub + tax - disc;
-
-          try {
-            const orderRef = doc(db, "branches", BRANCH_ID, "orders", orderId);
-            await updateDoc(orderRef, {
-              subtotal: sub,
-              tax: tax,
-              discount: disc,
-              total: t,
-              status: statusSelect.value,
-              updatedAt: serverTimestamp(),
-            });
-            setStatus("Totales guardados en la orden.");
-          } catch (err) {
-            console.error("Error guardando totales:", err);
-            setStatus("Error guardando totales.");
-          }
-        });
-
-        closeOrderBtn.addEventListener("click", async () => {
-          if (!confirm("¿Cerrar la cuenta de esta orden?")) return;
-          try {
-            const sub = parseFloat(subtotalInput.value) || 0;
-            const tax = parseFloat(taxInput.value) || 0;
-            const disc = parseFloat(discountInput.value) || 0;
-            const t = sub + tax - disc;
-
-            const orderRef = doc(db, "branches", BRANCH_ID, "orders", orderId);
-            await updateDoc(orderRef, {
-              status: "cerrada",
-              subtotal: sub,
-              tax: tax,
-              discount: disc,
-              total: t,
-              updatedAt: serverTimestamp(),
-            });
-            setStatus("Orden cerrada correctamente.");
-          } catch (err) {
-            console.error("Error cerrando orden:", err);
-            setStatus("Error al cerrar la orden.");
-          }
-        });
-
-        recalcFromItemsBtn.addEventListener("click", () => {
-          let newSub = 0;
-          items.forEach(item => {
-            const line = item.totalPrice ?? (item.unitPrice || 0) * (item.qty || 1);
-            newSub += line;
-          });
-          subtotalInput.value = newSub.toFixed(2);
-          updateTotalDisplay();
-          setStatus("Subtotal recalculado desde items (no guardado aún).");
-        });
-
-        // Cambiar estado sin tocar totales
-        statusSelect.addEventListener("change", async () => {
-          try {
-            const orderRef = doc(db, "branches", BRANCH_ID, "orders", orderId);
-            await updateDoc(orderRef, {
-              status: statusSelect.value,
-              updatedAt: serverTimestamp(),
-            });
-            setStatus("Estado de la orden actualizado.");
-          } catch (err) {
-            console.error("Error actualizando estado:", err);
-            setStatus("Error al actualizar el estado.");
-          }
-        });
-
-        // (opcional) permitir ajustar cantidad de item
-        const qtyInputs = itemsBody.querySelectorAll("input[type='number']");
-        qtyInputs.forEach(input => {
-          input.addEventListener("change", async () => {
-            const newQty = parseInt(input.value, 10);
-            const itemId = input.dataset.itemId;
-            if (!itemId || !Number.isFinite(newQty) || newQty <= 0) return;
-
-            const item = items.find(it => it.id === itemId);
-            if (!item) return;
-
-            const unitPrice = item.unitPrice || item.basePrice || 0;
-            const newLineTotal = unitPrice * newQty;
-
-            try {
-              const itemRef = doc(db, "branches", BRANCH_ID, "orders", orderId, "items", itemId);
-              await updateDoc(itemRef, {
-                qty: newQty,
-                totalPrice: newLineTotal,
-                updatedAt: serverTimestamp(),
-              });
-              setStatus("Cantidad del producto actualizada. Recalcula subtotal si lo deseas.");
-            } catch (err) {
-              console.error("Error actualizando cantidad:", err);
-              setStatus("Error al actualizar cantidad del producto.");
-            }
-          });
-        });
-      }
-
-      // === CHAT (cliente ↔ caja/mesero) ===
-      const messagesList = wrapper.querySelector("#messagesList");
-      const messageInput = wrapper.querySelector("#messageInput");
-      const sendMessageBtn = wrapper.querySelector("#sendMessageBtn");
-
-      function renderMessagesEmpty() {
-        messagesList.innerHTML = "<span style='font-size:12px;opacity:0.8;'>Sin mensajes aún.</span>";
-      }
-
-      wrapper._chat = {
-        messagesList,
-        renderMessagesEmpty,
-        messageInput,
-        sendMessageBtn,
-        orderId,
-      };
-
-      if (isAdmin && sendMessageBtn) {
-        sendMessageBtn.addEventListener("click", () => enviarMensaje(wrapper._chat));
-        messageInput.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            enviarMensaje(wrapper._chat);
-          }
-        });
-      }
-    }
-
-    function listenMessages(orderId) {
-      if (unsubscribeMessages) {
-        unsubscribeMessages();
-        unsubscribeMessages = null;
-      }
-      const currentWrapper = detailContainer.firstElementChild;
-      if (!currentWrapper || !orderId) return;
-
-      const chat = currentWrapper._chat;
-      if (!chat) return;
-
-      const { messagesList, renderMessagesEmpty } = chat;
-
-      const msgsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "messages");
-      const qMsgs = query(msgsRef, orderBy("createdAt", "asc"));
-
-      unsubscribeMessages = onSnapshot(
-        qMsgs,
-        snapshot => {
-          messagesList.innerHTML = "";
-          if (snapshot.size === 0) {
-            renderMessagesEmpty();
-            return;
-          }
-          snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const msgDiv = document.createElement("div");
-            const sender = data.sender || "cliente";
-            const isCliente = sender === "cliente";
-
-            msgDiv.className = "msg " + (isCliente ? "msg-cliente" : "msg-mesero");
-            msgDiv.innerHTML = `
-              <div>${data.text}</div>
-              <div class="msg-meta">${isCliente ? "Cliente" : "Caja/Mesero"}</div>
-            `;
-            messagesList.appendChild(msgDiv);
-          });
-          messagesList.scrollTop = messagesList.scrollHeight;
-        },
-        err => {
-          console.error("Error escuchando mensajes:", err);
-        }
-      );
-    }
-
-    async function enviarMensaje(chat) {
-      const { messageInput, orderId } = chat;
-      const text = messageInput.value.trim();
-      if (!text) return;
-      if (!currentOrderId) {
-        alert("Primero selecciona una orden.");
-        return;
-      }
-
-      try {
-        const msgsRef = collection(db, "branches", BRANCH_ID, "orders", currentOrderId, "messages");
-        await addDoc(msgsRef, {
-          sender: "mesero",
-          text,
-          createdAt: serverTimestamp(),
-        });
-        messageInput.value = "";
-        setStatus("Mensaje enviado al cliente.");
-      } catch (err) {
-        console.error("Error enviando mensaje:", err);
-        setStatus("Error al enviar mensaje.");
-      }
-    }
-
-    (function setTodayToDateFilter() {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = (d.getMonth() + 1).toString().padStart(2, "0");
-      const dd = d.getDate().toString().padStart(2, "0");
-      dateFilter.value = `${yyyy}-${mm}-${dd}`;
-    })();
-
-    listenOrders();
-  </script>
-</body>
-</html>
-      items.forEach(item => {
+      // AQUI INICIA EL BLOQUE DONDE SE INSERTA CADA ITEM
+items.forEach(item => {
         const lineTotal = item.totalPrice ?? (item.unitPrice || 0) * (item.qty || 1);
+
         const row = document.createElement("div");
         row.className = "items-row";
 
@@ -952,4 +395,214 @@
           <div>
             <div>${item.productName || "Producto"}</div>
             ${item.notes ? `<div class="items-row-notes">Nota: ${item.notes}</div>` : ""}
-           
+            <div class="items-row-status ${"status-" + (item.status || "pendiente")}">
+              ${item.status || "pendiente"}
+            </div>
+          </div>
+          <div class="items-row-qty">
+            <input type="number" min="1" value="${item.qty || 1}" data-item-id="${item.id}" ${!isAdmin ? "disabled" : ""}>
+          </div>
+          <div>${formatCurrency(item.unitPrice || 0)}</div>
+          <div>${formatCurrency(lineTotal)}</div>
+        `;
+
+        itemsBody.appendChild(row);
+      });
+
+      /* === Totales === */
+      const totals = document.createElement("div");
+      totals.className = "totals-card";
+      totals.innerHTML = `
+        <div>
+          <div class="totals-row">
+            <span>Subtotal</span>
+            <input type="number" id="subtotalInput" step="0.01" value="${subtotal}" ${!isAdmin ? "disabled" : ""}>
+          </div>
+          <div class="totals-row">
+            <span>Impuestos</span>
+            <input type="number" id="taxInput" step="0.01" value="${tax}" ${!isAdmin ? "disabled" : ""}>
+          </div>
+          <div class="totals-row">
+            <span>Descuento</span>
+            <input type="number" id="discountInput" step="0.01" value="${disc}" ${!isAdmin ? "disabled" : ""}>
+          </div>
+        </div>
+        <div class="totals-grand" id="totalDisplay">
+          ${formatCurrency(total)}
+        </div>
+      `;
+      detailContainer.appendChild(totals);
+
+      const subtotalInput = totals.querySelector("#subtotalInput");
+      const taxInput = totals.querySelector("#taxInput");
+      const discountInput = totals.querySelector("#discountInput");
+      const totalDisplay = totals.querySelector("#totalDisplay");
+
+      function updateTotal() {
+        const sub = parseFloat(subtotalInput.value)||0;
+        const tax = parseFloat(taxInput.value)||0;
+        const dis = parseFloat(discountInput.value)||0;
+        totalDisplay.textContent = formatCurrency(sub+tax-dis);
+      }
+
+      if (isAdmin) {
+        subtotalInput.oninput = updateTotal;
+        taxInput.oninput = updateTotal;
+        discountInput.oninput = updateTotal;
+      }
+
+      /* === ACCIONES === */
+      const actions = document.createElement("div");
+      actions.className = "actions";
+
+      if (isAdmin) {
+        actions.innerHTML = `
+          <button class="btn-primary" id="saveTotalsBtn">Guardar totales</button>
+          <button class="btn-secondary" id="recalcBtn">Recalcular</button>
+          <button class="btn-danger" id="closeOrderBtn">Cerrar orden</button>
+        `;
+      } else {
+        actions.innerHTML = `<span style="font-size:12px;opacity:0.8;">Modo caja: no editable</span>`;
+      }
+
+      detailContainer.appendChild(actions);
+
+      const statusSelect = wrapper.querySelector("#orderStatusSelect");
+      if (statusSelect) statusSelect.value = orderData.status;
+
+      if (isAdmin) {
+        document.getElementById("saveTotalsBtn").onclick = async () => {
+          const sub = parseFloat(subtotalInput.value)||0;
+          const tax = parseFloat(taxInput.value)||0;
+          const dis = parseFloat(discountInput.value)||0;
+
+          const orderRef = doc(db,"branches",BRANCH_ID,"orders",orderId);
+          await updateDoc(orderRef,{
+            subtotal:sub, tax:tax, discount:dis,
+            total: sub+tax-dis,
+            status: statusSelect.value,
+            updatedAt: serverTimestamp()
+          });
+          setStatus("Totales guardados.");
+        };
+
+        document.getElementById("recalcBtn").onclick = () => {
+          let newSub = 0;
+          items.forEach(it=>{
+            const line = it.totalPrice ?? (it.unitPrice||0)*(it.qty||1);
+            newSub += line;
+          });
+          subtotalInput.value = newSub;
+          updateTotal();
+        };
+
+        document.getElementById("closeOrderBtn").onclick = async () => {
+          if (!confirm("¿Cerrar orden?")) return;
+
+          const sub = parseFloat(subtotalInput.value)||0;
+          const tax = parseFloat(taxInput.value)||0;
+          const dis = parseFloat(discountInput.value)||0;
+
+          const orderRef = doc(db,"branches",BRANCH_ID,"orders",orderId);
+          await updateDoc(orderRef,{
+            status:"cerrada",
+            subtotal:sub, tax:tax, discount:dis,
+            total:sub+tax-dis,
+            updatedAt:serverTimestamp()
+          });
+          setStatus("Orden cerrada.");
+        };
+
+        statusSelect.onchange = async () => {
+          const orderRef = doc(db,"branches",BRANCH_ID,"orders",orderId);
+          await updateDoc(orderRef,{
+            status: statusSelect.value,
+            updatedAt: serverTimestamp()
+          });
+        };
+      }
+
+      /* ==== CHAT ==== */
+      const chatCard = document.createElement("div");
+      chatCard.className = "chat-card";
+      chatCard.innerHTML = `
+        <div class="chat-title">Chat con el cliente</div>
+        <div id="messagesList" class="chat-messages"></div>
+        <div class="chat-input-row">
+          <textarea id="messageInput" placeholder="Mensaje..." ${!isAdmin ? "disabled" : ""}></textarea>
+          <button id="sendMessageBtn" class="btn-primary" ${!isAdmin ? "disabled" : ""}>Enviar</button>
+        </div>
+      `;
+      detailContainer.appendChild(chatCard);
+
+      wrapper._chat = {
+        messagesList: chatCard.querySelector("#messagesList"),
+        messageInput: chatCard.querySelector("#messageInput"),
+        sendMessageBtn: chatCard.querySelector("#sendMessageBtn"),
+        orderId
+      };
+
+      if (isAdmin) {
+        wrapper._chat.sendMessageBtn.onclick = () => enviarMensaje(wrapper._chat);
+        wrapper._chat.messageInput.onkeydown = (e)=>{
+          if (e.key==="Enter" && !e.shiftKey) {
+            e.preventDefault();
+            enviarMensaje(wrapper._chat);
+          }
+        };
+      }
+    }
+
+    function listenMessages(orderId) {
+      if (unsubscribeMessages) unsubscribeMessages();
+
+      const msgsRef = collection(db,"branches",BRANCH_ID,"orders",orderId,"messages");
+      const qMsgs = query(msgsRef, orderBy("createdAt","asc"));
+
+      const wrapper = detailContainer.firstElementChild;
+      if (!wrapper || !wrapper._chat) return;
+
+      const {messagesList} = wrapper._chat;
+
+      unsubscribeMessages = onSnapshot(qMsgs, snap=>{
+        messagesList.innerHTML = "";
+
+        if (snap.size===0) {
+          messagesList.innerHTML = "<span style='opacity:0.7;'>Sin mensajes.</span>";
+          return;
+        }
+
+        snap.forEach(docSnap=>{
+          const m = docSnap.data();
+          const div = document.createElement("div");
+          const client = m.sender==="cliente";
+          div.className = "msg " + (client ? "msg-cliente":"msg-mesero");
+          div.innerHTML = `
+            <div>${m.text}</div>
+            <div class="msg-meta">${client?"Cliente":"Staff"}</div>
+          `;
+          messagesList.appendChild(div);
+        });
+
+        messagesList.scrollTop = messagesList.scrollHeight;
+      });
+    }
+
+    async function enviarMensaje(chat) {
+      const text = chat.messageInput.value.trim();
+      if (!text) return;
+
+      const msgRef = collection(db,"branches",BRANCH_ID,"orders",chat.orderId,"messages");
+      await addDoc(msgRef,{
+        sender:"mesero",
+        text,
+        createdAt:serverTimestamp()
+      });
+
+      chat.messageInput.value = "";
+    }
+
+    listenOrders();
+  </script>
+</body>
+</html>
