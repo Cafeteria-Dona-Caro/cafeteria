@@ -177,8 +177,7 @@
   </header>
 
   <div class="controls">
-    Mostrando órdenes con estado:
-    <strong>abierta / en_preparacion / lista</strong>
+    Mostrando órdenes con estado: <strong>abierta / en_preparacion / lista</strong> (filtrado en cliente)
   </div>
 
   <main id="ordersContainer">
@@ -195,7 +194,6 @@
       doc,
       onSnapshot,
       query,
-      where,
       orderBy,
       updateDoc,
       serverTimestamp,
@@ -333,10 +331,9 @@
             const data = docSnap.data();
             const itemId = docSnap.id;
             const itemEl = document.createElement("div");
-            itemEl.className = "item";
-
             const statusClass = `status-${data.status}`;
 
+            itemEl.className = "item";
             itemEl.innerHTML = `
               <div class="item-info">
                 <div class="item-name">${data.productName ?? "Producto"}</div>
@@ -365,12 +362,13 @@
       itemsUnsubscribes.set(orderId, unsub);
     }
 
-    // Escuchar órdenes activas
+    // Escuchar órdenes (todas) y filtrar en cliente
     function listenOrders() {
       const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+
+      // 👇 Solo orderBy(createdAt) → sin where → NO requiere índice compuesto
       const qOrders = query(
         ordersRef,
-        where("status", "in", ["abierta", "en_preparacion", "lista"]),
         orderBy("createdAt", "asc")
       );
 
@@ -378,9 +376,18 @@
         qOrders,
         snapshot => {
           ordersContainer.innerHTML = "";
-          setStatus(`Órdenes activas: ${snapshot.size}`);
 
-          const activeOrderIds = new Set(snapshot.docs.map(d => d.id));
+          // Filtrar solo ordenes que nos interesan
+          const activeStatuses = ["abierta", "en_preparacion", "lista"];
+          const docs = snapshot.docs.filter(d => {
+            const data = d.data();
+            return activeStatuses.includes(data.status);
+          });
+
+          setStatus(`Órdenes activas: ${docs.length}`);
+
+          // Limpiar listeners de items que ya no están
+          const activeOrderIds = new Set(docs.map(d => d.id));
           for (const [oid, unsub] of itemsUnsubscribes.entries()) {
             if (!activeOrderIds.has(oid)) {
               unsub();
@@ -388,12 +395,12 @@
             }
           }
 
-          if (snapshot.size === 0) {
+          if (docs.length === 0) {
             ordersContainer.innerHTML = "<p>No hay órdenes activas.</p>";
             return;
           }
 
-          snapshot.forEach(docSnap => {
+          docs.forEach(docSnap => {
             const orderId = docSnap.id;
             const data = docSnap.data();
             renderOrderCard(orderId, data);
