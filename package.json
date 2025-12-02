@@ -1,2 +1,16 @@
-npm init -y
-npm install firebase-admin
+{
+  "name": "caro",
+  "version": "1.0.0",
+  "main": "seedMenu.js",
+  "license": "ISC",
+  "description": "Cafetería Doña Caro",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "type": "commonjs",
+  "dependencies": {
+    "firebase-admin": "^13.6.0"
+  }
+}
