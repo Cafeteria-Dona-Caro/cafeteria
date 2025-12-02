@@ -18,7 +18,7 @@
       color: #222;
     }
 
-    /* === DETECCIÓN DE MÓVIL VS ESCRITORIO === */
+    /* === DETECCIÓN DE MÓVIL VS ESCRITORIO (solo visual) === */
     @media (max-width: 768px) {
       body { font-size: 14px; }
     }
@@ -197,6 +197,7 @@
       flex-direction: column;
       max-height: 50vh;
       overflow-y: auto;
+      z-index: 15;
     }
 
     .chat-message {
@@ -244,8 +245,27 @@
 
 <!-- Chat cliente -->
 <div id="chatBox"></div>
+
+<!-- Botón para hablar con mesero -->
+<div style="
+  position:fixed;
+  bottom:80px;
+  left:20px;
+  background:#2962ff;
+  color:#fff;
+  padding:12px 16px;
+  border-radius:30px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  z-index:20;
+" onclick="clientSendMessage()">
+  🗨 Hablar con mesero
+</div>
+
 <!-- ============================= -->
-<!--  F   I   R   E   B   A   S   E -->
+<!--  FIREBASE + LÓGICA COMPLETA  -->
 <!-- ============================= -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
@@ -253,6 +273,10 @@
     getFirestore, collection, getDocs, addDoc,
     doc, updateDoc, serverTimestamp, onSnapshot
   } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+  import {
+    getAuth,
+    signInAnonymously
+  } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
 
   /* ===============================
      CONFIGURACIÓN FIREBASE
@@ -266,17 +290,23 @@
     appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
   };
 
+  const BRANCH_ID = "cafecaro-centro"; // sucursal
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  // Cliente se autentica de forma anónima para pasar reglas
+  signInAnonymously(auth).catch((err) => {
+    console.error("Error en auth anónima:", err);
+  });
 
   /* ===============================
      VARIABLES GLOBALES
   =============================== */
-  const BRANCH_ID = "cafecaro-centro"; // sucursal
   const urlParams = new URLSearchParams(window.location.search);
   const mesa = urlParams.get("mesa") || "sin_mesa";
 
-  let cart = [];     // [{id,name,price,qty,notes}]
+  let cart = [];     // [{id, productName, unitPrice, qty, notes}]
   let selectedProduct = null;
 
   const productsGrid = document.getElementById("productsGrid");
@@ -289,6 +319,16 @@
   const qtyValue = document.getElementById("qtyValue");
   const addToCartBtn = document.getElementById("addToCartBtn");
   const cartButton = document.getElementById("cartButton");
+  const chatBox = document.getElementById("chatBox");
+
+  let activeOrderId = localStorage.getItem("cafecaro_active_order_" + mesa) || null;
+
+  /* ===============================
+     UTILIDAD
+  =============================== */
+  function formatCurrency(n) {
+    return `$${(n || 0).toFixed(2)}`;
+  }
 
   /* ===============================
      CARGAR PRODUCTOS DESDE FIREBASE
@@ -300,6 +340,11 @@
     const snap = await getDocs(ref);
 
     productsGrid.innerHTML = "";
+
+    if (snap.empty) {
+      productsGrid.innerHTML = "<p style='opacity:0.6;'>No hay productos en el menú.</p>";
+      return;
+    }
 
     snap.forEach(docSnap => {
       const p = docSnap.data();
@@ -313,7 +358,7 @@
         <img src="${p.imgUrl || "https://via.placeholder.com/300"}" class="product-img">
         <div class="product-body">
           <div class="product-title">${p.name}</div>
-          <div class="product-price">$${(p.basePrice || 0).toFixed(2)}</div>
+          <div class="product-price">${formatCurrency(p.basePrice || 0)}</div>
         </div>
       `;
 
@@ -329,7 +374,7 @@
   function openProduct(id, p) {
     selectedProduct = { id, ...p };
     modalTitle.textContent = p.name;
-    modalPrice.textContent = `$${p.basePrice.toFixed(2)}`;
+    modalPrice.textContent = formatCurrency(p.basePrice || 0);
     modalNotes.value = "";
     qtyValue.textContent = "1";
     productModal.classList.add("active");
@@ -393,7 +438,7 @@
         html += `
           <div style="padding:10px 0;border-bottom:1px solid #eee;">
             <strong>${item.productName}</strong><br>
-            Cant: ${item.qty} – $${(item.unitPrice * item.qty).toFixed(2)}<br>
+            Cant: ${item.qty} – ${formatCurrency(item.unitPrice * item.qty)}<br>
             ${item.notes ? "Nota: " + item.notes : ""}
             <br><button onclick="removeItem(${idx})" style="margin-top:5px;">Eliminar</button>
           </div>
@@ -402,7 +447,7 @@
 
       const total = cart.reduce((acc, i) => acc + i.unitPrice * i.qty, 0);
       html += `
-        <h3>Total: $${total.toFixed(2)}</h3>
+        <h3>Total: ${formatCurrency(total)}</h3>
         <button onclick="sendOrder()" style="
           background:#00c853;
           padding:12px 20px;
@@ -450,49 +495,59 @@
     if (cart.length === 0) return alert("Tu carrito está vacío.");
 
     const customer = document.getElementById("customerNameInput").value.trim();
+    const user = auth.currentUser; // de auth anónima
 
-    // Crear orden
-    const orderRef = await addDoc(
-      collection(db, "branches", BRANCH_ID, "orders"),
-      {
-        tableNumber: mesa,
-        customerName: customer || "",
-        status: "abierta",
-        source: "cliente",
-        subtotal: 0,
-        tax: 0,
-        discount: 0,
-        total: 0,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      }
-    );
-
-    // Insertar items
-    for (let item of cart) {
-      await addDoc(
-        collection(db, "branches", BRANCH_ID, "orders", orderRef.id, "items"),
+    try {
+      // Crear orden
+      const orderRef = await addDoc(
+        collection(db, "branches", BRANCH_ID, "orders"),
         {
-          productId: item.id,
-          productName: item.productName,
-          unitPrice: item.unitPrice,
-          qty: item.qty,
-          notes: item.notes,
-          status: "pendiente",
-          createdAt: serverTimestamp()
+          tableNumber: mesa,
+          customerName: customer || "",
+          customerUid: user ? user.uid : null,  // 🔑 para reglas
+          status: "abierta",
+          source: "cliente",
+          subtotal: 0,
+          tax: 0,
+          discount: 0,
+          total: 0,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
         }
       );
+
+      // Insertar items
+      for (let item of cart) {
+        await addDoc(
+          collection(db, "branches", BRANCH_ID, "orders", orderRef.id, "items"),
+          {
+            productId: item.id,
+            productName: item.productName,
+            unitPrice: item.unitPrice,
+            qty: item.qty,
+            notes: item.notes,
+            status: "pendiente",
+            createdAt: serverTimestamp()
+          }
+        );
+      }
+
+      // Actualizar timestamp (dispara listeners KDS/caja)
+      await updateDoc(orderRef, { updatedAt: serverTimestamp() });
+
+      // Guardar orden activa y enganchar listeners
+      afterOrderCreated(orderRef.id);
+
+      cart = [];
+      saveCartLocal();
+      updateCartButton();
+      closeCart();
+
+      alert("Pedido enviado. El mesero está preparando tu orden.");
+    } catch (err) {
+      console.error("Error al enviar pedido:", err);
+      alert("Hubo un problema al enviar tu pedido. Intenta de nuevo.");
     }
-
-    // Alertar KDS → sonido se reproducirá allá
-    await updateDoc(orderRef, { updatedAt: serverTimestamp() });
-
-    cart = [];
-    saveCartLocal();
-    updateCartButton();
-    closeCart();
-
-    alert("Pedido enviado. El mesero está preparando tu orden.");
   };
 
   /* ===============================
@@ -505,169 +560,134 @@
     const s = localStorage.getItem("cafecaro_cart_" + mesa);
     if (s) {
       cart = JSON.parse(s);
-      updateCartButton();
     }
+    updateCartButton();
   }
 
   loadCartLocal();
-</script>
 
-<!-- ============================= -->
-<!--  C H A T   +   E S T A D O    -->
-<!-- ============================= -->
-<script type="module">
-import { 
-  collection, doc, addDoc, onSnapshot, serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
-import { db } from "./firebaseInit.js"; // IGNORAR ESTA LÍNEA SI YA USASTE EL CONFIG DE PARTE 2
+  /* ===============================
+     NOTIFICACIONES AL CLIENTE
+  =============================== */
+  function showClientNotification(message) {
+    const alertDiv = document.createElement("div");
+    alertDiv.style.position = "fixed";
+    alertDiv.style.bottom = "80px";
+    alertDiv.style.right = "20px";
+    alertDiv.style.background = "#00c853";
+    alertDiv.style.color = "#000";
+    alertDiv.style.padding = "12px 16px";
+    alertDiv.style.borderRadius = "12px";
+    alertDiv.style.fontWeight = "700";
+    alertDiv.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+    alertDiv.style.zIndex = "50";
+    alertDiv.textContent = message;
 
+    document.body.appendChild(alertDiv);
 
-/* ====================================
-   ORDEN ACTIVA PARA EL CLIENTE
-==================================== */
-let activeOrderId = localStorage.getItem("cafecaro_active_order_" + mesa) || null;
-const chatBox = document.getElementById("chatBox");
+    setTimeout(() => {
+      alertDiv.style.opacity = "0";
+      alertDiv.style.transition = "opacity 0.5s";
 
-/* ====================================
-   DETECTAR CAMBIOS EN LA ORDEN
-==================================== */
-function watchOrderStatus(orderId) {
-  const ref = doc(db, "branches", BRANCH_ID, "orders", orderId);
+      setTimeout(() => alertDiv.remove(), 500);
+    }, 2000);
+  }
 
-  onSnapshot(ref, (snap) => {
-    if (!snap.exists()) return;
+  /* ===============================
+     ORDEN ACTIVA & ESTADO EN TIEMPO REAL
+  =============================== */
+  function watchOrderStatus(orderId) {
+    const ref = doc(db, "branches", BRANCH_ID, "orders", orderId);
 
-    const data = snap.data();
+    onSnapshot(ref, (snap) => {
+      if (!snap.exists()) return;
 
-    // Mostrar estado al cliente
-    showClientNotification(`Estado de tu pedido: ${data.status}`);
+      const data = snap.data();
+      showClientNotification(`Estado de tu pedido: ${data.status}`);
 
-    // Notificación especial cuando queda listo
-    if (data.status === "lista") {
-      alert("🍽 Tu pedido está listo. El mesero lo llevará a tu mesa.");
-    }
-  });
-}
+      if (data.status === "lista") {
+        alert("🍽 Tu pedido está listo. El mesero lo llevará a tu mesa.");
+      }
+    }, (err) => {
+      console.error("Error escuchando estado de orden:", err);
+    });
+  }
 
-/* ====================================
-   CHAT EN TIEMPO REAL
-==================================== */
-function startChatListener(orderId) {
-  const msgsRef = collection(
-    db,
-    "branches",
-    BRANCH_ID,
-    "orders",
-    orderId,
-    "messages"
-  );
+  function startChatListener(orderId) {
+    const msgsRef = collection(
+      db,
+      "branches",
+      BRANCH_ID,
+      "orders",
+      orderId,
+      "messages"
+    );
 
-  chatBox.style.display = "flex";
-  
-  onSnapshot(msgsRef, (snap) => {
-    chatBox.innerHTML = "";
+    chatBox.style.display = "flex";
 
-    if (snap.size === 0) {
-      chatBox.innerHTML = "<p style='opacity:0.6;'>No hay mensajes aún.</p>";
+    onSnapshot(msgsRef, (snap) => {
+      chatBox.innerHTML = "";
+
+      if (snap.size === 0) {
+        chatBox.innerHTML = "<p style='opacity:0.6;'>No hay mensajes aún.</p>";
+        return;
+      }
+
+      snap.forEach((docSnap) => {
+        const m = docSnap.data();
+        const div = document.createElement("div");
+        div.className = "chat-message";
+        div.innerHTML = m.text;
+        chatBox.appendChild(div);
+      });
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }, (err) => {
+      console.error("Error escuchando mensajes:", err);
+    });
+  }
+
+  function afterOrderCreated(orderId) {
+    activeOrderId = orderId;
+    localStorage.setItem("cafecaro_active_order_" + mesa, orderId);
+    watchOrderStatus(orderId);
+    startChatListener(orderId);
+  }
+
+  // Re-conexión automática si hay orden activa
+  if (activeOrderId) {
+    watchOrderStatus(activeOrderId);
+    startChatListener(activeOrderId);
+    showClientNotification("Reconectado al pedido activo.");
+  }
+
+  /* ===============================
+     ENVIAR MENSAJE DEL CLIENTE AL MESERO
+  =============================== */
+  window.clientSendMessage = async function () {
+    if (!activeOrderId) {
+      alert("Primero envía un pedido para poder hablar con el mesero.");
       return;
     }
 
-    snap.forEach((docSnap) => {
-      const m = docSnap.data();
-      const div = document.createElement("div");
-      div.className = "chat-message";
-      div.innerHTML = m.text;
-      chatBox.appendChild(div);
-    });
+    const text = prompt("Escribe tu mensaje para el mesero:");
+    if (!text || text.trim() === "") return;
 
-    chatBox.scrollTop = chatBox.scrollHeight;
-  });
-}
-
-/* ====================================
-   ENVIAR MENSAJE DEL CLIENTE AL MESERO
-==================================== */
-window.clientSendMessage = async function () {
-  if (!activeOrderId) return alert("Aún no has enviado un pedido.");
-
-  const text = prompt("Escribe tu mensaje para el mesero:");
-  if (!text || text.trim() === "") return;
-
-  await addDoc(
-    collection(db, "branches", BRANCH_ID, "orders", activeOrderId, "messages"),
-    {
-      sender: "cliente",
-      text,
-      createdAt: serverTimestamp(),
+    try {
+      await addDoc(
+        collection(db, "branches", BRANCH_ID, "orders", activeOrderId, "messages"),
+        {
+          sender: "cliente",
+          text,
+          createdAt: serverTimestamp(),
+        }
+      );
+    } catch (err) {
+      console.error("Error enviando mensaje de cliente:", err);
+      alert("No se pudo enviar el mensaje. Intenta de nuevo.");
     }
-  );
-};
-
-/* ====================================
-   NOTIFICACIONES AL CLIENTE
-==================================== */
-function showClientNotification(message) {
-  const alertDiv = document.createElement("div");
-  alertDiv.style.position = "fixed";
-  alertDiv.style.bottom = "80px";
-  alertDiv.style.right = "20px";
-  alertDiv.style.background = "#00c853";
-  alertDiv.style.color = "#000";
-  alertDiv.style.padding = "12px 16px";
-  alertDiv.style.borderRadius = "12px";
-  alertDiv.style.fontWeight = "700";
-  alertDiv.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
-  alertDiv.textContent = message;
-
-  document.body.appendChild(alertDiv);
-
-  setTimeout(() => {
-    alertDiv.style.opacity = "0";
-    alertDiv.style.transition = "opacity 0.5s";
-
-    setTimeout(() => alertDiv.remove(), 500);
-  }, 2000);
-}
-
-/* ====================================
-   CONECTAR ORDEN CREADA DESDE PARTE 2
-==================================== */
-window.afterOrderCreated = function(orderId) {
-  activeOrderId = orderId;
-  localStorage.setItem("cafecaro_active_order_" + mesa, orderId);
-
-  watchOrderStatus(orderId);
-  startChatListener(orderId);
-};
-
-/* ====================================
-   RE-CONEXIÓN AUTOMÁTICA
-   (si el cliente recarga la página)
-==================================== */
-if (activeOrderId) {
-  watchOrderStatus(activeOrderId);
-  startChatListener(activeOrderId);
-  showClientNotification("Reconectado al pedido activo.");
-}
+  };
 </script>
-
-<!-- BOTÓN PARA HABLAR CON EL MESERO -->
-<div style="
-  position:fixed;
-  bottom:80px;
-  left:20px;
-  background:#2962ff;
-  color:#fff;
-  padding:12px 16px;
-  border-radius:30px;
-  font-size:14px;
-  font-weight:700;
-  cursor:pointer;
-  box-shadow:0 4px 12px rgba(0,0,0,0.25);
-" onclick="clientSendMessage()">
-  🗨 Hablar con mesero
-</div>
-
 
 </body>
 </html>
