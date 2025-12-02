@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>KDS Cocina – Cafecaro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #050505;
+      color: #f5f5f5;
+    }
+    header {
+      padding: 10px 16px;
+      background: #111;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+    header .sub {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    header .branch {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    .controls {
+      padding: 8px 16px;
+      background: #111;
+      border-bottom: 1px solid #222;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    main {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 10px;
+    }
+    .order-card {
+      background: #121212;
+      border-radius: 12px;
+      border: 1px solid #333;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 160px;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .order-header h2 {
+      margin: 0;
+      font-size: 16px;
+    }
+    .badge {
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .badge-abierta {
+      background: #ffab00;
+      color: #000;
+    }
+    .badge-en_preparacion {
+      background: #2962ff;
+      color: #fff;
+    }
+    .badge-lista {
+      background: #00c853;
+      color: #000;
+    }
+    .order-meta {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+    .items {
+      margin-top: 6px;
+      border-top: 1px solid #333;
+      padding-top: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 4px 0;
+      border-bottom: 1px dashed #333;
+      gap: 8px;
+    }
+    .item:last-child {
+      border-bottom: none;
+    }
+    .item-info {
+      flex: 1;
+    }
+    .item-name {
+      font-weight: 600;
+    }
+    .item-notes {
+      font-size: 11px;
+      opacity: 0.85;
+    }
+    .item-status {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .status-pendiente {
+      background: #ffab00;
+      color: #000;
+    }
+    .status-en_preparacion {
+      background: #2962ff;
+      color: #fff;
+    }
+    .status-listo {
+      background: #00c853;
+      color: #000;
+    }
+    .item-actions button {
+      padding: 3px 8px;
+      font-size: 11px;
+      margin-left: 3px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      background: #333;
+      color: #eee;
+    }
+    .item-actions button.primary {
+      background: #00c853;
+      color: #000;
+      font-weight: 600;
+    }
+    .status-bar {
+      font-size: 12px;
+      opacity: 0.85;
+      padding: 6px 16px;
+      border-top: 1px solid #222;
+      background: #080808;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>KDS Cocina – Cafecaro</h1>
+      <div class="sub">Pedidos en tiempo real desde Mesero</div>
+    </div>
+    <div class="branch" id="branchLabel"></div>
+  </header>
+
+  <div class="controls">
+    Mostrando órdenes con estado:
+    <strong>abierta / en_preparacion / lista</strong>
+  </div>
+
+  <main id="ordersContainer">
+    <!-- Aquí se pintan las órdenes -->
+  </main>
+
+  <div class="status-bar" id="statusText">Conectando con Firestore...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      onSnapshot,
+      query,
+      where,
+      orderBy,
+      updateDoc,
+      serverTimestamp,
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    // === Config de tu proyecto Cafecaro ===
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21",
+      measurementId: "G-JC720XBF92"
+    };
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const branchLabel = document.getElementById("branchLabel");
+    const ordersContainer = document.getElementById("ordersContainer");
+    const statusText = document.getElementById("statusText");
+
+    branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
+
+    let unsubscribeOrders = null;
+    const itemsUnsubscribes = new Map(); // orderId -> unsubscribe
+
+    function setStatus(msg) {
+      statusText.textContent = msg;
+    }
+
+    // Render de tarjeta de orden
+    function renderOrderCard(orderId, orderData) {
+      const cardId = `order-${orderId}`;
+      let card = document.getElementById(cardId);
+
+      if (!card) {
+        card = document.createElement("div");
+        card.className = "order-card";
+        card.id = cardId;
+        ordersContainer.appendChild(card);
+      }
+
+      const createdAt = orderData.createdAt?.toDate ? orderData.createdAt.toDate() : null;
+      let timeText = "";
+      if (createdAt) {
+        const diffMs = Date.now() - createdAt.getTime();
+        const diffMin = Math.floor(diffMs / 60000);
+        if (diffMin >= 0) timeText = `${diffMin} min`;
+      }
+
+      const badgeClass = `badge-${orderData.status}`;
+
+      card.innerHTML = `
+        <div class="order-header">
+          <h2>Mesa ${orderData.tableNumber ?? "-"}</h2>
+          <span class="badge ${badgeClass}">${orderData.status}</span>
+        </div>
+        <div class="order-meta">
+          Orden: ${orderId}<br>
+          Origen: ${orderData.source ?? "-"}<br>
+          Tiempo: ${timeText}
+        </div>
+        <div class="items" id="items-${orderId}">
+          <em>Cargando productos...</em>
+        </div>
+      `;
+    }
+
+    // Botones según estado de item
+    function renderItemButtonsHtml(status) {
+      let html = "";
+      if (status === "pendiente") {
+        html += `<button class="primary" data-next="en_preparacion">Preparar</button>`;
+      } else if (status === "en_preparacion") {
+        html += `<button class="primary" data-next="listo">Listo</button>`;
+      }
+      if (status !== "pendiente") {
+        html += `<button data-next="pendiente">Reset</button>`;
+      }
+      return html;
+    }
+
+    function attachItemButtonsActions(container, branchId, orderId, itemId) {
+      if (!container) return;
+      const buttons = container.querySelectorAll("button[data-next]");
+      buttons.forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const nextStatus = btn.getAttribute("data-next");
+          try {
+            const itemRef = doc(
+              db,
+              "branches",
+              branchId,
+              "orders",
+              orderId,
+              "items",
+              itemId
+            );
+            await updateDoc(itemRef, {
+              status: nextStatus,
+              updatedAt: serverTimestamp(),
+            });
+          } catch (err) {
+            console.error("Error al actualizar item:", err);
+            alert("No se pudo actualizar el estado del producto.");
+          }
+        });
+      });
+    }
+
+    // Escuchar items de cada orden
+    function listenOrderItems(branchId, orderId) {
+      if (itemsUnsubscribes.has(orderId)) return; // ya escuchando
+
+      const itemsRef = collection(db, "branches", branchId, "orders", orderId, "items");
+      const qItems = query(itemsRef, orderBy("createdAt", "asc"));
+
+      const unsub = onSnapshot(
+        qItems,
+        snapshot => {
+          const container = document.getElementById(`items-${orderId}`);
+          if (!container) return;
+
+          container.innerHTML = "";
+          if (snapshot.size === 0) {
+            container.innerHTML = "<em>Sin productos.</em>";
+            return;
+          }
+
+          snapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            const itemId = docSnap.id;
+            const itemEl = document.createElement("div");
+            itemEl.className = "item";
+
+            const statusClass = `status-${data.status}`;
+
+            itemEl.innerHTML = `
+              <div class="item-info">
+                <div class="item-name">${data.productName ?? "Producto"}</div>
+                <div class="item-notes">
+                  x${data.qty ?? 1}
+                  ${data.notes ? " · " + data.notes : ""}
+                </div>
+                <span class="item-status ${statusClass}">${data.status}</span>
+              </div>
+              <div class="item-actions">
+                ${renderItemButtonsHtml(data.status)}
+              </div>
+            `;
+
+            const actionsDiv = itemEl.querySelector(".item-actions");
+            attachItemButtonsActions(actionsDiv, branchId, orderId, itemId);
+
+            container.appendChild(itemEl);
+          });
+        },
+        err => {
+          console.error("Error al escuchar items:", err);
+        }
+      );
+
+      itemsUnsubscribes.set(orderId, unsub);
+    }
+
+    // Escuchar órdenes activas
+    function listenOrders() {
+      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+      const qOrders = query(
+        ordersRef,
+        where("status", "in", ["abierta", "en_preparacion", "lista"]),
+        orderBy("createdAt", "asc")
+      );
+
+      unsubscribeOrders = onSnapshot(
+        qOrders,
+        snapshot => {
+          ordersContainer.innerHTML = "";
+          setStatus(`Órdenes activas: ${snapshot.size}`);
+
+          const activeOrderIds = new Set(snapshot.docs.map(d => d.id));
+          for (const [oid, unsub] of itemsUnsubscribes.entries()) {
+            if (!activeOrderIds.has(oid)) {
+              unsub();
+              itemsUnsubscribes.delete(oid);
+            }
+          }
+
+          if (snapshot.size === 0) {
+            ordersContainer.innerHTML = "<p>No hay órdenes activas.</p>";
+            return;
+          }
+
+          snapshot.forEach(docSnap => {
+            const orderId = docSnap.id;
+            const data = docSnap.data();
+            renderOrderCard(orderId, data);
+            listenOrderItems(BRANCH_ID, orderId);
+          });
+        },
+        err => {
+          console.error("Error al escuchar órdenes:", err);
+          setStatus("Error escuchando órdenes. Revisa la consola.");
+        }
+      );
+    }
+
+    // Iniciar
+    listenOrders();
+  </script>
+</body>
+</html>
