@@ -1,21 +1,27 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
+<head>
   <meta charset="UTF-8" />
-  <title>Mesero POS – Cafecaro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mesero | Cafecaro</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #101010;
-      color: #f5f5f5;
+      background: #f5f5f5;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+
     header {
-      padding: 12px 16px;
-      background: #181818;
-      border-bottom: 1px solid #333;
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -24,620 +30,646 @@
       z-index: 10;
     }
     header h1 {
-      font-size: 18px;
       margin: 0;
+      font-size: 18px;
     }
-    header .branch {
-      font-size: 13px;
-      opacity: 0.8;
-    }
-    main {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
-      gap: 12px;
-      padding: 12px;
-    }
-    @media (max-width: 900px) {
-      main {
-        grid-template-columns: 1fr;
-      }
-    }
-    .panel {
-      background: #181818;
-      border-radius: 12px;
-      border: 1px solid #333;
-      padding: 12px;
-      min-height: 200px;
-    }
-    .panel h2 {
-      margin: 0 0 8px;
-      font-size: 16px;
-    }
-    .mesa-controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }
-    input, select, button, textarea {
-      border-radius: 6px;
-      border: none;
-      font-size: 14px;
-      padding: 6px 10px;
-      font-family: inherit;
-    }
-    input, select, textarea {
-      background: #222;
-      color: #f5f5f5;
-    }
-    button {
-      background: #00c853;
-      color: #000;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button.secondary {
-      background: #333;
-      color: #eee;
-    }
-    button.danger {
-      background: #d32f2f;
-      color: #fff;
-    }
-    button:disabled {
-      background: #555;
-      color: #aaa;
-      cursor: not-allowed;
-    }
-    .pill {
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: #222;
-      font-size: 12px;
-    }
-    .flex {
-      display: flex;
-      align-items: center;
-    }
-    .flex-space {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .categories {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .cat-btn {
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #444;
-      background: #202020;
-      font-size: 13px;
-      cursor: pointer;
-    }
-    .cat-btn.active {
-      background: #00c853;
-      color: #000;
-      border-color: #00c853;
-      font-weight: 600;
-    }
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 8px;
-      max-height: 60vh;
-      overflow-y: auto;
-      padding-right: 4px;
-    }
-    .product-card {
-      background: #202020;
-      border-radius: 10px;
-      border: 1px solid #333;
-      padding: 8px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, border-color 0.08s ease;
-    }
-    .product-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-      border-color: #00c853;
-    }
-    .product-name {
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .product-cat {
+    header .sub {
       font-size: 11px;
       opacity: 0.7;
     }
-    .product-price {
-      font-size: 13px;
-      color: #c8ffb3;
-      font-weight: 600;
+    header .right {
+      text-align: right;
+      font-size: 12px;
     }
-    .cart-list {
-      max-height: 50vh;
-      overflow-y: auto;
-      padding-right: 4px;
+    .role-pill {
+      display: inline-block;
       margin-top: 4px;
-      border-top: 1px solid #333;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #ffecb3;
+      color: #8d6e00;
     }
-    .cart-item {
+
+    main {
+      flex: 1;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 0;
-      border-bottom: 1px dashed #333;
+      flex-direction: column;
       gap: 8px;
+      padding: 8px;
     }
-    .cart-title {
-      font-size: 14px;
-      font-weight: 500;
+
+    @media (min-width: 900px) {
+      main {
+        flex-direction: row;
+      }
     }
-    .cart-qty {
-      font-size: 12px;
-      opacity: 0.8;
+
+    .panel {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 10px;
+      margin-bottom: 8px;
     }
-    .cart-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 13px;
+
+    @media (min-width: 900px) {
+      .panel-left {
+        flex: 1;
+        margin-right: 6px;
+      }
+      .panel-right {
+        flex: 1.2;
+        margin-left: 6px;
+      }
     }
-    .cart-actions button {
-      padding: 2px 6px;
-      font-size: 12px;
+
+    .panel h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
     }
-    .cart-total {
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid #333;
+
+    .small {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    /* Lista de órdenes */
+    .orders-list {
+      max-height: 60vh;
+      overflow-y: auto;
+    }
+
+    .order-card {
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      padding: 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 15px;
-      font-weight: 600;
+      background: #fafafa;
     }
-    .status {
-      margin-top: 6px;
+    .order-card.selected {
+      border-color: #2962ff;
+      box-shadow: 0 0 0 2px #2962ff22;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+    .badge-status-abierta { background: #e3f2fd; color: #0d47a1; }
+    .badge-status-en_preparacion { background: #fff3e0; color: #e65100; }
+    .badge-status-lista { background: #e8f5e9; color: #1b5e20; }
+    .badge-status-cerrada { background: #eeeeee; color: #424242; }
+
+    .badge-source-cliente { background: #fce4ec; color: #880e4f; }
+    .badge-source-mesero { background: #ede7f6; color: #311b92; }
+
+    .order-main {
       font-size: 13px;
-      opacity: 0.85;
-      white-space: pre-line;
+    }
+    .order-main strong {
+      font-size: 14px;
+    }
+
+    .order-meta {
+      text-align: right;
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    /* Detalle de orden */
+    .order-detail-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .detail-items {
+      max-height: 30vh;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 6px;
+      margin-bottom: 6px;
+    }
+
+    .detail-item-row {
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+    }
+    .detail-item-row:last-child {
+      border-bottom: none;
+    }
+    .detail-item-row-notes {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-top: 2px;
+    }
+
+    .details-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-small {
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+    .btn-primary { background: #2962ff; color: #fff; }
+    .btn-success { background: #00c853; color: #000; }
+    .btn-warning { background: #ffb300; color: #000; }
+    .btn-neutral { background: #eeeeee; color: #333; }
+
+    /* Chat */
+    .chat-area {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 6px;
+      max-height: 26vh;
+      overflow-y: auto;
+      margin-bottom: 4px;
+      font-size: 12px;
+      background: #fafafa;
+    }
+
+    .chat-msg {
+      margin-bottom: 4px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      max-width: 80%;
+    }
+    .chat-msg-cliente {
+      background: #e3f2fd;
+      margin-right: auto;
+    }
+    .chat-msg-mesero {
+      background: #e8f5e9;
+      margin-left: auto;
+      text-align: right;
+    }
+    .chat-meta {
+      font-size: 10px;
+      opacity: 0.6;
+      margin-top: 1px;
+    }
+
+    .chat-input-row {
+      display: flex;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .chat-input-row input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+
+    .status-bar {
+      padding: 8px 12px;
+      font-size: 12px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
     }
   </style>
 </head>
 <body>
   <header>
     <div>
-      <h1>Mesero POS – Cafecaro</h1>
-      <div style="font-size:12px;opacity:0.8;">Levantar y enviar pedidos a cocina</div>
+      <h1>Mesero</h1>
+      <div class="sub" id="branchLabel">Sucursal: —</div>
     </div>
-    <div class="branch" id="branchLabel"></div>
+    <div class="right">
+      <div id="currentUserEmail">—</div>
+      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
+      <button id="logoutBtn" class="btn btn-neutral" style="margin-top:4px;">Salir</button>
+    </div>
   </header>
 
   <main>
-    <!-- Panel izquierdo: menú -->
-    <section class="panel">
-      <h2>Menú</h2>
-
-      <div class="mesa-controls">
-        <label>
-          Mesa:
-          <input id="mesaInput" type="number" min="1" placeholder="Ej. 5" style="width:80px;" />
-        </label>
-        <button id="abrirMesaBtn" class="secondary">Abrir / usar mesa</button>
-        <span id="mesaEstado" class="pill">Sin mesa seleccionada</span>
-      </div>
-
-      <div class="categories" id="categoriesContainer">
-        <!-- Botones de categoría -->
-      </div>
-
-      <div class="products-grid" id="productsContainer">
-        Cargando menú...
-      </div>
+    <!-- Panel de órdenes -->
+    <section class="panel panel-left">
+      <h2>Órdenes en curso</h2>
+      <p class="small">
+        Verás las órdenes abiertas/en preparación/listas de la sucursal actual.
+      </p>
+      <div class="orders-list" id="ordersList"></div>
     </section>
 
-    <!-- Panel derecho: pedido actual -->
-    <section class="panel">
-      <div class="flex-space">
-        <h2>Pedido actual</h2>
-        <span id="orderInfo" class="pill">Sin orden</span>
-      </div>
+    <!-- Panel de detalle -->
+    <section class="panel panel-right">
+      <h2>Detalle de orden</h2>
+      <p class="small" id="noOrderSelected">Selecciona una orden para ver el detalle.</p>
 
-      <div class="cart-list" id="cartContainer">
-        Añade productos tocando el menú de la izquierda.
-      </div>
+      <div id="orderDetail" style="display:none;">
+        <div class="order-detail-header">
+          <div>
+            <div><strong>Mesa <span id="detailTable"></span></strong></div>
+            <div>Cliente: <span id="detailCustomer"></span></div>
+            <div>Fuente: <span id="detailSource"></span></div>
+          </div>
+          <div style="text-align:right;">
+            <div>Estado: <span id="detailStatus" class="badge"></span></div>
+            <div class="small">Creada: <span id="detailCreatedAt"></span></div>
+          </div>
+        </div>
 
-      <div class="cart-total">
-        <span>Total:</span>
-        <span id="cartTotal">$0.00</span>
-      </div>
+        <div class="detail-items" id="detailItems"></div>
 
-      <div style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;">
-        <button id="enviarPedidoBtn">Enviar pedido a Firestore</button>
-        <button id="limpiarPedidoBtn" class="danger">Limpiar pedido local</button>
-      </div>
+        <div class="details-footer">
+          <div>Total: <strong id="detailTotal">$0.00</strong></div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;">
+            <button class="btn btn-small btn-warning" data-status="en_preparacion">En preparación</button>
+            <button class="btn btn-small btn-success" data-status="lista">Lista</button>
+            <button class="btn btn-small btn-neutral" data-status="cerrada">Cerrar</button>
+          </div>
+        </div>
 
-      <div class="status" id="status"></div>
+        <hr style="margin:8px 0;">
+
+        <div>
+          <div class="small">Chat con cliente (si el pedido vino de cliente.html):</div>
+          <div class="chat-area" id="chatArea"></div>
+          <div class="chat-input-row">
+            <input type="text" id="chatInput" placeholder="Escribe un mensaje al cliente..." />
+            <button class="btn btn-small btn-primary" id="chatSendBtn">Enviar</button>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- Firebase web v9 -->
+  <div id="globalStatus" class="status-bar">Conectando...</div>
+
+  <!-- ============================= -->
+  <!--  FIREBASE + LÓGICA MESERO    -->
+  <!-- ============================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import {
+      getAuth,
+      signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
       getFirestore,
-      collection,
       doc,
-      getDocs,
-      addDoc,
-      setDoc,
-      writeBatch,
-      serverTimestamp,
+      getDoc,
+      collection,
       query,
-      where,
-      limit
+      onSnapshot,
+      updateDoc,
+      serverTimestamp,
+      orderBy
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // === Tu config de Firebase ===
+    // === CONFIG FIREBASE ===
     const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8d21",
       authDomain: "cafecaro-af23b.firebaseapp.com",
       projectId: "cafecaro-af23b",
       storageBucket: "cafecaro-af23b.firebasestorage.app",
       messagingSenderId: "534231921780",
-      appId: "1:534231921780:web:f3702e23c024c14c0c8d21",
-      measurementId: "G-JC720XBF92"
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
     };
 
     const BRANCH_ID = "cafecaro-centro";
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // === DOM ===
     const branchLabel = document.getElementById("branchLabel");
-    const categoriesContainer = document.getElementById("categoriesContainer");
-    const productsContainer = document.getElementById("productsContainer");
-    const mesaInput = document.getElementById("mesaInput");
-    const abrirMesaBtn = document.getElementById("abrirMesaBtn");
-    const mesaEstado = document.getElementById("mesaEstado");
-    const cartContainer = document.getElementById("cartContainer");
-    const cartTotalEl = document.getElementById("cartTotal");
-    const enviarPedidoBtn = document.getElementById("enviarPedidoBtn");
-    const limpiarPedidoBtn = document.getElementById("limpiarPedidoBtn");
-    const statusEl = document.getElementById("status");
-    const orderInfo = document.getElementById("orderInfo");
+    const currentUserEmailEl = document.getElementById("currentUserEmail");
+    const currentUserRoleEl = document.getElementById("currentUserRole");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalStatus = document.getElementById("globalStatus");
 
-    branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
+    const ordersListEl = document.getElementById("ordersList");
 
-    let allProducts = [];
-    let selectedCategory = null;
-    let currentMesaNumber = null;
-    let currentOrderId = null; // si en el futuro quieres reabrir orden
-    let cart = []; // { productId, name, price, qty }
+    const noOrderSelectedEl = document.getElementById("noOrderSelected");
+    const orderDetailEl = document.getElementById("orderDetail");
 
-    // === Utilidades ===
-    function formatCurrency(n) {
-      return `$${n.toFixed(2)}`;
+    const detailTableEl = document.getElementById("detailTable");
+    const detailCustomerEl = document.getElementById("detailCustomer");
+    const detailSourceEl = document.getElementById("detailSource");
+    const detailStatusEl = document.getElementById("detailStatus");
+    const detailCreatedAtEl = document.getElementById("detailCreatedAt");
+    const detailItemsEl = document.getElementById("detailItems");
+    const detailTotalEl = document.getElementById("detailTotal");
+
+    const chatAreaEl = document.getElementById("chatArea");
+    const chatInputEl = document.getElementById("chatInput");
+    const chatSendBtn = document.getElementById("chatSendBtn");
+
+    branchLabel.textContent = "Sucursal: " + BRANCH_ID;
+
+    let currentOrderId = null;
+    let unsubscribeItems = null;
+    let unsubscribeMessages = null;
+
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg;
     }
 
-    function renderCategories() {
-      const cats = [...new Set(allProducts.map(p => p.category))].sort();
-      categoriesContainer.innerHTML = "";
-
-      const allBtn = document.createElement("button");
-      allBtn.textContent = "Todo";
-      allBtn.className = "cat-btn" + (selectedCategory === null ? " active" : "");
-      allBtn.addEventListener("click", () => {
-        selectedCategory = null;
-        renderCategories();
-        renderProducts();
-      });
-      categoriesContainer.appendChild(allBtn);
-
-      cats.forEach(cat => {
-        const btn = document.createElement("button");
-        btn.textContent = cat;
-        btn.className = "cat-btn" + (selectedCategory === cat ? " active" : "");
-        btn.addEventListener("click", () => {
-          selectedCategory = cat;
-          renderCategories();
-          renderProducts();
-        });
-        categoriesContainer.appendChild(btn);
-      });
-    }
-
-    function renderProducts() {
-      productsContainer.innerHTML = "";
-
-      if (allProducts.length === 0) {
-        productsContainer.textContent = "No hay productos en el menú.";
+    // === PROTECCIÓN: SOLO MESERO / ADMIN ===
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
         return;
       }
 
-      const filtered = selectedCategory
-        ? allProducts.filter(p => p.category === selectedCategory)
-        : allProducts;
+      currentUserEmailEl.textContent = user.email || "(sin correo)";
 
-      if (filtered.length === 0) {
-        productsContainer.textContent = "No hay productos para esta categoría.";
-        return;
-      }
-
-      filtered.forEach(prod => {
-        const card = document.createElement("div");
-        card.className = "product-card";
-        card.addEventListener("click", () => {
-          addToCart(prod);
-        });
-
-        card.innerHTML = `
-          <div class="product-name">${prod.name}</div>
-          <div class="product-cat">${prod.category}</div>
-          <div class="product-price">${formatCurrency(prod.basePrice || 0)}</div>
-        `;
-
-        productsContainer.appendChild(card);
-      });
-    }
-
-    function addToCart(product) {
-      const idx = cart.findIndex(item => item.productId === product.id);
-      if (idx >= 0) {
-        cart[idx].qty += 1;
-      } else {
-        cart.push({
-          productId: product.id,
-          name: product.name,
-          price: product.basePrice || 0,
-          qty: 1
-        });
-      }
-      renderCart();
-    }
-
-    function renderCart() {
-      cartContainer.innerHTML = "";
-
-      if (cart.length === 0) {
-        cartContainer.textContent = "Añade productos tocando el menú de la izquierda.";
-        cartTotalEl.textContent = "$0.00";
-        return;
-      }
-
-      let total = 0;
-
-      cart.forEach((item, index) => {
-        total += item.price * item.qty;
-
-        const row = document.createElement("div");
-        row.className = "cart-item";
-
-        row.innerHTML = `
-          <div>
-            <div class="cart-title">${item.name}</div>
-            <div class="cart-qty">x${item.qty} · ${formatCurrency(item.price)}</div>
-          </div>
-          <div class="cart-actions">
-            <button data-action="minus">-</button>
-            <button data-action="plus">+</button>
-            <button data-action="remove">×</button>
-          </div>
-        `;
-
-        const actions = row.querySelector(".cart-actions");
-        actions.addEventListener("click", (e) => {
-          const action = e.target.getAttribute("data-action");
-          if (!action) return;
-
-          if (action === "minus") {
-            if (cart[index].qty > 1) {
-              cart[index].qty -= 1;
-            } else {
-              cart.splice(index, 1);
-            }
-          } else if (action === "plus") {
-            cart[index].qty += 1;
-          } else if (action === "remove") {
-            cart.splice(index, 1);
-          }
-          renderCart();
-        });
-
-        cartContainer.appendChild(row);
-      });
-
-      cartTotalEl.textContent = formatCurrency(total);
-    }
-
-    function setStatus(msg) {
-      statusEl.textContent = msg;
-    }
-
-    // === Cargar menú desde Firestore ===
-    async function loadMenu() {
-      setStatus("Cargando menú desde Firestore...");
       try {
-        const productsRef = collection(db, "branches", BRANCH_ID, "products");
-        const snap = await getDocs(productsRef);
-        allProducts = [];
+        const roleDoc = await getDoc(doc(db, "users", user.uid));
+        if (!roleDoc.exists()) {
+          currentUserRoleEl.textContent = "Sin rol";
+          setGlobalStatus("Tu usuario no tiene rol asignado.");
+          alert("Tu usuario no tiene rol asignado en Firestore.");
+          return;
+        }
+
+        const data = roleDoc.data();
+        const role = data.role || "sin_rol";
+        currentUserRoleEl.textContent = "Rol: " + role;
+
+        if (!(role === "mesero" || role === "admin" || role === "caja")) {
+          alert("Acceso restringido. Esta página es solo para mesero/caja/admin.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        setGlobalStatus("Conectado como " + role + ".");
+        listenOrders();
+
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Error verificando rol.");
+      }
+    });
+
+    // === LOGOUT ===
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // === ESCUCHAR ÓRDENES DE LA SUCURSAL ===
+    function listenOrders() {
+      // Se pueden filtrar por status != 'cerrada', pero aquí las filtramos en cliente:
+      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
+
+      onSnapshot(qOrders, (snap) => {
+        ordersListEl.innerHTML = "";
+        if (snap.empty) {
+          ordersListEl.innerHTML = "<p class='small' style='padding:6px;'>No hay órdenes.</p>";
+          return;
+        }
+
         snap.forEach(docSnap => {
           const data = docSnap.data();
-          allProducts.push({
-            id: docSnap.id,
-            ...data
-          });
+          const status = data.status || "abierta";
+          if (status === "cerrada") {
+            // si quieres ver cerradas, quita este if
+            return;
+          }
+
+          const div = document.createElement("div");
+          div.className = "order-card";
+          div.dataset.id = docSnap.id;
+
+          const source = data.source || "desconocido";
+          const total = data.total ?? data.subtotal ?? 0;
+
+          const created = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+          const createdStr = created
+            ? created.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            : "--:--";
+
+          div.innerHTML = `
+            <div class="order-main">
+              <strong>Mesa ${data.tableNumber || "?"}</strong> – ${data.customerName || "Sin nombre"}<br>
+              <span class="badge ${getStatusBadgeClass(status)}">${status}</span>
+              ${source === "cliente" ? `<span class="badge badge-source-cliente">cliente</span>` : `<span class="badge badge-source-mesero">mesero</span>`}
+            </div>
+            <div class="order-meta">
+              <div>${createdStr}</div>
+              <div>${formatCurrency(total)}</div>
+            </div>
+          `;
+
+          div.addEventListener("click", () => selectOrder(docSnap.id, data));
+          ordersListEl.appendChild(div);
         });
 
-        if (allProducts.length === 0) {
-          setStatus("No se encontraron productos en branches/" + BRANCH_ID + "/products.");
-        } else {
-          setStatus("Menú cargado. Productos: " + allProducts.length);
+        if (!ordersListEl.hasChildNodes()) {
+          ordersListEl.innerHTML = "<p class='small' style='padding:6px;'>No hay órdenes abiertas.</p>";
         }
-
-        renderCategories();
-        renderProducts();
-      } catch (err) {
+      }, (err) => {
         console.error(err);
-        setStatus("Error cargando menú: " + err.message);
+        setGlobalStatus("Error leyendo órdenes.");
+      });
+    }
+
+    function getStatusBadgeClass(status) {
+      switch (status) {
+        case "abierta": return "badge badge-status-abierta";
+        case "en_preparacion": return "badge badge-status-en_preparacion";
+        case "lista": return "badge badge-status-lista";
+        case "cerrada": return "badge badge-status-cerrada";
+        default: return "badge";
       }
     }
 
-    // === Abrir/usar mesa ===
-    async function abrirMesa() {
-      const mesaNum = parseInt(mesaInput.value, 10);
-      if (!mesaNum || mesaNum <= 0) {
-        alert("Escribe un número de mesa válido.");
-        return;
-      }
-
-      currentMesaNumber = mesaNum;
-      mesaEstado.textContent = `Mesa ${mesaNum} seleccionada`;
-      mesaEstado.style.background = "#263238";
-
-      // Opcional: podrías buscar si hay una orden abierta para esa mesa
-      try {
-        const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-        const q = query(
-          ordersRef,
-          where("tableNumber", "==", mesaNum),
-          where("status", "in", ["abierta", "en_preparacion"]),
-          limit(1)
-        );
-        const snap = await getDocs(q);
-        if (!snap.empty) {
-          const docSnap = snap.docs[0];
-          currentOrderId = docSnap.id;
-          orderInfo.textContent = `Orden activa: ${currentOrderId}`;
-          setStatus(`Mesa ${mesaNum} ya tiene una orden abierta (${currentOrderId}). Los productos nuevos se sumarán.`);
-        } else {
-          currentOrderId = null;
-          orderInfo.textContent = "Sin orden (se creará nueva al enviar)";
-          setStatus(`Mesa ${mesaNum} lista. Al enviar el pedido se creará una nueva orden.`);
-        }
-      } catch (err) {
-        console.error(err);
-        setStatus("Error buscando orden abierta: " + err.message);
-      }
+    function formatCurrency(n) {
+      return "$" + (n || 0).toFixed(2);
     }
 
-    // === Enviar pedido a Firestore ===
-    async function enviarPedido() {
-      if (!currentMesaNumber) {
-        alert("Selecciona primero una mesa.");
-        return;
-      }
-      if (cart.length === 0) {
-        alert("El pedido está vacío.");
-        return;
-      }
+    // === SELECCIONAR ORDEN ===
+    function clearOrderSelectionUI() {
+      document.querySelectorAll(".order-card").forEach(el => el.classList.remove("selected"));
+    }
 
-      enviarPedidoBtn.disabled = true;
-      enviarPedidoBtn.textContent = "Enviando...";
-      setStatus("Enviando pedido a Firestore...");
+    function selectOrder(orderId, orderData) {
+      clearOrderSelectionUI();
+      const card = document.querySelector(`.order-card[data-id="${orderId}"]`);
+      if (card) card.classList.add("selected");
 
-      try {
-        const branchRef = doc(collection(db, "branches"), BRANCH_ID);
-        const ordersRef = collection(branchRef, "orders");
+      currentOrderId = orderId;
 
-        let orderRefDoc;
-        let isNewOrder = false;
+      noOrderSelectedEl.style.display = "none";
+      orderDetailEl.style.display = "block";
 
-        if (currentOrderId) {
-          // Usar orden existente
-          orderRefDoc = doc(ordersRef, currentOrderId);
-        } else {
-          // Crear nueva orden
-          orderRefDoc = await addDoc(ordersRef, {
-            tableNumber: currentMesaNumber,
-            tableId: null,
-            status: "abierta",
-            source: "mesero",
-            subtotal: 0,
-            tax: 0,
-            discount: 0,
-            total: 0,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
-          currentOrderId = orderRefDoc.id;
-          isNewOrder = true;
+      detailTableEl.textContent = orderData.tableNumber || "?";
+      detailCustomerEl.textContent = orderData.customerName || "Sin nombre";
+      detailSourceEl.textContent = orderData.source || "desconocido";
+
+      detailStatusEl.className = getStatusBadgeClass(orderData.status || "abierta");
+      detailStatusEl.textContent = orderData.status || "abierta";
+
+      const created = orderData.createdAt?.toDate ? orderData.createdAt.toDate() : null;
+      detailCreatedAtEl.textContent = created
+        ? created.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        : "--:--";
+
+      detailTotalEl.textContent = formatCurrency(orderData.total ?? orderData.subtotal ?? 0);
+
+      listenOrderItems(orderId);
+      listenOrderMessages(orderId);
+
+      // enlazar botones de estado
+      const buttons = orderDetailEl.querySelectorAll("button[data-status]");
+      buttons.forEach(btn => {
+        btn.onclick = () => updateOrderStatus(orderId, btn.dataset.status);
+      });
+    }
+
+    // === ESCUCHAR ITEMS DE ORDEN ===
+    function listenOrderItems(orderId) {
+      if (unsubscribeItems) unsubscribeItems();
+
+      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
+      const qItems = query(itemsRef, orderBy("createdAt", "asc"));
+
+      unsubscribeItems = onSnapshot(qItems, (snap) => {
+        detailItemsEl.innerHTML = "";
+        if (snap.empty) {
+          detailItemsEl.innerHTML = "<p class='small'>No hay productos en esta orden.</p>";
+          return;
         }
 
-        // Crear items
-        const batch = writeBatch(db);
-        let subtotal = 0;
+        let total = 0;
 
-        const itemsCol = collection(orderRefDoc, "items");
-        cart.forEach(item => {
-          const lineTotal = item.price * item.qty;
-          subtotal += lineTotal;
-          const itemDoc = doc(itemsCol);
-          batch.set(itemDoc, {
-            productId: item.productId,
-            productName: item.name,
-            qty: item.qty,
-            basePrice: item.price,
-            unitPrice: item.price,
-            totalPrice: lineTotal,
-            status: "pendiente",
-            notes: null,
-            createdAt: serverTimestamp(),
-            updatedAt: serverTimestamp()
-          });
+        snap.forEach(docSnap => {
+          const d = docSnap.data();
+          const amount = (d.unitPrice || 0) * (d.qty || 1);
+          total += amount;
+
+          const row = document.createElement("div");
+          row.className = "detail-item-row";
+
+          row.innerHTML = `
+            <div>${d.qty || 1} × <strong>${d.productName || "Producto"}</strong> – ${formatCurrency(amount)}</div>
+            ${d.notes ? `<div class="detail-item-row-notes">Nota: ${d.notes}</div>` : ""}
+          `;
+
+          detailItemsEl.appendChild(row);
         });
 
-        const tax = 0;
-        const discount = 0;
-        const total = subtotal;
+        detailTotalEl.textContent = formatCurrency(total);
+      }, (err) => {
+        console.error("Error items:", err);
+      });
+    }
 
-        batch.set(orderRefDoc, {
-          subtotal,
-          tax,
-          discount,
-          total,
+    // === ESCUCHAR MENSAJES (CHAT) ===
+    function listenOrderMessages(orderId) {
+      if (unsubscribeMessages) unsubscribeMessages();
+
+      const msgsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "messages");
+      const qMsgs = query(msgsRef, orderBy("createdAt", "asc"));
+
+      unsubscribeMessages = onSnapshot(qMsgs, (snap) => {
+        chatAreaEl.innerHTML = "";
+
+        if (snap.empty) {
+          chatAreaEl.innerHTML = "<p class='small'>No hay mensajes aún.</p>";
+          return;
+        }
+
+        snap.forEach(docSnap => {
+          const m = docSnap.data();
+          const sender = m.sender || "desconocido";
+          const text = m.text || "";
+          const created = m.createdAt?.toDate ? m.createdAt.toDate() : null;
+          const timeStr = created
+            ? created.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+            : "";
+
+          const div = document.createElement("div");
+          div.className = "chat-msg " + (sender === "cliente" ? "chat-msg-cliente" : "chat-msg-mesero");
+          div.innerHTML = `
+            <div>${text}</div>
+            <div class="chat-meta">${sender} ${timeStr}</div>
+          `;
+          chatAreaEl.appendChild(div);
+        });
+
+        chatAreaEl.scrollTop = chatAreaEl.scrollHeight;
+      }, (err) => {
+        console.error("Error msgs:", err);
+      });
+    }
+
+    // === ACTUALIZAR ESTADO DE ORDEN ===
+    async function updateOrderStatus(orderId, newStatus) {
+      try {
+        await updateDoc(doc(db, "branches", BRANCH_ID, "orders", orderId), {
+          status: newStatus,
           updatedAt: serverTimestamp()
-        }, { merge: true });
-
-        await batch.commit();
-
-        orderInfo.textContent = `Orden activa: ${currentOrderId}`;
-        setStatus(`✅ Pedido enviado. ${isNewOrder ? "Se creó una nueva orden." : "Se agregaron productos a la orden existente."}`);
-
-        // Opcional: limpiar carrito local
-        cart = [];
-        renderCart();
+        });
+        setGlobalStatus("Orden " + orderId + " → " + newStatus);
       } catch (err) {
         console.error(err);
-        setStatus("❌ Error enviando pedido: " + err.message);
-      } finally {
-        enviarPedidoBtn.disabled = false;
-        enviarPedidoBtn.textContent = "Enviar pedido a Firestore";
+        setGlobalStatus("Error actualizando estado de orden.");
       }
     }
 
-    function limpiarPedido() {
-      cart = [];
-      renderCart();
-      setStatus("Pedido local limpiado (no afecta Firestore).");
-    }
+    // === ENVIAR MENSAJE AL CLIENTE ===
+    chatSendBtn.onclick = async () => {
+      if (!currentOrderId) {
+        alert("Primero selecciona una orden.");
+        return;
+      }
+      const text = chatInputEl.value.trim();
+      if (!text) return;
 
-    // Eventos
-    abrirMesaBtn.addEventListener("click", abrirMesa);
-    enviarPedidoBtn.addEventListener("click", enviarPedido);
-    limpiarPedidoBtn.addEventListener("click", limpiarPedido);
-
-    // Cargar menú al iniciar
-    loadMenu();
+      try {
+        const msgsRef = collection(
+          db,
+          "branches",
+          BRANCH_ID,
+          "orders",
+          currentOrderId,
+          "messages"
+        );
+        await addDoc(msgsRef, {
+          sender: "mesero",
+          text,
+          createdAt: serverTimestamp()
+        });
+        chatInputEl.value = "";
+      } catch (err) {
+        console.error(err);
+        alert("No se pudo enviar el mensaje.");
+      }
+    };
   </script>
 </body>
 </html>
