@@ -2,154 +2,173 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Cafecaro – Login</title>
+  <title>Cafecaro – Iniciar sesión</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
+      background: radial-gradient(circle at top, #ffcc80 0%, #ffe0b2 40%, #fff8e1 100%);
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at top, #ffcc80 0, #ffe0b2 35%, #fff8e1 100%);
-      color: #4e342e;
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 12px;
+      align-items: center;
+      padding: 20px;
+      color: #4e342e;
     }
+
     .card {
       width: 100%;
       max-width: 380px;
       background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(3px);
       border-radius: 18px;
-      padding: 18px 16px 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 20px 18px;
     }
-    .card-header {
-      display:flex;
-      align-items:center;
-      gap:10px;
-      margin-bottom:10px;
+
+    .header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      gap: 10px;
     }
+
     .logo-circle {
-      width:40px;
-      height:40px;
-      border-radius:50%;
-      background:#5d4037;
-      color:#ffe0b2;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:700;
-      font-size:18px;
-      box-shadow:0 2px 6px rgba(93,64,55,0.4);
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      background: #5d4037;
+      color: #ffe0b2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 700;
+      box-shadow: 0 2px 7px rgba(93,64,55,0.5);
     }
+
     h1 {
       margin: 0;
-      font-size: 19px;
+      font-size: 20px;
+      font-weight: 700;
     }
+
     .sub {
       font-size: 11px;
-      opacity: 0.75;
+      opacity: 0.7;
     }
+
     label {
-      display:block;
-      font-size:12px;
-      margin-top:10px;
-      margin-bottom:3px;
+      font-size: 12px;
+      margin-top: 10px;
+      display: block;
     }
-    input[type="email"],
-    input[type="password"] {
+
+    input {
       width: 100%;
+      padding: 10px;
+      font-size: 14px;
       border-radius: 10px;
       border: 1px solid #d7ccc8;
-      padding: 8px 10px;
-      font-size: 13px;
+      background: #fffdf7;
+      margin-top: 3px;
       font-family: inherit;
-      background:#fffdf7;
     }
+
     input:focus {
-      outline:none;
-      border-color:#ffb74d;
-      box-shadow:0 0 0 2px rgba(255,183,77,0.35);
+      border-color: #ffb74d;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(255,183,77,0.3);
     }
+
     .btn {
+      margin-top: 16px;
       width: 100%;
-      margin-top: 14px;
+      padding: 12px;
       border: none;
       border-radius: 999px;
-      padding: 10px 12px;
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 700;
+      color: #ffe0b2;
+      background: #5d4037;
       cursor: pointer;
-      font-family: inherit;
-      background:#5d4037;
-      color:#ffe0b2;
-      box-shadow:0 3px 8px rgba(93,64,55,0.6);
+      box-shadow: 0 3px 7px rgba(93,64,55,0.5);
     }
+
     .btn:active {
-      transform:translateY(1px);
-      box-shadow:0 1px 4px rgba(93,64,55,0.6);
+      transform: translateY(1px);
     }
+
     .error-box {
-      display:none;
-      margin-top:8px;
-      font-size:11px;
-      padding:6px 8px;
-      border-radius:10px;
-      background:#ffebee;
-      color:#b71c1c;
-      border:1px solid #ffcdd2;
+      display: none;
+      margin-top: 10px;
+      padding: 8px 10px;
+      background: #ffebee;
+      color: #b71c1c;
+      border: 1px solid #ffcdd2;
+      border-radius: 10px;
+      font-size: 12px;
     }
+
     .help {
-      font-size:11px;
-      margin-top:8px;
-      opacity:0.8;
+      margin-top: 10px;
+      font-size: 12px;
+      text-align: center;
+      opacity: 0.85;
     }
-    .link {
-      color:#5d4037;
-      font-weight:600;
-      cursor:pointer;
-      text-decoration:underline;
+
+    .help span {
+      color: #5d4037;
+      font-weight: 600;
+      text-decoration: underline;
+      cursor: pointer;
     }
   </style>
 </head>
+
 <body>
+
   <div class="card">
-    <div class="card-header">
+
+    <div class="header">
       <div class="logo-circle">☕</div>
       <div>
-        <h1>Entrar a Cafecaro</h1>
-        <div class="sub">Staff: meseros, cocina, caja y admin.</div>
+        <h1>Iniciar sesión</h1>
+        <div class="sub">Sistema Cafecaro POS</div>
       </div>
     </div>
 
     <label for="emailInput">Correo</label>
-    <input id="emailInput" type="email" placeholder="ej. mesero@cafecaro.com" />
+    <input id="emailInput" type="email" placeholder="ej: mesero@cafecaro.com" />
 
     <label for="passwordInput">Contraseña</label>
-    <input id="passwordInput" type="password" placeholder="Contraseña" />
+    <input id="passwordInput" type="password" placeholder="********" />
 
-    <button id="loginBtn" class="btn">Ingresar</button>
+    <button id="loginBtn" class="btn">Entrar</button>
 
     <div id="errorBox" class="error-box"></div>
 
     <div class="help">
-      ¿Eres cliente? <span class="link" onclick="window.location.href='cliente.html'">Ver menú y pedir</span><br />
-      ¿Administrador? Crea usuarios en Firebase Auth y asígnales rol en <code>users</code>.
+      ¿Eres cliente?  
+      <span onclick="window.location.href='cliente.html'">Haz tu pedido aquí</span>
     </div>
+
   </div>
 
-  <!-- ============================= -->
-  <!--     FIREBASE + LOGIN JS      -->
-  <!-- ============================= -->
+  <!-- =========================================== -->
+  <!--                 FIREBASE JS                 -->
+  <!-- =========================================== -->
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import {
       getAuth,
       signInWithEmailAndPassword,
-      onAuthStateChanged
+      onAuthStateChanged,
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
     import {
       getFirestore,
@@ -157,6 +176,7 @@
       getDoc
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+    /* =========== FIREBASE CONFIG =========== */
     const firebaseConfig = {
       apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
       authDomain: "cafecaro-af23b.firebaseapp.com",
@@ -176,16 +196,17 @@
     const errorBox = document.getElementById("errorBox");
 
     function showError(msg) {
-      errorBox.style.display = "block";
       errorBox.textContent = msg;
+      errorBox.style.display = "block";
     }
 
+    /* ================= LOGIN ================= */
     loginBtn.onclick = async () => {
       const email = emailInput.value.trim();
       const pass = passwordInput.value.trim();
 
       if (!email || !pass) {
-        showError("Ingresa correo y contraseña");
+        showError("Debes ingresar correo y contraseña.");
         return;
       }
 
@@ -193,33 +214,28 @@
         const cred = await signInWithEmailAndPassword(auth, email, pass);
         const user = cred.user;
 
-        const roleDoc = await getDoc(doc(db, "users", user.uid));
-        if (!roleDoc.exists()) {
-          showError("Tu cuenta no tiene rol asignado. Contacta al administrador.");
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (!userDoc.exists()) {
+          showError("Tu cuenta no tiene un rol asignado. Contacta al administrador.");
           return;
         }
 
-        const role = roleDoc.data().role;
-        redirectByRole(role);
+        redirectByRole(userDoc.data().role);
 
       } catch (err) {
         console.error(err);
-        showError("Credenciales incorrectas o cuenta no registrada.");
+        showError("Correo o contraseña incorrectos.");
       }
     };
 
-    onAuthStateChanged(auth, async (user) => {
+    /* ========== AUTOLOGIN SI YA ESTÁ LOGUEADO ========== */
+    onAuthStateChanged(auth, async user => {
       if (!user) return;
-      try {
-        const roleDoc = await getDoc(doc(db, "users", user.uid));
-        if (!roleDoc.exists()) return;
-        const role = roleDoc.data().role;
-        redirectByRole(role);
-      } catch (err) {
-        console.error(err);
-      }
+      const snap = await getDoc(doc(db, "users", user.uid));
+      if (snap.exists()) redirectByRole(snap.data().role);
     });
 
+    /* ========== REDIRECCIÓN POR ROL ========== */
     function redirectByRole(role) {
       switch (role) {
         case "admin":
@@ -235,9 +251,10 @@
           window.location.href = "kds-cocina.html";
           break;
         default:
-          showError("Rol desconocido. Contacta al administrador.");
+          showError("Rol desconocido. Notifica al administrador.");
       }
     }
   </script>
+
 </body>
 </html>
