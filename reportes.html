@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafecaro – Reportes de ventas</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f3f4f6;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #111827;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 1px 4px rgba(15,23,42,0.8);
+    }
+
+    .h-left h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .h-left .sub {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .h-right {
+      text-align: right;
+      font-size: 11px;
+    }
+
+    .role-pill {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #111827;
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    .top-buttons {
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .btn-small {
+      padding: 5px 9px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: #0f172a;
+      color: #e5e7eb;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .filters-row label {
+      font-size: 12px;
+      color: #4b5563;
+    }
+
+    .period-select {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      font-size: 13px;
+      font-family: inherit;
+      background: #ffffff;
+    }
+
+    .date-input {
+      padding: 5px 8px;
+      border-radius: 8px;
+      border: 1px solid #d1d5db;
+      font-size: 12px;
+      font-family: inherit;
+      background: #ffffff;
+    }
+
+    .btn-refresh {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: none;
+      background: #5d4037;
+      color: #fef9c3;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .btn-refresh:active {
+      transform: translateY(1px);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #6b7280;
+      margin-bottom: 4px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 8px;
+    }
+
+    @media(min-width: 700px) {
+      .summary-grid {
+        grid-template-columns: repeat(4,minmax(0,1fr));
+      }
+    }
+
+    .summary-pill {
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .summary-value {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .summary-primary { border-left: 4px solid #16a34a; }
+    .summary-secondary { border-left: 4px solid #0ea5e9; }
+    .summary-tertiary { border-left: 4px solid #f97316; }
+    .summary-neutral { border-left: 4px solid #9ca3af; }
+
+    .pay-breakdown {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #374151;
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 4px;
+    }
+
+    @media(min-width: 600px) {
+      .pay-breakdown {
+        grid-template-columns: repeat(3,minmax(0,1fr));
+      }
+    }
+
+    .pay-line {
+      display:flex;
+      justify-content:space-between;
+      gap:6px;
+    }
+
+    .pay-label {
+      opacity:0.85;
+    }
+
+    .orders-table-wrapper {
+      margin-top: 6px;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 650px;
+    }
+
+    thead {
+      background: #f9fafb;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 600;
+      color: #4b5563;
+      font-size: 11px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .pill-status {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+    }
+
+    .st-abierta { background:#fffbeb; color:#92400e; }
+    .st-en_preparacion { background:#eff6ff; color:#1d4ed8; }
+    .st-lista { background:#ecfdf3; color:#15803d; }
+    .st-cerrada { background:#f3f4f6; color:#4b5563; }
+
+    .pay-pill {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+    }
+
+    .pay-pendiente { background:#fee2e2; color:#b91c1c; }
+    .pay-pagado { background:#dcfce7; color:#166534; }
+
+    .status-msg {
+      margin-top: 8px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      display: none;
+    }
+    .status-ok {
+      background: #ecfdf3;
+      color: #166534;
+    }
+    .status-error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="h-left">
+      <h1>Reportes de ventas</h1>
+      <div class="sub">Análisis por periodo · Cafecaro</div>
+    </div>
+    <div class="h-right">
+      <div id="userEmail">—</div>
+      <div id="userRole" class="role-pill">Verificando rol...</div>
+      <div class="top-buttons">
+        <button id="homeBtn" class="btn-small">Inicio</button>
+        <button id="logoutBtn" class="btn-small">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- FILTROS -->
+    <section class="card">
+      <div class="card-title">Filtros de periodo</div>
+      <div class="hint">
+        Selecciona un periodo rápido o define un rango de fechas.  
+        Solo se cuentan las órdenes con un valor en el campo <strong>total/subtotal</strong>.
+      </div>
+
+      <div class="filters-row">
+        <label for="periodSelect">Periodo:</label>
+        <select id="periodSelect" class="period-select">
+          <option value="hoy">Hoy</option>
+          <option value="ayer">Ayer</option>
+          <option value="7dias">Últimos 7 días</option>
+          <option value="estemes">Este mes</option>
+          <option value="rango">Rango personalizado</option>
+        </select>
+
+        <label for="fromDate">Desde:</label>
+        <input id="fromDate" type="date" class="date-input" />
+
+        <label for="toDate">Hasta:</label>
+        <input id="toDate" type="date" class="date-input" />
+
+        <button id="btnRefresh" class="btn-refresh">Actualizar</button>
+      </div>
+
+      <div id="periodInfo" class="hint"></div>
+      <div id="statusBox" class="status-msg"></div>
+    </section>
+
+    <!-- RESUMEN -->
+    <section class="card">
+      <div class="card-title">Resumen del periodo</div>
+
+      <div class="summary-grid">
+        <div class="summary-pill summary-primary">
+          <div class="summary-label">Total de ventas</div>
+          <div id="sumTotal" class="summary-value">$0.00</div>
+        </div>
+        <div class="summary-pill summary-secondary">
+          <div class="summary-label">Número de tickets</div>
+          <div id="countOrders" class="summary-value">0</div>
+        </div>
+        <div class="summary-pill summary-tertiary">
+          <div class="summary-label">Ticket promedio</div>
+          <div id="avgTicket" class="summary-value">$0.00</div>
+        </div>
+        <div class="summary-pill summary-neutral">
+          <div class="summary-label">Ordenes pagadas</div>
+          <div id="countPaid" class="summary-value">0</div>
+        </div>
+      </div>
+
+      <div class="pay-breakdown">
+        <div class="pay-line">
+          <span class="pay-label">Efectivo</span>
+          <span id="sumEfectivo">$0.00</span>
+        </div>
+        <div class="pay-line">
+          <span class="pay-label">Tarjeta</span>
+          <span id="sumTarjeta">$0.00</span>
+        </div>
+        <div class="pay-line">
+          <span class="pay-label">Transferencia</span>
+          <span id="sumTransf">$0.00</span>
+        </div>
+        <div class="pay-line">
+          <span class="pay-label">Vales</span>
+          <span id="sumVales">$0.00</span>
+        </div>
+        <div class="pay-line">
+          <span class="pay-label">Mixto</span>
+          <span id="sumMixto">$0.00</span>
+        </div>
+        <div class="pay-line">
+          <span class="pay-label">Sin método</span>
+          <span id="sumSinMetodo">$0.00</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLA DE ÓRDENES -->
+    <section class="card">
+      <div class="card-title">Órdenes del periodo</div>
+      <div class="orders-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Mesa</th>
+              <th>Cliente</th>
+              <th>Estado</th>
+              <th>Pago</th>
+              <th>Método</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <!-- filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- =========================================== -->
+  <!--               FIREBASE JS                  -->
+  <!-- =========================================== -->
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      query,
+      where,
+      orderBy,
+      getDocs,
+      Timestamp
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8uJZ5Wg8uJZ5Wg8", // <- CORRIGE si copias mal; usa siempre el mismo de tus otros archivos
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM
+    const userEmailEl = document.getElementById("userEmail");
+    const userRoleEl = document.getElementById("userRole");
+    const homeBtn = document.getElementById("homeBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const periodSelect = document.getElementById("periodSelect");
+    const fromDate = document.getElementById("fromDate");
+    const toDate = document.getElementById("toDate");
+    const btnRefresh = document.getElementById("btnRefresh");
+    const periodInfo = document.getElementById("periodInfo");
+    const statusBox = document.getElementById("statusBox");
+
+    const sumTotalEl = document.getElementById("sumTotal");
+    const countOrdersEl = document.getElementById("countOrders");
+    const avgTicketEl = document.getElementById("avgTicket");
+    const countPaidEl = document.getElementById("countPaid");
+
+    const sumEfectivoEl = document.getElementById("sumEfectivo");
+    const sumTarjetaEl = document.getElementById("sumTarjeta");
+    const sumTransfEl = document.getElementById("sumTransf");
+    const sumValesEl = document.getElementById("sumVales");
+    const sumMixtoEl = document.getElementById("sumMixto");
+    const sumSinMetodoEl = document.getElementById("sumSinMetodo");
+
+    const ordersTableBody = document.getElementById("ordersTableBody");
+
+    function showStatus(msg, isError=false) {
+      statusBox.style.display = "block";
+      statusBox.textContent = msg;
+      statusBox.className = "status-msg " + (isError ? "status-error" : "status-ok");
+    }
+
+    homeBtn.onclick = () => {
+      window.location.href = "index.html";
+    };
+
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // Auth + roles
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+      userEmailEl.textContent = user.email || "(sin correo)";
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        userRoleEl.textContent = "Sin rol";
+        alert("Tu usuario no tiene rol asignado. Contacta al administrador.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      const role = userDoc.data().role || "sin_rol";
+      userRoleEl.textContent = "Rol: " + role;
+
+      if (!["admin","caja"].includes(role)) {
+        alert("Este módulo es solo para Admin o Caja.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      // Inicializar fechas con HOY
+      setTodayPeriod();
+      await loadReports();
+    });
+
+    periodSelect.onchange = () => {
+      const val = periodSelect.value;
+      if (val === "rango") {
+        fromDate.disabled = false;
+        toDate.disabled = false;
+      } else {
+        fromDate.disabled = true;
+        toDate.disabled = true;
+        setPresetPeriod(val);
+      }
+    };
+
+    btnRefresh.onclick = () => {
+      loadReports();
+    };
+
+    function setTodayPeriod() {
+      periodSelect.value = "hoy";
+      setPresetPeriod("hoy");
+    }
+
+    function setPresetPeriod(value) {
+      const now = new Date();
+      let start, end;
+
+      if (value === "hoy") {
+        start = atStartOfDay(now);
+        end   = atEndOfDay(now);
+      } else if (value === "ayer") {
+        const y = new Date(now);
+        y.setDate(y.getDate() - 1);
+        start = atStartOfDay(y);
+        end   = atEndOfDay(y);
+      } else if (value === "7dias") {
+        const s = new Date(now);
+        s.setDate(s.getDate() - 6);
+        start = atStartOfDay(s);
+        end   = atEndOfDay(now);
+      } else if (value === "estemes") {
+        const s = new Date(now.getFullYear(), now.getMonth(), 1);
+        const e = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        start = atStartOfDay(s);
+        end   = atEndOfDay(e);
+      } else {
+        // rango
+        return;
+      }
+
+      fromDate.value = toInputDate(start);
+      toDate.value   = toInputDate(end);
+      updatePeriodInfo(start, end);
+    }
+
+    function atStartOfDay(d) {
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0,0,0,0);
+    }
+
+    function atEndOfDay(d) {
+      return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23,59,59,999);
+    }
+
+    function toInputDate(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth()+1).padStart(2,"0");
+      const dd = String(d.getDate()).padStart(2,"0");
+      return `${y}-${m}-${dd}`;
+    }
+
+    function updatePeriodInfo(start, end) {
+      const opt = { year:"numeric", month:"2-digit", day:"2-digit" };
+      periodInfo.textContent =
+        `Mostrando desde ${start.toLocaleDateString(undefined,opt)} ` +
+        `hasta ${end.toLocaleDateString(undefined,opt)}.`;
+    }
+
+    async function loadReports() {
+      try {
+        showStatus("Cargando reportes...", false);
+
+        // Determinar fechas
+        let start, end;
+        if (periodSelect.value === "rango") {
+          if (!fromDate.value || !toDate.value) {
+            showStatus("Debes seleccionar fecha 'Desde' y 'Hasta' para el rango.", true);
+            return;
+          }
+          start = new Date(fromDate.value + "T00:00:00");
+          end   = new Date(toDate.value + "T23:59:59");
+        } else {
+          if (!fromDate.value || !toDate.value) {
+            setPresetPeriod(periodSelect.value);
+          }
+          start = new Date(fromDate.value + "T00:00:00");
+          end   = new Date(toDate.value + "T23:59:59");
+        }
+
+        updatePeriodInfo(start, end);
+
+        const startTs = Timestamp.fromDate(start);
+        const endTs   = Timestamp.fromDate(end);
+
+        const ref = collection(db, "branches", BRANCH_ID, "orders");
+        const q = query(
+          ref,
+          where("createdAt", ">=", startTs),
+          where("createdAt", "<=", endTs),
+          orderBy("createdAt", "asc")
+        );
+
+        const snap = await getDocs(q);
+
+        const orders = [];
+        snap.forEach(docSnap => {
+          orders.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        computeStats(orders);
+        renderOrders(orders);
+
+        showStatus(`Se cargaron ${orders.length} órdenes.`, false);
+      } catch (err) {
+        console.error(err);
+        showStatus("Error al cargar los reportes. Tal vez requieras un índice para 'createdAt'.", true);
+      }
+    }
+
+    function computeStats(orders) {
+      let sumTotal = 0;
+      let count = 0;
+      let countPaid = 0;
+
+      let sumEfectivo = 0;
+      let sumTarjeta = 0;
+      let sumTransf = 0;
+      let sumVales = 0;
+      let sumMixto = 0;
+      let sumSinMetodo = 0;
+
+      orders.forEach(o => {
+        const total = (o.total ?? o.subtotal ?? 0);
+        const payStatus = o.paymentStatus || "pendiente";
+        const payMethod = o.paymentMethod || "";
+
+        if (!total || isNaN(total)) return;
+
+        sumTotal += total;
+        count++;
+
+        if (payStatus === "pagado") {
+          countPaid++;
+        }
+
+        // por método
+        const t = total;
+        switch (payMethod) {
+          case "efectivo": sumEfectivo += t; break;
+          case "tarjeta": sumTarjeta += t; break;
+          case "transferencia": sumTransf += t; break;
+          case "vales": sumVales += t; break;
+          case "mixto": sumMixto += t; break;
+          default: sumSinMetodo += t; break;
+        }
+      });
+
+      const avg = count ? (sumTotal / count) : 0;
+
+      sumTotalEl.textContent = formatMoney(sumTotal);
+      countOrdersEl.textContent = count;
+      avgTicketEl.textContent = formatMoney(avg);
+      countPaidEl.textContent = countPaid;
+
+      sumEfectivoEl.textContent = formatMoney(sumEfectivo);
+      sumTarjetaEl.textContent = formatMoney(sumTarjeta);
+      sumTransfEl.textContent = formatMoney(sumTransf);
+      sumValesEl.textContent = formatMoney(sumVales);
+      sumMixtoEl.textContent = formatMoney(sumMixto);
+      sumSinMetodoEl.textContent = formatMoney(sumSinMetodo);
+    }
+
+    function renderOrders(orders) {
+      ordersTableBody.innerHTML = "";
+
+      if (!orders.length) {
+        ordersTableBody.innerHTML = `
+          <tr>
+            <td colspan="7" style="font-size:12px; opacity:0.7; padding:6px 8px;">
+              No hay órdenes en este periodo.
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      orders.forEach(o => {
+        const tr = document.createElement("tr");
+        const status = o.status || "abierta";
+        const payStatus = o.paymentStatus || "pendiente";
+        const payMethod = o.paymentMethod || "";
+        const mesa = o.tableNumber || "-";
+        const cliente = o.customerName || "";
+        const total = (o.total ?? o.subtotal ?? 0);
+
+        const createdAt = o.createdAt ? o.createdAt.toDate() : null;
+        const createdStr = createdAt ? formatDateTime(createdAt) : "";
+
+        const stClass =
+          status === "en_preparacion" ? "st-en_preparacion" :
+          status === "lista" ? "st-lista" :
+          status === "cerrada" ? "st-cerrada" :
+          "st-abierta";
+
+        const payClass = (payStatus === "pagado") ? "pay-pagado" : "pay-pendiente";
+
+        tr.innerHTML = `
+          <td>${createdStr}</td>
+          <td>${mesa}</td>
+          <td>${cliente}</td>
+          <td><span class="pill-status ${stClass}">${status}</span></td>
+          <td><span class="pay-pill ${payClass}">${payStatus}</span></td>
+          <td>${payMethod || "—"}</td>
+          <td>${formatMoney(total)}</td>
+        `;
+
+        ordersTableBody.appendChild(tr);
+      });
+    }
+
+    function formatMoney(v) {
+      return "$" + (v || 0).toFixed(2);
+    }
+
+    function formatDateTime(d) {
+      const day = String(d.getDate()).padStart(2,"0");
+      const month = String(d.getMonth()+1).padStart(2,"0");
+      const year = d.getFullYear();
+      const h = String(d.getHours()).padStart(2,"0");
+      const m = String(d.getMinutes()).padStart(2,"0");
+      return `${day}/${month}/${year} ${h}:${m}`;
+    }
+  </script>
+</body>
+</html>
