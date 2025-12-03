@@ -28,6 +28,7 @@
     header h1 {
       margin: 0;
       font-size: 20px;
+      font-weight: 600;
     }
 
     header .sub {
@@ -36,8 +37,8 @@
     }
 
     .logo-circle {
-      width: 40px;
-      height: 40px;
+      width: 42px;
+      height: 42px;
       border-radius: 50%;
       background: #5d4037;
       color: #ffe0b2;
@@ -54,7 +55,7 @@
       display: flex;
       flex-direction: column;
       padding: 8px 12px 16px;
-      gap: 10px;
+      gap: 14px;
     }
 
     @media (min-width: 900px) {
@@ -67,7 +68,7 @@
     .hero-card {
       background: rgba(255,255,255,0.9);
       border-radius: 16px;
-      padding: 16px;
+      padding: 18px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
@@ -82,6 +83,7 @@
     .hero-text {
       font-size: 13px;
       opacity: 0.9;
+      line-height: 1.4;
     }
 
     .hero-badges {
@@ -102,7 +104,7 @@
     .btn {
       border: none;
       border-radius: 999px;
-      padding: 10px 14px;
+      padding: 11px 14px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
@@ -112,6 +114,7 @@
       justify-content: center;
       gap: 6px;
       text-decoration: none;
+      text-align: center;
     }
 
     .btn-primary {
@@ -125,17 +128,11 @@
       color: #4e342e;
     }
 
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #d7ccc8;
-      color: #4e342e;
-    }
-
     .hero-actions {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 8px;
+      gap: 10px;
+      margin-top: 10px;
     }
 
     @media (min-width: 600px) {
@@ -167,7 +164,7 @@
     .quick-grid {
       display: grid;
       grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 6px;
+      gap: 8px;
     }
 
     @media (min-width: 700px) {
@@ -177,7 +174,7 @@
     }
 
     .quick-link {
-      padding: 8px 10px;
+      padding: 10px 12px;
       border-radius: 10px;
       border: 1px solid #ffe0b2;
       background: #fff8e1;
@@ -185,9 +182,14 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
-      cursor: pointer;
       text-decoration: none;
       color: inherit;
+      transition: 0.15s;
+    }
+
+    .quick-link:hover {
+      background: #ffe6c9;
+      border-color: #ffc777;
     }
 
     .quick-link-title {
@@ -200,7 +202,7 @@
     }
 
     .qr-box {
-      margin-top: 6px;
+      margin-top: 8px;
       padding: 8px;
       border-radius: 10px;
       border: 1px dashed #d7ccc8;
@@ -217,80 +219,82 @@
     }
 
     footer {
-      padding: 6px 12px 10px;
+      padding: 8px 12px 14px;
       font-size: 10px;
       opacity: 0.7;
       text-align: center;
     }
   </style>
 </head>
+
 <body>
+
   <header>
     <div>
       <h1>Cafecaro POS</h1>
-      <div class="sub">Pedidos, mesas, cocina, caja y reportes en una sola web.</div>
+      <div class="sub">Pedidos · Mesas · Cocina · Caja · Reportes</div>
     </div>
-    <div class="logo-circle">
-      ☕
-    </div>
+    <div class="logo-circle">☕</div>
   </header>
 
   <main>
+
     <!-- HERO PRINCIPAL -->
     <section class="hero-card">
-      <div class="hero-title">¿Qué quieres hacer?</div>
+      <div class="hero-title">¿Qué deseas hacer?</div>
       <div class="hero-text">
-        Este es el panel central del sistema Cafecaro.  
-        Desde aquí puedes entrar como <strong>cliente</strong> (QR) o al panel de <strong>personal</strong>.
+        Bienvenido al sistema de Cafetería Doña Caro.  
+        Desde aquí puedes ingresar como <strong>cliente</strong> para realizar pedidos  
+        o como <strong>personal</strong> para gestionar el negocio.
       </div>
 
       <div class="hero-badges">
-        <span class="badge">Mesas en tiempo real</span>
-        <span class="badge">KDS en cocina</span>
-        <span class="badge">Caja + reportes</span>
+        <span class="badge">Mapa de mesas</span>
+        <span class="badge">Cocina KDS</span>
+        <span class="badge">Caja y tickets</span>
+        <span class="badge">Reportes</span>
       </div>
 
       <div class="hero-actions">
-        <a class="btn btn-primary" href="cliente.html">
-          🚶 Cliente – Ver menú y pedir
-        </a>
-        <a class="btn btn-secondary" href="login.html">
-          👤 Personal – Iniciar sesión
-        </a>
+        <a class="btn btn-primary" href="cliente.html">🚶 Cliente – Ver menú y pedir</a>
+        <a class="btn btn-secondary" href="login.html">👤 Personal – Iniciar sesión</a>
       </div>
     </section>
 
-    <!-- ACCESOS RÁPIDOS -->
+    <!-- ACCESOS RÁPIDOS STAFF -->
     <section class="section">
       <div class="section-title">Accesos rápidos (staff)</div>
-      <div class="section-sub">
-        Estos enlaces son útiles si ya estás logueado con tu correo/password de Cafecaro.
-      </div>
+      <div class="section-sub">Si ya iniciaste sesión, accede directo:</div>
 
       <div class="quick-grid">
-        <a class="quick-link" href="caja.html">
-          <span class="quick-link-title">Caja</span>
-          <span class="quick-link-sub">Cobrar, marcar pagado, ver tickets.</span>
+        <a class="quick-link" href="mesas.html">
+          <span class="quick-link-title">Mapa de Mesas</span>
+          <span class="quick-link-sub">Planta baja · Alta · Balcón</span>
         </a>
+
         <a class="quick-link" href="mesero.html">
           <span class="quick-link-title">Mesero</span>
-          <span class="quick-link-sub">Levantar y editar órdenes por mesa.</span>
+          <span class="quick-link-sub">Levantar y editar pedidos</span>
         </a>
+
         <a class="quick-link" href="kds-cocina.html">
           <span class="quick-link-title">Cocina (KDS)</span>
-          <span class="quick-link-sub">Ver pedidos en tiempo real.</span>
+          <span class="quick-link-sub">Pedidos en tiempo real</span>
         </a>
+
+        <a class="quick-link" href="caja.html">
+          <span class="quick-link-title">Caja</span>
+          <span class="quick-link-sub">Cobros y tickets</span>
+        </a>
+
         <a class="quick-link" href="reportes.html">
           <span class="quick-link-title">Reportes</span>
-          <span class="quick-link-sub">Ventas por día, ticket promedio.</span>
+          <span class="quick-link-sub">Ventas y estadísticas</span>
         </a>
+
         <a class="quick-link" href="admin-panel.html">
           <span class="quick-link-title">Admin</span>
-          <span class="quick-link-sub">Roles, sucursales, usuarios.</span>
-        </a>
-        <a class="quick-link" href="mesero.html#chat">
-          <span class="quick-link-title">Mesas / Chat</span>
-          <span class="quick-link-sub">Hablar con mesas desde el mesero.</span>
+          <span class="quick-link-sub">Roles · Sucursales · Usuarios</span>
         </a>
       </div>
     </section>
@@ -298,24 +302,21 @@
     <!-- SECCIÓN QR -->
     <section class="section">
       <div class="section-title">QR para clientes</div>
-      <div class="section-sub">
-        Usa esta URL para generar el código QR que irá en las mesas.
-      </div>
+      <div class="section-sub">Usa este enlace para generar los códigos QR de las mesas.</div>
 
       <div class="qr-box">
-        <div>URL sugerida para QR:</div>
-        <div class="mono">
-          https://cafeteria-dona-caro.github.io/cafeteria/cliente.html
-        </div>
+        <div>Enlace del menú para QR:</div>
+        <div class="mono">https://cafeteria-dona-caro.github.io/cafeteria/cliente.html</div>
         <div style="margin-top:4px;">
-          Cualquier cliente que escanee este QR verá el menú tipo Uber Eats y podrá levantar su pedido.
+          Al escanear este QR, el cliente verá el menú tipo Uber Eats y podrá levantar su pedido.
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    Cafecaro POS · Construido sobre Firebase · v1
+    Cafecaro POS · Construido con Firebase · 2025
   </footer>
+
 </body>
 </html>
