@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafecaro – Mesero</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    header .sub {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    header .right {
+      text-align: right;
+      font-size: 12px;
+    }
+
+    .role-pill {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e8f5e9;
+      color: #1b5e20;
+    }
+
+    #logoutBtn {
+      margin-top: 4px;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #eeeeee;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      gap: 8px;
+    }
+
+    @media (min-width: 900px) {
+      main {
+        flex-direction: row;
+      }
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 10px;
+    }
+
+    @media (min-width: 900px) {
+      .panel-left {
+        flex: 0.8;
+        margin-right: 6px;
+      }
+      .panel-right {
+        flex: 1.2;
+        margin-left: 6px;
+      }
+    }
+
+    .panel h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    .small {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-primary { background: #2962ff; color: #fff; }
+    .btn-success { background: #00c853; color: #000; }
+    .btn-warning { background: #ffb300; color: #000; }
+    .btn-neutral { background: #eeeeee; color: #333; }
+    .btn-danger { background: #e53935; color: #fff; }
+    .btn-small { padding: 4px 10px; font-size: 11px; }
+
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+    .chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .chip.active {
+      border-color: #2962ff;
+      background: #e3f2fd;
+      color: #0d47a1;
+      font-weight: 600;
+    }
+
+    .orders-list {
+      max-height: 60vh;
+      overflow-y: auto;
+      margin-top: 4px;
+    }
+
+    .order-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 4px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .order-row:nth-child(2n) {
+      background: #fafafa;
+    }
+    .order-row.selected {
+      background: #e3f2fd;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      margin-right: 4px;
+    }
+    .badge-status-abierta { background: #e3f2fd; color: #0d47a1; }
+    .badge-status-en_preparacion { background: #fff3e0; color: #e65100; }
+    .badge-status-lista { background: #e8f5e9; color: #1b5e20; }
+    .badge-status-cerrada { background: #eeeeee; color: #424242; }
+
+    .badge-source-cliente { background:#f3e5f5; color:#4a148c; }
+    .badge-source-mesero { background:#e0f2f1; color:#004d40; }
+
+    .detail-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+
+    .detail-items {
+      max-height: 30vh;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 6px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .detail-item-row {
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .detail-item-row:last-child {
+      border-bottom: none;
+    }
+    .detail-item-notes {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 2px;
+    }
+
+    .detail-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 12px;
+      align-items: center;
+    }
+
+    /* Chat */
+    .chat-panel {
+      margin-top: 8px;
+      border-top: 1px solid #eee;
+      padding-top: 6px;
+      font-size: 12px;
+    }
+    .chat-messages {
+      max-height: 18vh;
+      overflow-y: auto;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      padding: 6px;
+      margin-bottom: 4px;
+      background:#fafafa;
+    }
+    .chat-message {
+      padding: 4px 6px;
+      border-radius: 8px;
+      margin-bottom: 4px;
+      font-size: 11px;
+    }
+    .chat-message.cliente {
+      background:#e3f2fd;
+      align-self:flex-start;
+    }
+    .chat-message.mesero {
+      background:#c8e6c9;
+      align-self:flex-end;
+    }
+    .chat-input-row {
+      display:flex;
+      gap:4px;
+      margin-top:4px;
+    }
+    .chat-input-row input {
+      flex:1;
+      border-radius:999px;
+      border:1px solid #ccc;
+      padding:6px 10px;
+      font-size:12px;
+    }
+
+    .status-bar {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    /* Modal genérico */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 30;
+    }
+    .modal.active { display:flex; }
+
+    .modal-content {
+      background:#fff;
+      width:100%;
+      max-width:380px;
+      border-radius:12px;
+      padding:14px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      font-size:13px;
+    }
+    .modal-content h3 {
+      margin:0 0 6px;
+      font-size:16px;
+    }
+    .modal-content label {
+      font-size:12px;
+      margin-bottom:2px;
+    }
+    .modal-content input,
+    .modal-content select,
+    .modal-content textarea {
+      width:100%;
+      border-radius:8px;
+      border:1px solid #ccc;
+      padding:6px 8px;
+      font-size:13px;
+      font-family:inherit;
+    }
+    .modal-actions {
+      display:flex;
+      justify-content:flex-end;
+      gap:6px;
+      margin-top:4px;
+    }
+    .product-list-modal {
+      max-height:260px;
+      overflow-y:auto;
+      border:1px solid #eee;
+      border-radius:8px;
+    }
+    .product-row {
+      padding:6px;
+      border-bottom:1px solid #f0f0f0;
+      cursor:pointer;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:12px;
+    }
+    .product-row:last-child { border-bottom:none; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Mesero</h1>
+      <div class="sub" id="branchLabel">Sucursal: —</div>
+    </div>
+    <div class="right">
+      <div id="currentUserEmail">—</div>
+      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
+      <button id="logoutBtn">Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Panel izquierdo: órdenes -->
+    <section class="panel panel-left">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <h2>Órdenes activas</h2>
+          <p class="small">Crea y administra pedidos por mesa.</p>
+        </div>
+        <button id="newOrderBtn" class="btn btn-primary btn-small">+ Nueva orden</button>
+      </div>
+
+      <div class="filters-row">
+        <span class="small">Ver:</span>
+        <div id="chipAbiertas" class="chip active">En curso</div>
+        <div id="chipTodas" class="chip">Todas</div>
+      </div>
+
+      <div class="orders-list" id="ordersList"></div>
+    </section>
+
+    <!-- Panel derecho: detalle -->
+    <section class="panel panel-right">
+      <h2>Detalle de orden</h2>
+      <p class="small" id="noOrderSelected">Selecciona una orden para ver o agregar productos.</p>
+
+      <div id="detailPanel" style="display:none;">
+        <div class="detail-header">
+          <div>
+            <div><strong>Orden <span id="detailOrderIdShort"></span></strong></div>
+            <div>Mesa <span id="detailTable"></span> — <span id="detailCustomer"></span></div>
+            <div class="small">
+              <span id="detailSourceBadge" class="badge"></span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div class="small">Estado:</div>
+            <div id="detailStatusBadge" class="badge"></div>
+            <div class="small">Creada: <span id="detailCreatedAt"></span></div>
+          </div>
+        </div>
+
+        <div class="detail-items" id="detailItems"></div>
+
+        <div class="detail-footer">
+          <div>
+            <div>Total: <strong id="detailTotal">$0.00</strong></div>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px;" id="detailButtons">
+            <!-- botones llenados por JS -->
+          </div>
+        </div>
+
+        <div class="chat-panel">
+          <div class="small">Chat con cliente</div>
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-input-row">
+            <input type="text" id="chatInput" placeholder="Escribe un mensaje para la mesa..." />
+            <button id="chatSendBtn" class="btn btn-small btn-primary">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="globalStatus" class="status-bar">Conectando...</div>
+
+  <!-- Modal: Nueva orden -->
+  <div id="newOrderModal" class="modal">
+    <div class="modal-content">
+      <h3>Nueva orden</h3>
+      <div>
+        <label>Mesa</label>
+        <input type="text" id="newOrderTableInput" placeholder="Ej. 1, 2, Terraza..." />
+      </div>
+      <div>
+        <label>Nombre del cliente (opcional)</label>
+        <input type="text" id="newOrderCustomerInput" placeholder="Nombre para ticket / factura" />
+      </div>
+      <div class="modal-actions">
+        <button id="cancelNewOrderBtn" class="btn btn-neutral btn-small">Cancelar</button>
+        <button id="createNewOrderBtn" class="btn btn-success btn-small">Crear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Agregar producto -->
+  <div id="addProductModal" class="modal">
+    <div class="modal-content">
+      <h3>Agregar producto</h3>
+      <div class="product-list-modal" id="productListModal"></div>
+      <div style="margin-top:6px;">
+        <label>Cantidad</label>
+        <input type="number" id="addQtyInput" value="1" min="1" />
+      </div>
+      <div>
+        <label>Notas (opcional)</label>
+        <textarea id="addNotesInput" rows="2" placeholder="Sin azúcar, bien caliente, etc."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button id="cancelAddProductBtn" class="btn btn-neutral btn-small">Cerrar</button>
+        <button id="confirmAddProductBtn" class="btn btn-success btn-small">Agregar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= -->
+  <!--  FIREBASE + LÓGICA MESERO    -->
+  <!-- ============================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      collection,
+      query,
+      orderBy,
+      onSnapshot,
+      addDoc,
+      updateDoc,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM
+    const branchLabel = document.getElementById("branchLabel");
+    const currentUserEmailEl = document.getElementById("currentUserEmail");
+    const currentUserRoleEl = document.getElementById("currentUserRole");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalStatus = document.getElementById("globalStatus");
+
+    const chipAbiertas = document.getElementById("chipAbiertas");
+    const chipTodas = document.getElementById("chipTodas");
+    const ordersListEl = document.getElementById("ordersList");
+
+    const noOrderSelectedEl = document.getElementById("noOrderSelected");
+    const detailPanelEl = document.getElementById("detailPanel");
+
+    const detailOrderIdShortEl = document.getElementById("detailOrderIdShort");
+    const detailTableEl = document.getElementById("detailTable");
+    const detailCustomerEl = document.getElementById("detailCustomer");
+    const detailSourceBadgeEl = document.getElementById("detailSourceBadge");
+    const detailStatusBadgeEl = document.getElementById("detailStatusBadge");
+    const detailCreatedAtEl = document.getElementById("detailCreatedAt");
+    const detailItemsEl = document.getElementById("detailItems");
+    const detailTotalEl = document.getElementById("detailTotal");
+    const detailButtonsEl = document.getElementById("detailButtons");
+
+    const chatMessagesEl = document.getElementById("chatMessages");
+    const chatInputEl = document.getElementById("chatInput");
+    const chatSendBtn = document.getElementById("chatSendBtn");
+
+    const newOrderBtn = document.getElementById("newOrderBtn");
+    const newOrderModal = document.getElementById("newOrderModal");
+    const newOrderTableInput = document.getElementById("newOrderTableInput");
+    const newOrderCustomerInput = document.getElementById("newOrderCustomerInput");
+    const cancelNewOrderBtn = document.getElementById("cancelNewOrderBtn");
+    const createNewOrderBtn = document.getElementById("createNewOrderBtn");
+
+    const addProductModal = document.getElementById("addProductModal");
+    const productListModal = document.getElementById("productListModal");
+    const addQtyInput = document.getElementById("addQtyInput");
+    const addNotesInput = document.getElementById("addNotesInput");
+    const cancelAddProductBtn = document.getElementById("cancelAddProductBtn");
+    const confirmAddProductBtn = document.getElementById("confirmAddProductBtn");
+
+    branchLabel.textContent = "Sucursal: " + BRANCH_ID;
+
+    let isAdmin = false;
+    let isMesero = false;
+    let allOrders = [];
+    let currentFilter = "abiertas"; // "abiertas" | "todas"
+    let currentOrderId = null;
+    let currentOrderData = null;
+    let productsCache = [];
+    let selectedProductIdForAdd = null;
+    let chatUnsubscribe = null;
+    let itemsUnsubscribe = null;
+
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg;
+    }
+
+    function formatCurrency(n) {
+      return "$" + (n || 0).toFixed(2);
+    }
+
+    function formatTime(date) {
+      if (!date) return "--:--";
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function getStatusBadgeClass(status) {
+      switch (status) {
+        case "abierta": return "badge badge-status-abierta";
+        case "en_preparacion": return "badge badge-status-en_preparacion";
+        case "lista": return "badge badge-status-lista";
+        case "cerrada": return "badge badge-status-cerrada";
+        default: return "badge";
+      }
+    }
+
+    function getSourceBadge(source) {
+      if (source === "cliente") {
+        return { text: "Pedido desde QR", className:"badge badge-source-cliente" };
+      }
+      return { text: "Tomado por mesero", className:"badge badge-source-mesero" };
+    }
+
+    // === AUTH + ROL ===
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUserEmailEl.textContent = user.email || "(sin correo)";
+
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userDocRef);
+
+        if (!snap.exists()) {
+          currentUserRoleEl.textContent = "Sin rol";
+          setGlobalStatus("Sin rol. Contacta al administrador.");
+          alert("Tu usuario no tiene rol asignado.");
+          return;
+        }
+
+        const data = snap.data();
+        const role = data.role || "sin_rol";
+
+        isAdmin = role === "admin";
+        isMesero = role === "mesero";
+
+        if (!(isAdmin || isMesero)) {
+          alert("Acceso restringido. Esta página es solo para rol 'admin' o 'mesero'.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentUserRoleEl.textContent = "Rol: " + role;
+        setGlobalStatus("Conectado como " + role + ".");
+
+        listenOrders();
+        loadProductsCache();
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Error al verificar tu rol.");
+      }
+    });
+
+    logoutBtn.onclick = async () => {
+      if (chatUnsubscribe) chatUnsubscribe();
+      if (itemsUnsubscribe) itemsUnsubscribe();
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // === CARGAR PRODUCTOS (para agregar a órdenes) ===
+    async function loadProductsCache() {
+      try {
+        const productsRef = collection(db, "branches", BRANCH_ID, "products");
+        const qProducts = query(productsRef, orderBy("name", "asc"));
+        // Solo una carga simple
+        const unsub = onSnapshot(qProducts, (snap) => {
+          productsCache = [];
+          snap.forEach(docSnap => {
+            productsCache.push({ id: docSnap.id, data: docSnap.data() });
+          });
+        }, (err) => {
+          console.error("Error leyendo productos:", err);
+        });
+        // No guardo unsub porque son pocos y ayuda a mantenerlos actualizados
+      } catch (err) {
+        console.error("Error cargando productos:", err);
+      }
+    }
+
+    // === ÓRDENES ===
+    function listenOrders() {
+      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
+
+      onSnapshot(qOrders, (snap) => {
+        allOrders = [];
+        snap.forEach(docSnap => {
+          allOrders.push({ id: docSnap.id, data: docSnap.data() });
+        });
+        renderOrders();
+      }, (err) => {
+        console.error("Error escuchando órdenes:", err);
+        setGlobalStatus("Error leyendo órdenes.");
+      });
+    }
+
+    chipAbiertas.onclick = () => {
+      currentFilter = "abiertas";
+      chipAbiertas.classList.add("active");
+      chipTodas.classList.remove("active");
+      renderOrders();
+    };
+
+    chipTodas.onclick = () => {
+      currentFilter = "todas";
+      chipTodas.classList.add("active");
+      chipAbiertas.classList.remove("active");
+      renderOrders();
+    };
+
+    function orderMatchesFilter(order) {
+      if (currentFilter === "todas") return true;
+      const status = order.data.status || "abierta";
+      return status !== "cerrada";
+    }
+
+    function renderOrders() {
+      ordersListEl.innerHTML = "";
+
+      const filtered = allOrders.filter(orderMatchesFilter);
+
+      if (!filtered.length) {
+        ordersListEl.innerHTML = "<p class='small' style='padding:6px;'>No hay órdenes para mostrar.</p>";
+      }
+
+      filtered.forEach(({ id, data }) => {
+        const status = data.status || "abierta";
+        const created = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+        const totalOrder = data.total ?? data.subtotal ?? 0;
+
+        const row = document.createElement("div");
+        row.className = "order-row";
+        row.dataset.id = id;
+
+        const sourceInfo = getSourceBadge(data.source);
+
+        row.innerHTML = `
+          <div>
+            <div><strong>Mesa ${data.tableNumber || "?"}</strong> – ${data.customerName || "Sin nombre"}</div>
+            <div class="small">
+              <span class="${getStatusBadgeClass(status)}">${status}</span>
+              <span class="${sourceInfo.className}">${sourceInfo.text}</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div>${formatCurrency(totalOrder)}</div>
+            <div class="small">${formatTime(created)}</div>
+          </div>
+        `;
+
+        row.addEventListener("click", () => selectOrder(id, data));
+        ordersListEl.appendChild(row);
+      });
+
+      if (currentOrderId) {
+        document.querySelectorAll(".order-row").forEach(r => {
+          r.classList.toggle("selected", r.dataset.id === currentOrderId);
+        });
+      }
+    }
+
+    // === Seleccionar orden + cargar items + chat ===
+    function clearDetailListeners() {
+      if (itemsUnsubscribe) itemsUnsubscribe();
+      if (chatUnsubscribe) chatUnsubscribe();
+      itemsUnsubscribe = null;
+      chatUnsubscribe = null;
+    }
+
+    function selectOrder(orderId, orderData) {
+      currentOrderId = orderId;
+      currentOrderData = orderData;
+
+      document.querySelectorAll(".order-row").forEach(r => {
+        r.classList.toggle("selected", r.dataset.id === orderId);
+      });
+
+      noOrderSelectedEl.style.display = "none";
+      detailPanelEl.style.display = "block";
+
+      detailOrderIdShortEl.textContent = orderId.slice(-6);
+      detailTableEl.textContent = orderData.tableNumber || "?";
+      detailCustomerEl.textContent = orderData.customerName || "Sin nombre";
+
+      const sourceInfo = getSourceBadge(orderData.source);
+      detailSourceBadgeEl.className = sourceInfo.className;
+      detailSourceBadgeEl.textContent = sourceInfo.text;
+
+      const status = orderData.status || "abierta";
+      detailStatusBadgeEl.className = getStatusBadgeClass(status);
+      detailStatusBadgeEl.textContent = status;
+
+      const created = orderData.createdAt?.toDate ? orderData.createdAt.toDate() : null;
+      detailCreatedAtEl.textContent = formatTime(created);
+
+      detailTotalEl.textContent = formatCurrency(orderData.total ?? orderData.subtotal ?? 0);
+
+      renderDetailButtons(orderId, orderData);
+      subscribeItems(orderId);
+      subscribeChat(orderId);
+    }
+
+    function subscribeItems(orderId) {
+      if (itemsUnsubscribe) itemsUnsubscribe();
+
+      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
+      const qItems = query(itemsRef, orderBy("createdAt", "asc"));
+
+      itemsUnsubscribe = onSnapshot(qItems, (snap) => {
+        detailItemsEl.innerHTML = "";
+        if (snap.empty) {
+          detailItemsEl.innerHTML = "<p class='small'>No hay productos en esta orden.</p>";
+          return;
+        }
+
+        let total = 0;
+        snap.forEach(docSnap => {
+          const d = docSnap.data();
+          const amount = (d.unitPrice || 0) * (d.qty || 1);
+          total += amount;
+
+          const row = document.createElement("div");
+          row.className = "detail-item-row";
+          row.innerHTML = `
+            <div>${d.qty || 1} × <strong>${d.productName || "Producto"}</strong> – ${formatCurrency(amount)}</div>
+            ${d.notes ? `<div class="detail-item-notes">Nota: ${d.notes}</div>` : ""}
+          `;
+          detailItemsEl.appendChild(row);
+        });
+
+        // Actualizar total si falta
+        detailTotalEl.textContent = formatCurrency(total);
+      }, (err) => {
+        console.error("Error escuchando items:", err);
+        detailItemsEl.innerHTML = "<p class='small'>Error al cargar productos.</p>";
+      });
+    }
+
+    function subscribeChat(orderId) {
+      if (chatUnsubscribe) chatUnsubscribe();
+
+      const msgsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "messages");
+      const qMsgs = query(msgsRef, orderBy("createdAt", "asc"));
+
+      chatUnsubscribe = onSnapshot(qMsgs, (snap) => {
+        chatMessagesEl.innerHTML = "";
+        if (snap.empty) {
+          chatMessagesEl.innerHTML = "<p class='small'>No hay mensajes aún.</p>";
+          return;
+        }
+
+        snap.forEach(docSnap => {
+          const m = docSnap.data();
+          const div = document.createElement("div");
+          div.className = "chat-message " + (m.sender === "cliente" ? "cliente" : "mesero");
+          div.textContent = m.text;
+          chatMessagesEl.appendChild(div);
+        });
+
+        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+      }, (err) => {
+        console.error("Error escuchando chat:", err);
+      });
+    }
+
+    function renderDetailButtons(orderId, orderData) {
+      detailButtonsEl.innerHTML = "";
+
+      // Agregar producto
+      const btnAdd = document.createElement("button");
+      btnAdd.className = "btn btn-small btn-success";
+      btnAdd.textContent = "Agregar producto";
+      btnAdd.onclick = () => openAddProductModal();
+      detailButtonsEl.appendChild(btnAdd);
+
+      // Cambiar estados
+      const status = orderData.status || "abierta";
+
+      const btnPrep = document.createElement("button");
+      btnPrep.className = "btn btn-small btn-warning";
+      btnPrep.textContent = "En preparación";
+      btnPrep.onclick = () => changeStatus(orderId, "en_preparacion");
+      detailButtonsEl.appendChild(btnPrep);
+
+      const btnLista = document.createElement("button");
+      btnLista.className = "btn btn-small btn-primary";
+      btnLista.textContent = "Lista";
+      btnLista.onclick = () => changeStatus(orderId, "lista");
+      detailButtonsEl.appendChild(btnLista);
+
+      const btnCerrar = document.createElement("button");
+      btnCerrar.className = "btn btn-small btn-neutral";
+      btnCerrar.textContent = "Cerrar orden";
+      btnCerrar.onclick = () => changeStatus(orderId, "cerrada");
+      detailButtonsEl.appendChild(btnCerrar);
+    }
+
+    async function changeStatus(orderId, newStatus) {
+      try {
+        await updateDoc(doc(db, "branches", BRANCH_ID, "orders", orderId), {
+          status: newStatus,
+          updatedAt: serverTimestamp()
+        });
+        setGlobalStatus(`Orden ${orderId.slice(-6)} → ${newStatus}`);
+      } catch (err) {
+        console.error("Error cambiando estado:", err);
+        alert("No se pudo cambiar el estado.");
+      }
+    }
+
+    // === Nueva orden ===
+    newOrderBtn.onclick = () => {
+      newOrderTableInput.value = "";
+      newOrderCustomerInput.value = "";
+      newOrderModal.classList.add("active");
+      newOrderTableInput.focus();
+    };
+
+    cancelNewOrderBtn.onclick = () => {
+      newOrderModal.classList.remove("active");
+    };
+
+    createNewOrderBtn.onclick = async () => {
+      const mesa = newOrderTableInput.value.trim() || "sin_mesa";
+      const customer = newOrderCustomerInput.value.trim();
+
+      try {
+        const orderRef = await addDoc(
+          collection(db, "branches", BRANCH_ID, "orders"),
+          {
+            tableNumber: mesa,
+            customerName: customer || "",
+            customerUid: null,
+            status: "abierta",
+            source: "mesero",
+            subtotal: 0,
+            tax: 0,
+            discount: 0,
+            total: 0,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          }
+        );
+        newOrderModal.classList.remove("active");
+        setGlobalStatus(`Orden creada para mesa ${mesa}.`);
+      } catch (err) {
+        console.error("Error creando orden:", err);
+        alert("No se pudo crear la orden.");
+      }
+    };
+
+    newOrderModal.addEventListener("click", (e) => {
+      if (e.target === newOrderModal) newOrderModal.classList.remove("active");
+    });
+
+    // === Agregar producto ===
+    function openAddProductModal() {
+      if (!currentOrderId) {
+        alert("Selecciona una orden primero.");
+        return;
+      }
+
+      productListModal.innerHTML = "";
+      if (!productsCache.length) {
+        productListModal.innerHTML = "<p class='small'>No hay productos cargados.</p>";
+      } else {
+        productsCache.forEach(({ id, data }) => {
+          const row = document.createElement("div");
+          row.className = "product-row";
+          row.innerHTML = `
+            <div>${data.name}</div>
+            <div>${formatCurrency(data.basePrice || 0)}</div>
+          `;
+          row.onclick = () => {
+            selectedProductIdForAdd = id;
+            // resaltar
+            document.querySelectorAll(".product-row").forEach(r => r.style.background = "");
+            row.style.background = "#e3f2fd";
+          };
+          productListModal.appendChild(row);
+        });
+      }
+
+      addQtyInput.value = "1";
+      addNotesInput.value = "";
+      selectedProductIdForAdd = null;
+
+      addProductModal.classList.add("active");
+    }
+
+    cancelAddProductBtn.onclick = () => {
+      addProductModal.classList.remove("active");
+    };
+
+    addProductModal.addEventListener("click", (e) => {
+      if (e.target === addProductModal) addProductModal.classList.remove("active");
+    });
+
+    confirmAddProductBtn.onclick = async () => {
+      if (!currentOrderId) {
+        alert("No hay orden seleccionada.");
+        return;
+      }
+      if (!selectedProductIdForAdd) {
+        alert("Selecciona un producto.");
+        return;
+      }
+
+      const qty = parseInt(addQtyInput.value || "1", 10);
+      const notes = addNotesInput.value.trim();
+
+      const product = productsCache.find(p => p.id === selectedProductIdForAdd);
+      if (!product) {
+        alert("Producto no encontrado.");
+        return;
+      }
+
+      try {
+        await addDoc(
+          collection(db, "branches", BRANCH_ID, "orders", currentOrderId, "items"),
+          {
+            productId: product.id,
+            productName: product.data.name,
+            unitPrice: product.data.basePrice || 0,
+            qty,
+            notes,
+            status: "pendiente",
+            createdAt: serverTimestamp()
+          }
+        );
+
+        await updateDoc(doc(db, "branches", BRANCH_ID, "orders", currentOrderId), {
+          updatedAt: serverTimestamp()
+        });
+
+        setGlobalStatus("Producto agregado a la orden.");
+        addProductModal.classList.remove("active");
+      } catch (err) {
+        console.error("Error agregando producto:", err);
+        alert("No se pudo agregar el producto.");
+      }
+    };
+
+    // === Chat mesero-cliente ===
+    chatSendBtn.onclick = async () => {
+      if (!currentOrderId) {
+        alert("Selecciona una orden para chatear con el cliente.");
+        return;
+      }
+      const text = chatInputEl.value.trim();
+      if (!text) return;
+
+      try {
+        await addDoc(
+          collection(db, "branches", BRANCH_ID, "orders", currentOrderId, "messages"),
+          {
+            sender: "mesero",
+            text,
+            createdAt: serverTimestamp()
+          }
+        );
+        chatInputEl.value = "";
+      } catch (err) {
+        console.error("Error enviando mensaje:", err);
+        alert("No se pudo enviar el mensaje.");
+      }
+    };
+
+    chatInputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        chatSendBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
