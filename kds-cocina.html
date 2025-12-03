@@ -2,420 +2,726 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>KDS Cocina – Cafecaro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cafecaro – Cocina (KDS)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #050505;
-      color: #f5f5f5;
+      background: #263238;
+      color: #eceff1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
+
     header {
+      background: #37474f;
+      border-bottom: 1px solid #455a64;
       padding: 10px 16px;
-      background: #111;
-      border-bottom: 1px solid #333;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
+
     header h1 {
       margin: 0;
       font-size: 18px;
     }
+
     header .sub {
-      font-size: 12px;
+      font-size: 11px;
       opacity: 0.8;
     }
-    header .branch {
-      font-size: 13px;
-      opacity: 0.9;
+
+    header .right {
+      text-align: right;
+      font-size: 12px;
     }
-    .controls {
-      padding: 8px 16px;
-      background: #111;
-      border-bottom: 1px solid #222;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      font-size: 13px;
-      opacity: 0.9;
+
+    .role-pill {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #00c853;
+      color: #000;
     }
+
+    #logoutBtn {
+      margin-top: 4px;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #546e7a;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      color: #eceff1;
+    }
+
     main {
-      padding: 12px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 10px;
-    }
-    .order-card {
-      background: #121212;
-      border-radius: 12px;
-      border: 1px solid #333;
-      padding: 10px;
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      min-height: 160px;
+      padding: 8px;
+      gap: 8px;
     }
-    .order-header {
+
+    @media (min-width: 900px) {
+      main {
+        flex-direction: row;
+      }
+    }
+
+    .column {
+      background: #37474f;
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    @media (min-width: 900px) {
+      .column {
+        flex: 1;
+      }
+    }
+
+    .column h2 {
+      margin: 0 0 4px;
+      font-size: 16px;
+    }
+
+    .column .small {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .orders-column-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .order-card {
+      border-radius: 10px;
+      padding: 8px;
+      margin-bottom: 6px;
+      background: #455a64;
+      cursor: pointer;
+      font-size: 12px;
+      border: 1px solid transparent;
+      transition: transform 0.05s, box-shadow 0.05s, border-color 0.05s;
+    }
+
+    .order-card:hover {
+      border-color: #00e676;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    }
+
+    .order-card.new {
+      animation: newOrderPulse 1.2s ease-out 2;
+      border-color: #ffeb3b;
+    }
+
+    @keyframes newOrderPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); box-shadow: 0 0 12px rgba(255,235,59,0.7); }
+      100% { transform: scale(1); box-shadow: none; }
+    }
+
+    .order-header-line {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 4px;
     }
-    .order-header h2 {
-      margin: 0;
-      font-size: 16px;
+
+    .order-title {
+      font-weight: 700;
     }
-    .badge {
+
+    .order-meta {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+
+    .badge-source {
+      display: inline-block;
       padding: 2px 8px;
       border-radius: 999px;
-      font-size: 11px;
-      text-transform: uppercase;
-    }
-    .badge-abierta {
-      background: #ffab00;
-      color: #000;
-    }
-    .badge-en_preparacion {
-      background: #2962ff;
-      color: #fff;
-    }
-    .badge-lista {
-      background: #00c853;
-      color: #000;
-    }
-    .order-meta {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-    .items {
-      margin-top: 6px;
-      border-top: 1px solid #333;
-      padding-top: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      max-height: 60vh;
-      overflow-y: auto;
-    }
-    .item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      padding: 4px 0;
-      border-bottom: 1px dashed #333;
-      gap: 8px;
-    }
-    .item:last-child {
-      border-bottom: none;
-    }
-    .item-info {
-      flex: 1;
-    }
-    .item-name {
-      font-weight: 600;
-    }
-    .item-notes {
-      font-size: 11px;
-      opacity: 0.85;
-    }
-    .item-status {
-      display: inline-block;
       font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 999px;
-      text-transform: uppercase;
-      margin-top: 2px;
+      margin-right: 4px;
+      background:#5e35b1;
+      color:#fff;
     }
-    .status-pendiente {
-      background: #ffab00;
-      color: #000;
+    .badge-source-mesero {
+      background:#00695c;
     }
-    .status-en_preparacion {
-      background: #2962ff;
-      color: #fff;
-    }
-    .status-listo {
-      background: #00c853;
-      color: #000;
-    }
-    .item-actions button {
-      padding: 3px 8px;
-      font-size: 11px;
-      margin-left: 3px;
-      border-radius: 999px;
+
+    .btn {
       border: none;
-      cursor: pointer;
-      background: #333;
-      color: #eee;
-    }
-    .item-actions button.primary {
-      background: #00c853;
-      color: #000;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
       font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
     }
+    .btn-small { padding: 4px 8px; font-size: 11px; }
+
+    .btn-primary { background:#00b0ff; color:#000; }
+    .btn-success { background:#00e676; color:#000; }
+    .btn-warning { background:#ffca28; color:#000; }
+    .btn-neutral { background:#78909c; color:#eceff1; }
+
     .status-bar {
+      padding: 6px 12px;
       font-size: 12px;
-      opacity: 0.85;
-      padding: 6px 16px;
-      border-top: 1px solid #222;
-      background: #080808;
+      border-top: 1px solid #455a64;
+      background: #37474f;
     }
+
+    /* Detalle lateral en pantallas grandes */
+    .detail-panel {
+      background:#37474f;
+      border-radius:12px;
+      padding:8px;
+      box-shadow:0 1px 4px rgba(0,0,0,0.4);
+      margin-top:8px;
+    }
+
+    @media (min-width: 900px) {
+      .detail-panel {
+        margin-top:0;
+        margin-left:8px;
+        flex:0.9;
+      }
+      main {
+        display:flex;
+      }
+    }
+
+    .detail-header {
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:6px;
+      font-size:12px;
+      margin-bottom:4px;
+    }
+
+    .detail-items {
+      max-height:40vh;
+      overflow-y:auto;
+      border-radius:10px;
+      border:1px solid #455a64;
+      padding:6px;
+      font-size:12px;
+    }
+
+    .detail-item-row {
+      padding:4px 0;
+      border-bottom:1px solid #455a64;
+    }
+    .detail-item-row:last-child { border-bottom:none; }
+    .detail-item-notes {
+      font-size:11px;
+      opacity:0.8;
+      margin-top:2px;
+    }
+
+    .detail-footer {
+      display:flex;
+      justify-content:space-between;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:6px;
+      font-size:12px;
+      align-items:center;
+    }
+
+    .badge-status {
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      margin-right:4px;
+    }
+    .badge-status-abierta { background:#ffca28; color:#000; }
+    .badge-status-en_preparacion { background:#29b6f6; color:#000; }
+    .badge-status-lista { background:#00e676; color:#000; }
+    .badge-status-cerrada { background:#78909c; color:#eceff1; }
   </style>
 </head>
 <body>
   <header>
     <div>
-      <h1>KDS Cocina – Cafecaro</h1>
-      <div class="sub">Pedidos en tiempo real desde Mesero</div>
+      <h1>Cocina (KDS)</h1>
+      <div class="sub" id="branchLabel">Sucursal: —</div>
     </div>
-    <div class="branch" id="branchLabel"></div>
+    <div class="right">
+      <div id="currentUserEmail">—</div>
+      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
+      <button id="logoutBtn">Salir</button>
+    </div>
   </header>
 
-  <div class="controls">
-    Mostrando órdenes con estado: <strong>abierta / en_preparacion / lista</strong> (filtrado en cliente)
-  </div>
+  <main>
+    <!-- Columnas de estado -->
+    <section class="column" id="colNuevas">
+      <h2>Nuevos</h2>
+      <div class="small">Órdenes recién tomadas (status: abierta).</div>
+      <div class="orders-column-list" id="listNuevas"></div>
+    </section>
 
-  <main id="ordersContainer">
-    <!-- Aquí se pintan las órdenes -->
+    <section class="column" id="colPreparacion">
+      <h2>En preparación</h2>
+      <div class="small">Órdenes que ya están cocinándose.</div>
+      <div class="orders-column-list" id="listPreparacion"></div>
+    </section>
+
+    <section class="column" id="colListas">
+      <h2>Listas</h2>
+      <div class="small">Órdenes terminadas, listas para entregar.</div>
+      <div class="orders-column-list" id="listListas"></div>
+    </section>
   </main>
 
-  <div class="status-bar" id="statusText">Conectando con Firestore...</div>
+  <!-- Detalle de orden (en la parte de abajo en móvil / a la derecha en desktop) -->
+  <section class="detail-panel" id="detailPanel" style="display:none;">
+    <h2>Detalle de orden</h2>
+    <p id="noOrderSelected" style="font-size:11px;opacity:0.8;">Selecciona una orden para ver sus productos.</p>
 
+    <div id="detailContent" style="display:none;">
+      <div class="detail-header">
+        <div>
+          <div><strong>Orden <span id="detailOrderIdShort"></span></strong></div>
+          <div>Mesa <span id="detailTable"></span> — <span id="detailCustomer"></span></div>
+          <div style="margin-top:2px;">
+            <span id="detailSourceBadge" class="badge-source">—</span>
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="badge-status" id="detailStatusBadge">status</div>
+          <div style="font-size:11px;opacity:0.8;">Creada: <span id="detailCreatedAt"></span></div>
+        </div>
+      </div>
+
+      <div class="detail-items" id="detailItems"></div>
+
+      <div class="detail-footer">
+        <div>Total aproximado: <strong id="detailTotal">$0.00</strong></div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;" id="detailButtons">
+          <!-- botones llenados por JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="globalStatus" class="status-bar">Conectando...</div>
+
+  <!-- ============================= -->
+  <!--   FIREBASE + LÓGICA KDS      -->
+  <!-- ============================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
       getFirestore,
-      collection,
       doc,
-      onSnapshot,
+      getDoc,
+      collection,
       query,
       orderBy,
+      onSnapshot,
       updateDoc,
-      serverTimestamp,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    // === Config de tu proyecto Cafecaro ===
     const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8d21",
       authDomain: "cafecaro-af23b.firebaseapp.com",
       projectId: "cafecaro-af23b",
       storageBucket: "cafecaro-af23b.firebasestorage.app",
       messagingSenderId: "534231921780",
-      appId: "1:534231921780:web:f3702e23c024c14c0c8d21",
-      measurementId: "G-JC720XBF92"
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
     };
 
     const BRANCH_ID = "cafecaro-centro";
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // DOM
     const branchLabel = document.getElementById("branchLabel");
-    const ordersContainer = document.getElementById("ordersContainer");
-    const statusText = document.getElementById("statusText");
+    const currentUserEmailEl = document.getElementById("currentUserEmail");
+    const currentUserRoleEl = document.getElementById("currentUserRole");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalStatus = document.getElementById("globalStatus");
 
-    branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
+    const listNuevas = document.getElementById("listNuevas");
+    const listPreparacion = document.getElementById("listPreparacion");
+    const listListas = document.getElementById("listListas");
 
-    let unsubscribeOrders = null;
-    const itemsUnsubscribes = new Map(); // orderId -> unsubscribe
+    const detailPanel = document.getElementById("detailPanel");
+    const noOrderSelectedEl = document.getElementById("noOrderSelected");
+    const detailContentEl = document.getElementById("detailContent");
 
-    function setStatus(msg) {
-      statusText.textContent = msg;
+    const detailOrderIdShortEl = document.getElementById("detailOrderIdShort");
+    const detailTableEl = document.getElementById("detailTable");
+    const detailCustomerEl = document.getElementById("detailCustomer");
+    const detailSourceBadgeEl = document.getElementById("detailSourceBadge");
+    const detailStatusBadgeEl = document.getElementById("detailStatusBadge");
+    const detailCreatedAtEl = document.getElementById("detailCreatedAt");
+    const detailItemsEl = document.getElementById("detailItems");
+    const detailTotalEl = document.getElementById("detailTotal");
+    const detailButtonsEl = document.getElementById("detailButtons");
+
+    branchLabel.textContent = "Sucursal: " + BRANCH_ID;
+
+    let isAdmin = false;
+    let isCocina = false;
+    let allOrders = [];
+    let currentOrderId = null;
+    let itemsUnsubscribe = null;
+
+    // === Audio de nueva orden ===
+    let newOrderAudio = null;
+    function initAudio() {
+      // Pequeño beep (puede que algunos navegadores pidan interacción previa)
+      newOrderAudio = new Audio(
+        "data:audio/wav;base64,UklGRhQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQwAAAAA/////wAAAP///wAAAP///wAAAP///wAAAP///wAAAP///wAA"
+      );
     }
 
-    // Render de tarjeta de orden
-    function renderOrderCard(orderId, orderData) {
-      const cardId = `order-${orderId}`;
-      let card = document.getElementById(cardId);
-
-      if (!card) {
-        card = document.createElement("div");
-        card.className = "order-card";
-        card.id = cardId;
-        ordersContainer.appendChild(card);
-      }
-
-      const createdAt = orderData.createdAt?.toDate ? orderData.createdAt.toDate() : null;
-      let timeText = "";
-      if (createdAt) {
-        const diffMs = Date.now() - createdAt.getTime();
-        const diffMin = Math.floor(diffMs / 60000);
-        if (diffMin >= 0) timeText = `${diffMin} min`;
-      }
-
-      const badgeClass = `badge-${orderData.status}`;
-
-      card.innerHTML = `
-        <div class="order-header">
-          <h2>Mesa ${orderData.tableNumber ?? "-"}</h2>
-          <span class="badge ${badgeClass}">${orderData.status}</span>
-        </div>
-        <div class="order-meta">
-          Orden: ${orderId}<br>
-          Origen: ${orderData.source ?? "-"}<br>
-          Tiempo: ${timeText}
-        </div>
-        <div class="items" id="items-${orderId}">
-          <em>Cargando productos...</em>
-        </div>
-      `;
+    function playNewOrderSound() {
+      if (!newOrderAudio) return;
+      try {
+        newOrderAudio.currentTime = 0;
+        newOrderAudio.play().catch(() => {});
+      } catch (e) {}
     }
 
-    // Botones según estado de item
-    function renderItemButtonsHtml(status) {
-      let html = "";
-      if (status === "pendiente") {
-        html += `<button class="primary" data-next="en_preparacion">Preparar</button>`;
-      } else if (status === "en_preparacion") {
-        html += `<button class="primary" data-next="listo">Listo</button>`;
-      }
-      if (status !== "pendiente") {
-        html += `<button data-next="pendiente">Reset</button>`;
-      }
-      return html;
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg;
     }
 
-    function attachItemButtonsActions(container, branchId, orderId, itemId) {
-      if (!container) return;
-      const buttons = container.querySelectorAll("button[data-next]");
-      buttons.forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const nextStatus = btn.getAttribute("data-next");
-          try {
-            const itemRef = doc(
-              db,
-              "branches",
-              branchId,
-              "orders",
-              orderId,
-              "items",
-              itemId
-            );
-            await updateDoc(itemRef, {
-              status: nextStatus,
-              updatedAt: serverTimestamp(),
-            });
-          } catch (err) {
-            console.error("Error al actualizar item:", err);
-            alert("No se pudo actualizar el estado del producto.");
+    function formatCurrency(n) {
+      return "$" + (n || 0).toFixed(2);
+    }
+
+    function formatTime(date) {
+      if (!date) return "--:--";
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function badgeStatusClass(status) {
+      switch (status) {
+        case "abierta": return "badge-status badge-status-abierta";
+        case "en_preparacion": return "badge-status badge-status-en_preparacion";
+        case "lista": return "badge-status badge-status-lista";
+        case "cerrada": return "badge-status badge-status-cerrada";
+        default: return "badge-status";
+      }
+    }
+
+    function sourceInfo(source) {
+      if (source === "cliente") {
+        return { text:"QR cliente", className:"badge-source" };
+      }
+      return { text:"Mesero", className:"badge-source badge-source-mesero" };
+    }
+
+    // === AUTH + ROL ===
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUserEmailEl.textContent = user.email || "(sin correo)";
+
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userDocRef);
+
+        if (!snap.exists()) {
+          currentUserRoleEl.textContent = "Sin rol";
+          setGlobalStatus("Sin rol. Contacta al administrador.");
+          alert("Tu usuario no tiene rol asignado.");
+          return;
+        }
+
+        const data = snap.data();
+        const role = data.role || "sin_rol";
+
+        isAdmin = role === "admin";
+        isCocina = role === "cocina";
+
+        if (!(isAdmin || isCocina)) {
+          alert("Acceso restringido. Esta pantalla es solo para cocina o admin.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentUserRoleEl.textContent = "Rol: " + role;
+        setGlobalStatus("Conectado como " + role + ".");
+        initAudio();
+        listenOrders();
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Error al verificar tu rol.");
+      }
+    });
+
+    logoutBtn.onclick = async () => {
+      if (itemsUnsubscribe) itemsUnsubscribe();
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // === ESCUCHAR ÓRDENES (solo 1 índice: createdAt) ===
+    function listenOrders() {
+      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+      const qOrders = query(ordersRef, orderBy("createdAt", "asc"));
+
+      onSnapshot(qOrders, (snap) => {
+        const changes = snap.docChanges();
+        // Detectar nuevas órdenes abiertas para sonido
+        changes.forEach(change => {
+          if (change.type === "added") {
+            const d = change.doc.data();
+            if ((d.status || "abierta") === "abierta") {
+              playNewOrderSound();
+            }
           }
         });
+
+        allOrders = [];
+        snap.forEach(docSnap => {
+          allOrders.push({ id: docSnap.id, data: docSnap.data() });
+        });
+        renderColumns();
+      }, (err) => {
+        console.error("Error escuchando órdenes en KDS:", err);
+        setGlobalStatus("Error leyendo órdenes.");
       });
     }
 
-    // Escuchar items de cada orden
-    function listenOrderItems(branchId, orderId) {
-      if (itemsUnsubscribes.has(orderId)) return; // ya escuchando
+    function renderColumns() {
+      listNuevas.innerHTML = "";
+      listPreparacion.innerHTML = "";
+      listListas.innerHTML = "";
 
-      const itemsRef = collection(db, "branches", branchId, "orders", orderId, "items");
+      const nuevas = [];
+      const prep = [];
+      const listas = [];
+
+      allOrders.forEach(({ id, data }) => {
+        const status = data.status || "abierta";
+        if (status === "cerrada") return; // cocina ya no la necesita
+
+        if (status === "abierta") nuevas.push({ id, data });
+        else if (status === "en_preparacion") prep.push({ id, data });
+        else if (status === "lista") listas.push({ id, data });
+      });
+
+      if (!nuevas.length) {
+        listNuevas.innerHTML = "<p style='font-size:11px;opacity:0.8;'>Sin órdenes nuevas.</p>";
+      }
+      if (!prep.length) {
+        listPreparacion.innerHTML = "<p style='font-size:11px;opacity:0.8;'>Ninguna en preparación.</p>";
+      }
+      if (!listas.length) {
+        listListas.innerHTML = "<p style='font-size:11px;opacity:0.8;'>Ninguna lista.</p>";
+      }
+
+      nuevas.forEach(o => listNuevas.appendChild(createOrderCard(o, true)));
+      prep.forEach(o => listPreparacion.appendChild(createOrderCard(o, false)));
+      listas.forEach(o => listListas.appendChild(createOrderCard(o, false)));
+
+      // Si la orden seleccionada deja de estar en estos estados, ocultar detalle
+      if (currentOrderId) {
+        const stillVisible = allOrders.some(o => o.id === currentOrderId && o.data.status !== "cerrada");
+        if (!stillVisible) {
+          currentOrderId = null;
+          if (itemsUnsubscribe) itemsUnsubscribe();
+          itemsUnsubscribe = null;
+          detailPanel.style.display = "none";
+        }
+      }
+    }
+
+    function createOrderCard({ id, data }, isNew) {
+      const card = document.createElement("div");
+      card.className = "order-card" + (isNew ? " new" : "");
+      card.dataset.id = id;
+
+      const created = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+      const itemsCount = data.itemsCount || null; // opcional, si en un futuro lo guardas
+      const totalApprox = data.total ?? data.subtotal ?? 0;
+
+      const src = sourceInfo(data.source);
+
+      card.innerHTML = `
+        <div class="order-header-line">
+          <div class="order-title">Mesa ${data.tableNumber || "?"}</div>
+          <div class="order-meta">${formatTime(created)}</div>
+        </div>
+        <div class="order-meta">${data.customerName || "Sin nombre"}</div>
+        <div class="order-meta">
+          <span class="${src.className}">${src.text}</span>
+        </div>
+        <div class="order-meta">
+          Total aprox: ${formatCurrency(totalApprox)}
+        </div>
+      `;
+
+      card.onclick = () => selectOrder(id, data);
+      return card;
+    }
+
+    // === DETALLE ===
+    async function selectOrder(orderId, orderData) {
+      currentOrderId = orderId;
+
+      detailPanel.style.display = "block";
+      noOrderSelectedEl.style.display = "none";
+      detailContentEl.style.display = "block";
+
+      detailOrderIdShortEl.textContent = orderId.slice(-6);
+      detailTableEl.textContent = orderData.tableNumber || "?";
+      detailCustomerEl.textContent = orderData.customerName || "Sin nombre";
+      const src = sourceInfo(orderData.source);
+      detailSourceBadgeEl.className = src.className;
+      detailSourceBadgeEl.textContent = src.text;
+
+      const status = orderData.status || "abierta";
+      detailStatusBadgeEl.className = badgeStatusClass(status);
+      detailStatusBadgeEl.textContent = status;
+
+      const created = orderData.createdAt?.toDate ? orderData.createdAt.toDate() : null;
+      detailCreatedAtEl.textContent = formatTime(created);
+
+      detailItemsEl.innerHTML = "<p style='font-size:11px;opacity:0.8;'>Cargando productos...</p>";
+      detailTotalEl.textContent = formatCurrency(orderData.total ?? orderData.subtotal ?? 0);
+
+      renderDetailButtons(orderId, orderData);
+      subscribeItems(orderId);
+    }
+
+    function renderDetailButtons(orderId, orderData) {
+      detailButtonsEl.innerHTML = "";
+
+      const status = orderData.status || "abierta";
+
+      if (status === "abierta") {
+        const btnTomar = document.createElement("button");
+        btnTomar.className = "btn btn-small btn-warning";
+        btnTomar.textContent = "Tomar y poner en preparación";
+        btnTomar.onclick = () => changeStatus(orderId, "en_preparacion");
+        detailButtonsEl.appendChild(btnTomar);
+      }
+
+      if (status === "en_preparacion") {
+        const btnLista = document.createElement("button");
+        btnLista.className = "btn btn-small btn-success";
+        btnLista.textContent = "Marcar como lista";
+        btnLista.onclick = () => changeStatus(orderId, "lista");
+        detailButtonsEl.appendChild(btnLista);
+      }
+
+      if (status === "lista") {
+        const btnCerrar = document.createElement("button");
+        btnCerrar.className = "btn btn-small btn-neutral";
+        btnCerrar.textContent = "Cerrar orden (entregada)";
+        btnCerrar.onclick = () => changeStatus(orderId, "cerrada");
+        detailButtonsEl.appendChild(btnCerrar);
+      }
+
+      // Botón para regresar etapa si se equivocan (solo admin o cocina)
+      const btnReabrir = document.createElement("button");
+      btnReabrir.className = "btn btn-small btn-primary";
+      btnReabrir.textContent = "Reabrir / ajustar estado";
+      btnReabrir.onclick = async () => {
+        const nuevo = prompt(
+          "Nuevo estado (abierta, en_preparacion, lista, cerrada):",
+          status
+        );
+        if (!nuevo) return;
+        if (!["abierta","en_preparacion","lista","cerrada"].includes(nuevo)) {
+          alert("Estado no válido.");
+          return;
+        }
+        changeStatus(orderId, nuevo);
+      };
+      detailButtonsEl.appendChild(btnReabrir);
+    }
+
+    async function changeStatus(orderId, newStatus) {
+      try {
+        await updateDoc(doc(db, "branches", BRANCH_ID, "orders", orderId), {
+          status: newStatus,
+          updatedAt: serverTimestamp()
+        });
+        setGlobalStatus(`Orden ${orderId.slice(-6)} → ${newStatus}`);
+      } catch (err) {
+        console.error("Error cambiando estado:", err);
+        alert("No se pudo actualizar el estado.");
+      }
+    }
+
+    function subscribeItems(orderId) {
+      if (itemsUnsubscribe) itemsUnsubscribe();
+
+      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
       const qItems = query(itemsRef, orderBy("createdAt", "asc"));
 
-      const unsub = onSnapshot(
-        qItems,
-        snapshot => {
-          const container = document.getElementById(`items-${orderId}`);
-          if (!container) return;
-
-          container.innerHTML = "";
-          if (snapshot.size === 0) {
-            container.innerHTML = "<em>Sin productos.</em>";
-            return;
-          }
-
-          snapshot.forEach(docSnap => {
-            const data = docSnap.data();
-            const itemId = docSnap.id;
-            const itemEl = document.createElement("div");
-            const statusClass = `status-${data.status}`;
-
-            itemEl.className = "item";
-            itemEl.innerHTML = `
-              <div class="item-info">
-                <div class="item-name">${data.productName ?? "Producto"}</div>
-                <div class="item-notes">
-                  x${data.qty ?? 1}
-                  ${data.notes ? " · " + data.notes : ""}
-                </div>
-                <span class="item-status ${statusClass}">${data.status}</span>
-              </div>
-              <div class="item-actions">
-                ${renderItemButtonsHtml(data.status)}
-              </div>
-            `;
-
-            const actionsDiv = itemEl.querySelector(".item-actions");
-            attachItemButtonsActions(actionsDiv, branchId, orderId, itemId);
-
-            container.appendChild(itemEl);
-          });
-        },
-        err => {
-          console.error("Error al escuchar items:", err);
+      itemsUnsubscribe = onSnapshot(qItems, (snap) => {
+        detailItemsEl.innerHTML = "";
+        if (snap.empty) {
+          detailItemsEl.innerHTML = "<p style='font-size:11px;opacity:0.8;'>Sin productos.</p>";
+          return;
         }
-      );
 
-      itemsUnsubscribes.set(orderId, unsub);
+        let total = 0;
+        snap.forEach(docSnap => {
+          const d = docSnap.data();
+          const amount = (d.unitPrice || 0) * (d.qty || 1);
+          total += amount;
+
+          const row = document.createElement("div");
+          row.className = "detail-item-row";
+          row.innerHTML = `
+            <div>${d.qty || 1} × <strong>${d.productName || "Producto"}</strong> – ${formatCurrency(amount)}</div>
+            ${d.notes ? `<div class="detail-item-notes">Nota: ${d.notes}</div>` : ""}
+          `;
+          detailItemsEl.appendChild(row);
+        });
+
+        detailTotalEl.textContent = formatCurrency(total);
+      }, (err) => {
+        console.error("Error escuchando items en KDS:", err);
+        detailItemsEl.innerHTML = "<p style='font-size:11px;opacity:0.8;'>Error al cargar productos.</p>";
+      });
     }
-
-    // Escuchar órdenes (todas) y filtrar en cliente
-    function listenOrders() {
-      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-
-      // 👇 Solo orderBy(createdAt) → sin where → NO requiere índice compuesto
-      const qOrders = query(
-        ordersRef,
-        orderBy("createdAt", "asc")
-      );
-
-      unsubscribeOrders = onSnapshot(
-        qOrders,
-        snapshot => {
-          ordersContainer.innerHTML = "";
-
-          // Filtrar solo ordenes que nos interesan
-          const activeStatuses = ["abierta", "en_preparacion", "lista"];
-          const docs = snapshot.docs.filter(d => {
-            const data = d.data();
-            return activeStatuses.includes(data.status);
-          });
-
-          setStatus(`Órdenes activas: ${docs.length}`);
-
-          // Limpiar listeners de items que ya no están
-          const activeOrderIds = new Set(docs.map(d => d.id));
-          for (const [oid, unsub] of itemsUnsubscribes.entries()) {
-            if (!activeOrderIds.has(oid)) {
-              unsub();
-              itemsUnsubscribes.delete(oid);
-            }
-          }
-
-          if (docs.length === 0) {
-            ordersContainer.innerHTML = "<p>No hay órdenes activas.</p>";
-            return;
-          }
-
-          docs.forEach(docSnap => {
-            const orderId = docSnap.id;
-            const data = docSnap.data();
-            renderOrderCard(orderId, data);
-            listenOrderItems(BRANCH_ID, orderId);
-          });
-        },
-        err => {
-          console.error("Error al escuchar órdenes:", err);
-          setStatus("Error escuchando órdenes. Revisa la consola.");
-        }
-      );
-    }
-
-    // Iniciar
-    listenOrders();
   </script>
 </body>
 </html>
