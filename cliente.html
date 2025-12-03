@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafecaro – Menú del cliente</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #fafafa;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 14px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #3e2723;
+      font-weight: 700;
+    }
+
+    header .sub {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    main {
+      padding: 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .mesa-box {
+      background: #fff;
+      padding: 12px;
+      border-radius: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .mesa-box label {
+      font-size: 13px;
+    }
+
+    .mesa-input {
+      margin-top: 6px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 14px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: 6px;
+      color: #5d4037;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
+    }
+
+    @media(min-width: 700px) {
+      .products-grid {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+      }
+    }
+
+    .product-card {
+      background: white;
+      border-radius: 14px;
+      padding: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.13);
+    }
+
+    .product-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: #4e342e;
+    }
+
+    .product-price {
+      font-size: 14px;
+      color: #6d4c41;
+      font-weight: 600;
+    }
+
+    .notes-input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      font-size: 12px;
+      resize: none;
+    }
+
+    .cart {
+      background: #fff;
+      padding: 12px;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 10px;
+    }
+
+    .cart h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #3e2723;
+    }
+
+    .cart-item {
+      border-bottom: 1px solid #eee;
+      padding: 8px 0;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-total {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 10px;
+      color: #4e342e;
+    }
+
+    .btn-submit {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      background: #5d4037;
+      color: #ffe0b2;
+      font-weight: 700;
+      padding: 12px 14px;
+      margin-top: 12px;
+      font-size: 15px;
+      cursor: pointer;
+      box-shadow: 0 3px 7px rgba(93,64,55,0.5);
+    }
+
+    .btn-submit:active {
+      transform: translateY(1px);
+    }
+
+    .status-msg {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 8px;
+      padding: 6px;
+      border-radius: 8px;
+      display: none;
+    }
+
+    .success {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>Menú Cafecaro</h1>
+    <div class="sub">Elige tus productos y envía tu pedido</div>
+  </header>
+
+  <main>
+
+    <!-- MESA -->
+    <section class="mesa-box">
+      <label for="mesaInput">Número de mesa:</label>
+      <input id="mesaInput" type="text" class="mesa-input" placeholder="Ej. PB-01, 12, Balcón 3" />
+    </section>
+
+    <h2 class="section-title">Menú</h2>
+
+    <!-- PRODUCTOS -->
+    <div id="productsContainer" class="products-grid"></div>
+
+    <!-- CARRITO -->
+    <section class="cart" id="cartBox" style="display:none;">
+      <h2>Tu pedido</h2>
+      <div id="cartItems"></div>
+      <div class="cart-total" id="cartTotal"></div>
+      <button id="btnEnviar" class="btn-submit">Enviar pedido</button>
+      <div id="statusMsg" class="status-msg"></div>
+    </section>
+
+  </main>
+
+  <!-- =========================================== -->
+  <!--               FIREBASE JS                  -->
+  <!-- =========================================== -->
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      doc,
+      setDoc,
+      serverTimestamp,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    /* FIREBASE */
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const BRANCH_ID = "cafecaro-centro";
+
+    /* DOM */
+    const productsContainer = document.getElementById("productsContainer");
+    const cartBox = document.getElementById("cartBox");
+    const cartItemsEl = document.getElementById("cartItems");
+    const cartTotalEl = document.getElementById("cartTotal");
+    const mesaInput = document.getElementById("mesaInput");
+    const btnEnviar = document.getElementById("btnEnviar");
+    const statusMsg = document.getElementById("statusMsg");
+
+    let cart = [];
+
+    /* ==================== CARGAR MENÚ ==================== */
+    async function loadMenu() {
+      const ref = collection(db, "branches", BRANCH_ID, "products");
+      const snap = await getDocs(ref);
+      productsContainer.innerHTML = "";
+
+      snap.forEach(prod => {
+        const p = prod.data();
+
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        card.innerHTML = `
+          <div class="product-name">${p.name}</div>
+          <div class="product-price">$${p.price.toFixed(2)}</div>
+          <textarea class="notes-input" placeholder="Notas (opcional)"></textarea>
+          <button class="btn-submit" style="padding:8px;margin-top:6px;">Agregar</button>
+        `;
+
+        const btn = card.querySelector("button");
+        const notesInput = card.querySelector("textarea");
+
+        btn.onclick = () => {
+          addToCart({
+            productId: prod.id,
+            productName: p.name,
+            price: p.price,
+            notes: notesInput.value || ""
+          });
+          notesInput.value = "";
+        };
+
+        productsContainer.appendChild(card);
+      });
+    }
+
+    loadMenu();
+
+    /* ==================== CARRITO ==================== */
+    function addToCart(item) {
+      cart.push(item);
+      renderCart();
+    }
+
+    function renderCart() {
+      if (cart.length === 0) {
+        cartBox.style.display = "none";
+        return;
+      }
+
+      cartBox.style.display = "block";
+      cartItemsEl.innerHTML = "";
+
+      let total = 0;
+
+      cart.forEach((item, index) => {
+        total += item.price;
+
+        const div = document.createElement("div");
+        div.className = "cart-item";
+
+        div.innerHTML = `
+          <span>
+            ${item.productName}  
+            ${item.notes ? `<span style="font-size:11px;opacity:0.7;">(${item.notes})</span>` : ""}
+          </span>
+          <button style="padding:4px 8px;border:none;border-radius:6px;background:#eee;" data-index="${index}">
+            ❌
+          </button>
+        `;
+
+        div.querySelector("button").onclick = (e) => {
+          cart.splice(index, 1);
+          renderCart();
+        };
+
+        cartItemsEl.appendChild(div);
+      });
+
+      cartTotalEl.textContent = "Total: $" + total.toFixed(2);
+    }
+
+    /* ==================== ENVIAR PEDIDO ==================== */
+    btnEnviar.onclick = async () => {
+      const mesa = mesaInput.value.trim();
+
+      if (!mesa) {
+        showStatus("Debes ingresar el número de mesa.", true);
+        return;
+      }
+
+      if (cart.length === 0) {
+        showStatus("Tu carrito está vacío.", true);
+        return;
+      }
+
+      try {
+        showStatus("Enviando pedido...", false);
+
+        // 1. Crear orden
+        const orderRef = await addDoc(collection(db, "branches", BRANCH_ID, "orders"), {
+          tableNumber: mesa,
+          status: "abierta",
+          source: "cliente",
+          subtotal: cart.reduce((acc, x) => acc + x.price, 0),
+          total: cart.reduce((acc, x) => acc + x.price, 0),
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+
+        // 2. Crear items
+        for (const item of cart) {
+          await addDoc(
+            collection(db, "branches", BRANCH_ID, "orders", orderRef.id, "items"),
+            {
+              productId: item.productId,
+              productName: item.productName,
+              price: item.price,
+              notes: item.notes,
+              createdAt: serverTimestamp()
+            }
+          );
+        }
+
+        // Limpiar carrito
+        cart = [];
+        renderCart();
+        mesaInput.value = "";
+
+        showStatus("¡Pedido enviado! El mesero ha sido notificado.", false, true);
+
+      } catch (err) {
+        console.error(err);
+        showStatus("Hubo un problema al enviar tu pedido. Revisa tu conexión.", true);
+      }
+    };
+
+    function showStatus(msg, isError = false, success = false) {
+      statusMsg.style.display = "block";
+      statusMsg.textContent = msg;
+      statusMsg.className = "status-msg " + (isError ? "error" : "success");
+    }
+
+  </script>
+
+</body>
+</html>
