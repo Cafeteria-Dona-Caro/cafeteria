@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafecaro – Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f3f4f6;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #111827;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #111827;
+      color: #f9fafb;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+
+    .h-left h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .h-left .sub {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .h-right {
+      text-align: right;
+      font-size: 11px;
+    }
+
+    .role-pill {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #1f2937;
+      color: #a5b4fc;
+      font-weight: 600;
+    }
+
+    .top-buttons {
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .btn-small {
+      padding: 5px 9px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      background: #111827;
+      color: #f9fafb;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 1000px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #111827;
+      margin-bottom: 6px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2,minmax(0,1fr));
+      gap: 8px;
+    }
+
+    @media(min-width: 700px) {
+      .summary-grid {
+        grid-template-columns: repeat(4,minmax(0,1fr));
+      }
+    }
+
+    .summary-pill {
+      border-radius: 12px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+    }
+
+    .summary-label {
+      font-size: 11px;
+      color: #6b7280;
+    }
+
+    .summary-value {
+      font-size: 16px;
+      font-weight: 700;
+      margin-top: 2px;
+    }
+
+    .summary-role-admin { border-left: 4px solid #6366f1; }
+    .summary-role-caja  { border-left: 4px solid #f59e0b; }
+    .summary-role-mesero{ border-left: 4px solid #10b981; }
+    .summary-role-cocina{ border-left: 4px solid #f97316; }
+
+    .users-table-wrapper {
+      margin-top: 6px;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      min-width: 520px;
+    }
+
+    thead {
+      background: #f9fafb;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+      white-space: nowrap;
+    }
+
+    th {
+      font-weight: 600;
+      color: #4b5563;
+      font-size: 11px;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #f9fafb;
+    }
+
+    .uid-cell {
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .role-select, .branch-input {
+      font-size: 12px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      padding: 4px 8px;
+      font-family: inherit;
+      background: #ffffff;
+    }
+
+    .branch-input {
+      border-radius: 6px;
+    }
+
+    .tag-branch {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-size: 10px;
+    }
+
+    .status-msg {
+      margin-top: 8px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      display: none;
+    }
+    .status-ok {
+      background: #ecfdf3;
+      color: #166534;
+    }
+    .status-error {
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+
+    .badge-role {
+      display:inline-block;
+      padding:2px 6px;
+      border-radius:999px;
+      font-size:10px;
+    }
+    .badge-role-admin { background:#eef2ff; color:#4f46e5; }
+    .badge-role-caja  { background:#fffbeb; color:#d97706; }
+    .badge-role-mesero{ background:#ecfdf3; color:#15803d; }
+    .badge-role-cocina{ background:#fff7ed; color:#ea580c; }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="h-left">
+      <h1>Panel de administración</h1>
+      <div class="sub">Gestión de usuarios, roles y sucursales</div>
+    </div>
+    <div class="h-right">
+      <div id="userEmail">—</div>
+      <div id="userRole" class="role-pill">Verificando rol...</div>
+      <div class="top-buttons">
+        <button id="homeBtn" class="btn-small">Inicio</button>
+        <button id="logoutBtn" class="btn-small">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- RESUMEN DE ROLES -->
+    <section class="card">
+      <div class="card-title">Resumen de usuarios</div>
+      <div class="summary-grid">
+        <div class="summary-pill summary-role-admin">
+          <div class="summary-label">Administradores</div>
+          <div id="countAdmin" class="summary-value">0</div>
+        </div>
+        <div class="summary-pill summary-role-caja">
+          <div class="summary-label">Caja</div>
+          <div id="countCaja" class="summary-value">0</div>
+        </div>
+        <div class="summary-pill summary-role-mesero">
+          <div class="summary-label">Meseros</div>
+          <div id="countMesero" class="summary-value">0</div>
+        </div>
+        <div class="summary-pill summary-role-cocina">
+          <div class="summary-label">Cocina</div>
+          <div id="countCocina" class="summary-value">0</div>
+        </div>
+      </div>
+      <div class="hint">
+        Para crear un usuario nuevo: primero agrégalo en <strong>Firebase Auth</strong> (correo + contraseña),  
+        luego asígnale rol y sucursal aquí en la colección <code>users</code>.
+      </div>
+    </section>
+
+    <!-- TABLA DE USUARIOS -->
+    <section class="card">
+      <div class="card-title">Usuarios del sistema</div>
+      <div class="hint">
+        Los cambios de rol y sucursal se guardan <strong>automáticamente</strong> cuando cambias el valor.
+      </div>
+      <div class="users-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Sucursal</th>
+              <th>UID</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <!-- filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="statusBox" class="status-msg"></div>
+    </section>
+  </main>
+
+  <!-- =========================================== -->
+  <!--               FIREBASE JS                  -->
+  <!-- =========================================== -->
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      onSnapshot,
+      updateDoc
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const DEFAULT_BRANCH = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const userEmailEl = document.getElementById("userEmail");
+    const userRoleEl = document.getElementById("userRole");
+    const homeBtn = document.getElementById("homeBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const countAdminEl = document.getElementById("countAdmin");
+    const countCajaEl = document.getElementById("countCaja");
+    const countMeseroEl = document.getElementById("countMesero");
+    const countCocinaEl = document.getElementById("countCocina");
+
+    const usersTableBody = document.getElementById("usersTableBody");
+    const statusBox = document.getElementById("statusBox");
+
+    function showStatus(msg, isError = false) {
+      statusBox.style.display = "block";
+      statusBox.textContent = msg;
+      statusBox.className = "status-msg " + (isError ? "status-error" : "status-ok");
+    }
+
+    homeBtn.onclick = () => {
+      window.location.href = "index.html";
+    };
+
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // Auth + check admin
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      userEmailEl.textContent = user.email || "(sin correo)";
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        userRoleEl.textContent = "Sin rol";
+        alert("Tu usuario no tiene rol asignado. Contacta al administrador.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      const role = userDoc.data().role || "sin_rol";
+      userRoleEl.textContent = "Rol: " + role;
+
+      if (role !== "admin") {
+        alert("Este módulo es solo para administradores.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      listenUsers();
+    });
+
+    function listenUsers() {
+      const ref = collection(db, "users");
+      onSnapshot(ref, (snap) => {
+        const users = [];
+        snap.forEach(docSnap => {
+          users.push({ uid: docSnap.id, ...docSnap.data() });
+        });
+        renderUsers(users);
+      }, (err) => {
+        console.error(err);
+        showStatus("Error al cargar usuarios.", true);
+      });
+    }
+
+    function renderUsers(users) {
+      usersTableBody.innerHTML = "";
+
+      let cAdmin = 0, cCaja = 0, cMesero = 0, cCocina = 0;
+
+      users.forEach(u => {
+        const email = u.email || "(sin correo)";
+        const role = u.role || "sin_rol";
+        const branchId = u.branchId || DEFAULT_BRANCH;
+        const uid = u.uid;
+
+        if (role === "admin") cAdmin++;
+        else if (role === "caja") cCaja++;
+        else if (role === "mesero") cMesero++;
+        else if (role === "cocina") cCocina++;
+
+        const tr = document.createElement("tr");
+
+        // Correo
+        const tdEmail = document.createElement("td");
+        tdEmail.textContent = email;
+        tr.appendChild(tdEmail);
+
+        // Rol
+        const tdRole = document.createElement("td");
+        const select = document.createElement("select");
+        select.className = "role-select";
+        select.dataset.uid = uid;
+
+        const roles = ["admin","caja","mesero","cocina"];
+        roles.forEach(r => {
+          const opt = document.createElement("option");
+          opt.value = r;
+          opt.textContent = r;
+          if (role === r) opt.selected = true;
+          select.appendChild(opt);
+        });
+
+        select.onchange = async () => {
+          const newRole = select.value;
+          try {
+            await updateDoc(doc(db, "users", uid), { role: newRole });
+            showStatus(`Rol actualizado a "${newRole}" para ${email}`);
+          } catch (err) {
+            console.error(err);
+            showStatus("Error al actualizar el rol.", true);
+          }
+        };
+
+        tdRole.appendChild(select);
+
+        // Badge rol visual
+        const badge = document.createElement("span");
+        badge.className = "badge-role " + roleBadgeClass(role);
+        badge.textContent = role;
+        tdRole.appendChild(document.createElement("br"));
+        tdRole.appendChild(badge);
+
+        tr.appendChild(tdRole);
+
+        // Sucursal
+        const tdBranch = document.createElement("td");
+        const inputBranch = document.createElement("input");
+        inputBranch.className = "branch-input";
+        inputBranch.value = branchId;
+        inputBranch.dataset.uid = uid;
+        inputBranch.placeholder = DEFAULT_BRANCH;
+
+        let branchTimeout = null;
+        inputBranch.oninput = () => {
+          if (branchTimeout) clearTimeout(branchTimeout);
+          branchTimeout = setTimeout(async () => {
+            const newBranch = inputBranch.value.trim() || DEFAULT_BRANCH;
+            try {
+              await updateDoc(doc(db, "users", uid), { branchId: newBranch });
+              showStatus(`Sucursal actualizada a "${newBranch}" para ${email}`);
+            } catch (err) {
+              console.error(err);
+              showStatus("Error al actualizar sucursal.", true);
+            }
+          }, 600);
+        };
+
+        tdBranch.appendChild(inputBranch);
+        tdBranch.appendChild(document.createElement("br"));
+
+        const tag = document.createElement("span");
+        tag.className = "tag-branch";
+        tag.textContent = branchId;
+        tdBranch.appendChild(tag);
+
+        tr.appendChild(tdBranch);
+
+        // UID
+        const tdUid = document.createElement("td");
+        tdUid.className = "uid-cell";
+        tdUid.textContent = uid;
+        tr.appendChild(tdUid);
+
+        usersTableBody.appendChild(tr);
+      });
+
+      countAdminEl.textContent = cAdmin;
+      countCajaEl.textContent = cCaja;
+      countMeseroEl.textContent = cMesero;
+      countCocinaEl.textContent = cCocina;
+
+      if (!users.length) {
+        showStatus("Aún no hay usuarios en la colección 'users'.", false);
+      } else {
+        statusBox.style.display = "none";
+      }
+    }
+
+    function roleBadgeClass(role) {
+      switch (role) {
+        case "admin": return "badge-role-admin";
+        case "caja": return "badge-role-caja";
+        case "mesero": return "badge-role-mesero";
+        case "cocina": return "badge-role-cocina";
+        default: return "";
+      }
+    }
+  </script>
+</body>
+</html>
