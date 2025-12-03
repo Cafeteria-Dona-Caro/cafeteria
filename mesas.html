@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Cafecaro – Mesas</title>
+  <title>Cafecaro – Mapa de Mesas</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 
   <style>
@@ -10,21 +10,18 @@
 
     body {
       margin: 0;
+      background: #fafafa;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f5f5f5;
-      color: #222;
-      min-height: 100vh;
+      color: #333;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
     }
 
     header {
-      background: #ffffff;
-      border-bottom: 1px solid #e0e0e0;
-      padding: 10px 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      background: white;
+      padding: 14px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
       position: sticky;
       top: 0;
       z-index: 10;
@@ -32,339 +29,147 @@
 
     header h1 {
       margin: 0;
-      font-size: 18px;
+      font-size: 20px;
+      color: #3e2723;
+      font-weight: 700;
     }
 
     header .sub {
-      font-size: 11px;
-      opacity: 0.7;
-    }
-
-    header .right {
-      text-align: right;
       font-size: 12px;
-    }
-
-    .role-pill {
-      display: inline-block;
-      margin-top: 4px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      background: #e3f2fd;
-      color: #0d47a1;
-    }
-
-    #logoutBtn {
-      margin-top: 4px;
-      border: none;
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: #eeeeee;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    #homeBtn {
-      margin-right: 8px;
-      border: none;
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: #fff3e0;
-      cursor: pointer;
-      font-size: 11px;
-      font-weight: 600;
-      color: #e65100;
+      opacity: 0.7;
     }
 
     main {
+      padding: 14px;
       flex: 1;
-      padding: 8px 10px 10px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 16px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    @media (min-width: 900px) {
-      main {
-        max-width: 1100px;
-        margin: 0 auto;
-      }
-    }
-
-    .filters-row {
-      background: #ffffff;
+    .filter-box {
+      background: white;
+      padding: 10px;
       border-radius: 12px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      padding: 10px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-items: center;
-      font-size: 12px;
+      gap: 10px;
+      overflow-x: auto;
     }
 
-    .filters-label {
-      font-size: 11px;
-      opacity: 0.7;
-      margin-right: 4px;
-    }
-
-    .chip {
-      border-radius: 999px;
-      padding: 4px 10px;
+    .filter-btn {
+      padding: 8px 14px;
+      border-radius: 20px;
       border: 1px solid #ddd;
-      background: #fafafa;
+      background: #fff;
       cursor: pointer;
-      font-size: 12px;
-    }
-    .chip.active {
-      border-color: #2962ff;
-      background: #e3f2fd;
-      color: #0d47a1;
-      font-weight: 600;
+      font-size: 13px;
     }
 
-    .legend {
-      margin-left: auto;
-      display:flex;
-      flex-wrap:wrap;
-      gap:6px;
-      align-items:center;
-      font-size:11px;
-    }
-    .legend-dot {
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      display:inline-block;
-      margin-right:2px;
+    .filter-btn.active {
+      background: #5d4037;
+      color: #ffe0b2;
+      border-color: #5d4037;
     }
 
-    .legend-abierta { background:#ffcc80; }
-    .legend-prep { background:#81d4fa; }
-    .legend-lista { background:#c5e1a5; }
-    .legend-pago { background:#b0bec5; }
-    .legend-vacia { background:#eeeeee; }
+    .area-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #5d4037;
+      margin-top: 10px;
+    }
 
-    .tables-grid {
-      margin-top: 4px;
+    .grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 12px;
     }
 
-    @media (min-width: 700px) {
-      .tables-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+    @media(min-width: 700px) {
+      .grid {
+        grid-template-columns: repeat(3, minmax(0,1fr));
       }
     }
 
-    .table-card {
-      border-radius: 12px;
-      padding: 8px 10px;
-      background: #ffffff;
-      border: 1px solid #eeeeee;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    .mesa-card {
+      background: white;
+      padding: 14px;
+      border-radius: 14px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: 0.15s;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: transform 0.06s ease-out, box-shadow 0.06s ease-out, border-color 0.06s;
+      gap: 6px;
+      border-left: 8px solid #ddd;
     }
 
-    .table-card:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-color: #d7ccc8;
+    .mesa-card:hover {
+      transform: scale(1.02);
     }
 
-    .table-card-header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
+    .mesa-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: #3e2723;
     }
 
-    .table-name {
-      font-weight:700;
-      font-size:13px;
+    .mesa-status {
+      font-size: 13px;
+      opacity: 0.8;
     }
 
-    .table-area {
-      font-size:11px;
-      opacity:0.75;
-    }
-
-    .table-status-chip {
-      padding:2px 8px;
-      border-radius:999px;
-      font-size:10px;
-      display:inline-block;
-    }
-    .table-status-abierta {
-      background:#ffecb3;
-      color:#e65100;
-    }
-    .table-status-en_preparacion {
-      background:#e1f5fe;
-      color:#0277bd;
-    }
-    .table-status-lista {
-      background:#e8f5e9;
-      color:#2e7d32;
-    }
-    .table-status-cerrada {
-      background:#eceff1;
-      color:#546e7a;
-    }
-    .table-status-vacia {
-      background:#eeeeee;
-      color:#757575;
-    }
-
-    .table-body-row {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      font-size:11px;
-    }
-
-    .table-body-main {
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-    }
-
-    .table-customer {
-      opacity:0.9;
-    }
-
-    .table-meta {
-      opacity:0.7;
-      font-size:11px;
-    }
-
-    .table-total {
-      font-weight:600;
-      font-size:13px;
-    }
-
-    .table-footer {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      margin-top:4px;
-      font-size:11px;
-      opacity:0.8;
-    }
-
-    .table-source {
-      padding:2px 6px;
-      border-radius:999px;
-      font-size:10px;
-      background:#f3e5f5;
-      color:#4a148c;
-    }
-    .table-source-mesero {
-      background:#e0f2f1;
-      color:#004d40;
-    }
-
-    .call-dot {
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:#d50000;
-      margin-left:4px;
-      box-shadow:0 0 6px rgba(213,0,0,0.7);
-    }
-
-    .small {
-      font-size:11px;
-      opacity:0.75;
-    }
-
-    .status-bar {
-      padding: 6px 12px;
-      font-size: 12px;
-      border-top: 1px solid #ddd;
-      background: #fafafa;
-    }
-
-    .empty-message {
-      font-size:12px;
-      opacity:0.7;
-      padding:6px 4px;
-    }
+    /* COLORES SEGÚN STATUS */
+    .st-abierta { border-color: #ffb74d; }
+    .st-preparacion { border-color: #64b5f6; }
+    .st-listo { border-color: #81c784; }
+    .st-cerrada { border-color: #bdbdbd; }
+    .st-nopedido { border-color: #e0e0e0; }
   </style>
 </head>
+
 <body>
+
   <header>
-    <div>
-      <h1>Mesas</h1>
-      <div class="sub" id="branchLabel">Sucursal: —</div>
-    </div>
-    <div class="right">
-      <div id="currentUserEmail">—</div>
-      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
-      <div>
-        <button id="homeBtn">Inicio</button>
-        <button id="logoutBtn">Salir</button>
-      </div>
-    </div>
+    <h1>Mapa de Mesas</h1>
+    <div class="sub">Estado general · Planta baja · Alta · Balcón</div>
   </header>
 
   <main>
-    <section class="filters-row">
-      <span class="filters-label">Ver:</span>
-      <div id="chipTodas" class="chip active">Todas</div>
-      <div id="chipPB" class="chip">Planta baja</div>
-      <div id="chipPA" class="chip">Planta alta</div>
-      <div id="chipBAL" class="chip">Balcón</div>
 
-      <div class="legend">
-        <span><span class="legend-dot legend-vacia"></span>Libre</span>
-        <span><span class="legend-dot legend-abierta"></span>Tomando orden</span>
-        <span><span class="legend-dot legend-prep"></span>En cocina</span>
-        <span><span class="legend-dot legend-lista"></span>Lista</span>
-        <span><span class="legend-dot legend-pago"></span>Pago / cerrada</span>
-      </div>
-    </section>
+    <!-- filtros -->
+    <div class="filter-box">
+      <button class="filter-btn active" data-filter="all">Todas</button>
+      <button class="filter-btn" data-filter="PB">Planta baja</button>
+      <button class="filter-btn" data-filter="PA">Planta alta</button>
+      <button class="filter-btn" data-filter="B">Balcón</button>
+    </div>
 
-    <section id="tablesContainer">
-      <div class="tables-grid" id="tablesGrid"></div>
-      <div id="emptyMessage" class="empty-message" style="display:none;">
-        Aún no hay información de mesas. En cuanto se registren órdenes, aparecerán aquí agrupadas por mesa.
-      </div>
-    </section>
+    <!-- contenedores -->
+    <div id="containerPB"></div>
+    <div id="containerPA"></div>
+    <div id="containerB"></div>
+
   </main>
 
-  <div id="globalStatus" class="status-bar">Conectando...</div>
+  <!-- =========================================== -->
+  <!--               FIREBASE JS                  -->
+  <!-- =========================================== -->
 
-  <!-- ============================= -->
-  <!--      FIREBASE + LÓGICA       -->
-  <!-- ============================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import {
-      getAuth,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-    import {
       getFirestore,
       collection,
-      doc,
-      getDoc,
       query,
       orderBy,
       onSnapshot,
-      where,
-      limit
+      limit,
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+    /* CONFIG */
     const firebaseConfig = {
       apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
       authDomain: "cafecaro-af23b.firebaseapp.com",
@@ -374,325 +179,109 @@
       appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
     };
 
-    const BRANCH_ID = "cafecaro-centro";
-
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // DOM
-    const branchLabel = document.getElementById("branchLabel");
-    const currentUserEmailEl = document.getElementById("currentUserEmail");
-    const currentUserRoleEl = document.getElementById("currentUserRole");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const homeBtn = document.getElementById("homeBtn");
-    const globalStatus = document.getElementById("globalStatus");
+    const BRANCH_ID = "cafecaro-centro";
 
-    const chipTodas = document.getElementById("chipTodas");
-    const chipPB = document.getElementById("chipPB");
-    const chipPA = document.getElementById("chipPA");
-    const chipBAL = document.getElementById("chipBAL");
+    /* AREAS */
+    const PB = ["PB-01","PB-02","PB-03","PB-04","PB-05","PB-06","PB-07","PB-08"];
+    const PA = ["PA-01","PA-02","PA-03","PA-04","PA-05","PA-06"];
+    const B  = ["B-01","B-02","B-03","B-04"];
 
-    const tablesGrid = document.getElementById("tablesGrid");
-    const emptyMessage = document.getElementById("emptyMessage");
+    const containerPB = document.getElementById("containerPB");
+    const containerPA = document.getElementById("containerPA");
+    const containerB = document.getElementById("containerB");
 
-    branchLabel.textContent = "Sucursal: " + BRANCH_ID;
+    /* FILTRO */
+    const filterButtons = document.querySelectorAll(".filter-btn");
 
-    let allowedRoles = ["admin", "caja", "mesero", "cocina"];
-    let currentFilterArea = "todas"; // todas | pb | pa | bal
-    let allTablesMap = {}; // { tableKey: { tableNumber, area, latestOrder, hasOpenOrder, stats... } }
+    filterButtons.forEach(btn => {
+      btn.onclick = () => {
+        filterButtons.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
 
-    function setGlobalStatus(msg) {
-      globalStatus.textContent = msg;
-    }
-
-    function formatCurrency(n) {
-      return "$" + (n || 0).toFixed(2);
-    }
-
-    function formatTime(d) {
-      if (!d) return "--:--";
-      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    }
-
-    function inferArea(tableNumber, orderData) {
-      // 1) Si existe field tableArea, usarlo
-      if (orderData && orderData.tableArea) {
-        const raw = (orderData.tableArea || "").toString().toLowerCase();
-        if (raw.includes("baja")) return "pb";
-        if (raw.includes("alta")) return "pa";
-        if (raw.includes("balc")) return "bal";
-        return "otro";
-      }
-
-      const t = (tableNumber || "").toString().toLowerCase();
-
-      if (t.startsWith("pb") || t.includes("baja")) return "pb";
-      if (t.startsWith("pa") || t.includes("alta")) return "pa";
-      if (t.startsWith("bal") || t.includes("balc")) return "bal";
-
-      return "otro";
-    }
-
-    function areaLabel(area) {
-      switch (area) {
-        case "pb": return "Planta baja";
-        case "pa": return "Planta alta";
-        case "bal": return "Balcón";
-        default: return "Sin área";
-      }
-    }
-
-    function sourceInfo(source) {
-      if (source === "cliente") {
-        return { text: "Cliente (QR)", className: "table-source" };
-      }
-      return { text: "Mesero", className: "table-source table-source-mesero" };
-    }
-
-    function statusChipClass(status) {
-      switch (status) {
-        case "abierta": return "table-status-chip table-status-abierta";
-        case "en_preparacion": return "table-status-chip table-status-en_preparacion";
-        case "lista": return "table-status-chip table-status-lista";
-        case "cerrada": return "table-status-chip table-status-cerrada";
-        default: return "table-status-chip table-status-vacia";
-      }
-    }
-
-    function statusLabel(status) {
-      switch (status) {
-        case "abierta": return "Tomando orden";
-        case "en_preparacion": return "En preparación";
-        case "lista": return "Lista";
-        case "cerrada": return "Cerrada";
-        default: return "Libre";
-      }
-    }
-
-    // === AUTH ===
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      currentUserEmailEl.textContent = user.email || "(sin correo)";
-
-      try {
-        const userDocRef = doc(db, "users", user.uid);
-        const snap = await getDoc(userDocRef);
-
-        if (!snap.exists()) {
-          currentUserRoleEl.textContent = "Sin rol";
-          setGlobalStatus("Sin rol. Contacta al administrador.");
-          alert("Tu usuario no tiene rol asignado.");
-          return;
-        }
-
-        const data = snap.data();
-        const role = data.role || "sin_rol";
-
-        if (!allowedRoles.includes(role)) {
-          alert("Acceso restringido. Esta pantalla es para admin, caja, mesero o cocina.");
-          window.location.href = "login.html";
-          return;
-        }
-
-        currentUserRoleEl.textContent = "Rol: " + role;
-        setGlobalStatus("Conectado como " + role + ".");
-        listenOrdersByTable();
-      } catch (err) {
-        console.error(err);
-        setGlobalStatus("Error al verificar tu rol.");
-      }
+        const f = btn.dataset.filter;
+        document.getElementById("containerPB").style.display = (f === "all" || f === "PB") ? "block" : "none";
+        document.getElementById("containerPA").style.display = (f === "all" || f === "PA") ? "block" : "none";
+        document.getElementById("containerB").style.display = (f === "all" || f === "B") ? "block" : "none";
+      };
     });
 
-    logoutBtn.onclick = async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    };
+    /* GENERAR TARJETAS */
+    function createMesaCard(name, status, time) {
+      const div = document.createElement("div");
+      div.className = `mesa-card st-${status}`;
+      div.onclick = () => {
+        window.location.href = `mesero.html?mesa=${name}`;
+      };
 
-    homeBtn.onclick = () => {
-      window.location.href = "index.html";
-    };
+      div.innerHTML = `
+        <div class="mesa-name">${name}</div>
+        <div class="mesa-status">${statusText(status)} · ${time}</div>
+      `;
 
-    // === FILTROS UI ===
-    function setFilter(area) {
-      currentFilterArea = area;
-      chipTodas.classList.remove("active");
-      chipPB.classList.remove("active");
-      chipPA.classList.remove("active");
-      chipBAL.classList.remove("active");
-
-      if (area === "todas") chipTodas.classList.add("active");
-      else if (area === "pb") chipPB.classList.add("active");
-      else if (area === "pa") chipPA.classList.add("active");
-      else if (area === "bal") chipBAL.classList.add("active");
-
-      renderTables();
+      return div;
     }
 
-    chipTodas.onclick = () => setFilter("todas");
-    chipPB.onclick = () => setFilter("pb");
-    chipPA.onclick = () => setFilter("pa");
-    chipBAL.onclick = () => setFilter("bal");
+    function statusText(st) {
+      switch (st) {
+        case "abierta": return "Pedido abierto";
+        case "preparacion": return "En preparación";
+        case "listo": return "Listo para entregar";
+        case "cerrada": return "Cuenta lista";
+        default: return "Sin pedido";
+      }
+    }
 
-    // === ESCUCHAR ÓRDENES Y AGRUPAR POR MESA ===
-    function listenOrdersByTable() {
-      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-      const qOrders = query(ordersRef, orderBy("tableNumber"), orderBy("createdAt", "asc"));
+    function timeAgo(ts) {
+      if (!ts) return "";
+      const secs = Math.floor((Date.now() - ts.toMillis()) / 1000);
+      if (secs < 60) return secs + "s";
+      const mins = Math.floor(secs / 60);
+      if (mins < 60) return mins + "m";
+      const hrs = Math.floor(mins / 60);
+      return hrs + "h";
+    }
 
-      onSnapshot(qOrders, (snap) => {
-        const tmpMap = {};
+    /* ESCUCHAR CAMBIOS EN TIEMPO REAL */
+    function listenMesa(mesa, container) {
+      const qRef = query(
+        collection(db, "branches", BRANCH_ID, "orders"),
+        orderBy("createdAt", "desc"),
+        limit(1)
+      );
+
+      onSnapshot(qRef, (snap) => {
+        let status = "nopedido";
+        let time = "";
 
         snap.forEach(docSnap => {
           const d = docSnap.data();
-          const tableNumber = d.tableNumber || "Sin mesa";
-
-          if (!tmpMap[tableNumber]) {
-            tmpMap[tableNumber] = {
-              tableNumber,
-              area: inferArea(tableNumber, d),
-              orders: []
-            };
+          if (d.tableNumber === mesa) {
+            status = d.status || "abierta";
+            time = timeAgo(d.createdAt);
           }
-          tmpMap[tableNumber].orders.push({ id: docSnap.id, data: d });
         });
 
-        // Para cada mesa, sacar la orden "principal" (la más reciente NO cerrada, o la última que haya)
-        Object.values(tmpMap).forEach(mesa => {
-          if (!mesa.orders.length) return;
-
-          // Ordenamos por createdAt desc para encontrar la más nueva
-          mesa.orders.sort((a, b) => {
-            const ad = a.data.createdAt?.toDate ? a.data.createdAt.toDate().getTime() : 0;
-            const bd = b.data.createdAt?.toDate ? b.data.createdAt.toDate().getTime() : 0;
-            return bd - ad;
-          });
-
-          const openOrder = mesa.orders.find(o => (o.data.status || "abierta") !== "cerrada");
-          const latest = openOrder || mesa.orders[0];
-
-          mesa.latestOrder = latest;
-          mesa.hasOpenOrder = !!openOrder;
-
-          const status = latest.data.status || (mesa.hasOpenOrder ? "abierta" : "cerrada");
-          mesa.status = status;
-
-          const total = latest.data.total ?? latest.data.subtotal ?? 0;
-          mesa.total = total;
-          mesa.customerName = latest.data.customerName || "";
-          mesa.source = latest.data.source || "mesero";
-          mesa.updatedAt = latest.data.updatedAt?.toDate
-                           || latest.data.createdAt?.toDate
-                           || null;
-
-          // Llamada al mesero: en este MVP, consideramos que si la última orden es de fuente cliente y no está cerrada,
-          // puede marcar "atención".
-          mesa.callWaiter = (mesa.source === "cliente" && mesa.hasOpenOrder);
-        });
-
-        allTablesMap = tmpMap;
-        renderTables();
-        setGlobalStatus("Mesas actualizadas.");
-      }, (err) => {
-        console.error("Error escuchando órdenes por mesa:", err);
-        setGlobalStatus("Error leyendo mesas.");
+        const card = createMesaCard(mesa, status, time);
+        container.appendChild(card);
       });
     }
 
-    // === RENDERIZAR TARJETAS DE MESA ===
-    function renderTables() {
-      tablesGrid.innerHTML = "";
+    /* RENDERIZAR TODAS LAS MESAS */
+    function renderAll() {
+      containerPB.innerHTML = `<div class="area-title">Planta Baja</div>`;
+      containerPA.innerHTML = `<div class="area-title">Planta Alta</div>`;
+      containerB.innerHTML = `<div class="area-title">Balcón</div>`;
 
-      const mesas = Object.values(allTablesMap);
-
-      if (!mesas.length) {
-        emptyMessage.style.display = "block";
-        return;
-      }
-      emptyMessage.style.display = "none";
-
-      // aplicar filtro por área
-      const filtered = mesas.filter(m => {
-        if (currentFilterArea === "todas") return true;
-        if (currentFilterArea === "pb") return m.area === "pb";
-        if (currentFilterArea === "pa") return m.area === "pa";
-        if (currentFilterArea === "bal") return m.area === "bal";
-        return true;
-      });
-
-      if (!filtered.length) {
-        tablesGrid.innerHTML = "";
-        emptyMessage.style.display = "block";
-        emptyMessage.textContent = "No hay mesas con órdenes en esta área.";
-        return;
-      } else {
-        emptyMessage.style.display = "none";
-        emptyMessage.textContent = "Aún no hay información de mesas. En cuanto se registren órdenes, aparecerán aquí agrupadas por mesa.";
-      }
-
-      // ordenar mesas por área, luego número alfabético
-      filtered.sort((a, b) => {
-        if (a.area !== b.area) return a.area.localeCompare(b.area);
-        return a.tableNumber.toString().localeCompare(b.tableNumber.toString(), "es", { numeric: true });
-      });
-
-      filtered.forEach(mesa => {
-        const card = document.createElement("div");
-        card.className = "table-card";
-
-        const status = mesa.status || "libre";
-        const hasOrder = !!mesa.latestOrder;
-        const area = mesa.area;
-        const total = mesa.total || 0;
-        const d = mesa.updatedAt;
-        const src = sourceInfo(mesa.source);
-
-        let statusClass = statusChipClass(hasOrder ? status : "libre");
-        let statusText = statusLabel(hasOrder ? status : "libre");
-
-        card.innerHTML = `
-          <div class="table-card-header">
-            <div>
-              <div class="table-name">Mesa ${mesa.tableNumber}</div>
-              <div class="table-area">${areaLabel(area)}</div>
-            </div>
-            <div>
-              <span class="${statusClass}">${statusText}</span>
-            </div>
-          </div>
-          <div class="table-body-row">
-            <div class="table-body-main">
-              <div class="table-customer">${mesa.customerName || "Sin cliente"}</div>
-              <div class="table-meta">
-                ${hasOrder ? `Actualizada: ${formatTime(d)}` : "Sin órdenes recientes"}
-              </div>
-            </div>
-            <div class="table-total">
-              ${hasOrder ? formatCurrency(total) : ""}
-            </div>
-          </div>
-          <div class="table-footer">
-            <div>
-              <span class="${src.className}">${src.text}</span>
-              ${mesa.callWaiter ? `<span class="small"> · Llamando mesero</span><span class="call-dot"></span>` : ""}
-            </div>
-            <div class="small">Tap para ver en detalle</div>
-          </div>
-        `;
-
-        card.onclick = () => {
-          // Lo mandamos al panel del mesero con la mesa preseleccionada (query param)
-          // Más adelante puedes hacer que mesero.html lea ?mesa=...
-          const mesaParam = encodeURIComponent(mesa.tableNumber);
-          window.location.href = `mesero.html?mesa=${mesaParam}`;
-        };
-
-        tablesGrid.appendChild(card);
-      });
+      PB.forEach(m => listenMesa(m, containerPB));
+      PA.forEach(m => listenMesa(m, containerPA));
+      B.forEach(m => listenMesa(m, containerB));
     }
+
+    renderAll();
   </script>
+
 </body>
 </html>
