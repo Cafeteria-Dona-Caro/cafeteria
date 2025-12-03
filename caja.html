@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafecaro – Caja</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f5f5f5;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 10px 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .h-left h1 {
+      margin: 0;
+      font-size: 18px;
+      color: #3e2723;
+    }
+
+    .h-left .sub {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .h-right {
+      text-align: right;
+      font-size: 11px;
+    }
+
+    .role-pill {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: #e3f2fd;
+      color: #0d47a1;
+      font-weight: 600;
+    }
+
+    .top-buttons {
+      margin-top: 4px;
+      display: flex;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+
+    .btn-small {
+      padding: 5px 9px;
+      font-size: 11px;
+      border-radius: 999px;
+      border: 1px solid #ccc;
+      background: #fafafa;
+      cursor: pointer;
+    }
+
+    main {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .layout {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    @media(min-width: 900px) {
+      .layout {
+        display: grid;
+        grid-template-columns: 1.2fr 1.1fr;
+        gap: 12px;
+      }
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: #5d4037;
+      margin-bottom: 6px;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .filter-pill {
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      cursor: pointer;
+    }
+
+    .filter-pill.active {
+      background: #5d4037;
+      border-color: #5d4037;
+      color: #ffe0b2;
+    }
+
+    .orders-list {
+      max-height: 380px;
+      overflow-y: auto;
+      border-top: 1px solid #eee;
+      margin-top: 6px;
+    }
+
+    .order-row {
+      padding: 7px 4px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+
+    .order-row:hover {
+      background: #fff8e1;
+    }
+
+    .order-row.selected {
+      background: #ffe0b2;
+    }
+
+    .order-main {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    .order-meta {
+      font-size: 11px;
+      opacity: 0.75;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .pill-status {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+    }
+
+    .st-abierta { background: #fff3e0; color: #e65100; }
+    .st-en_preparacion { background: #e3f2fd; color: #0277bd; }
+    .st-lista { background: #e8f5e9; color: #2e7d32; }
+    .st-cerrada { background: #eceff1; color: #455a64; }
+
+    .pay-pill {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 10px;
+    }
+
+    .pay-pendiente { background: #ffebee; color: #b71c1c; }
+    .pay-pagado { background: #e8f5e9; color: #2e7d32; }
+
+    .detail-section {
+      margin-top: 6px;
+    }
+
+    label {
+      display:block;
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 13px;
+      font-family: inherit;
+      background:#fff;
+    }
+
+    .items-list {
+      margin-top: 6px;
+      border-top: 1px solid #eee;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .items-row {
+      padding: 6px 0;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 12px;
+    }
+
+    .items-row-main {
+      flex: 1;
+    }
+
+    .items-row-name {
+      font-weight: 600;
+    }
+
+    .items-row-notes {
+      font-size: 11px;
+      opacity: 0.75;
+    }
+
+    .items-row-price {
+      white-space: nowrap;
+      font-weight: 600;
+      color: #5d4037;
+    }
+
+    .total-line {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid #ddd;
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .status-msg {
+      margin-top: 8px;
+      padding: 6px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      display: none;
+    }
+    .status-ok {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .status-error {
+      background: #ffebee;
+      color: #b71c1c;
+    }
+
+    .btn-save {
+      margin-top: 8px;
+      width: 100%;
+      padding: 10px;
+      border-radius: 999px;
+      border:none;
+      background:#5d4037;
+      color:#ffe0b2;
+      font-weight:700;
+      cursor:pointer;
+      font-size:13px;
+      box-shadow:0 3px 8px rgba(93,64,55,0.5);
+    }
+
+    .btn-save[disabled] {
+      opacity:0.4;
+      cursor: default;
+      box-shadow:none;
+    }
+
+    .legend {
+      font-size: 11px;
+      margin-top: 4px;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="h-left">
+      <h1>Caja</h1>
+      <div class="sub">Cobros, pagos y estado de las cuentas</div>
+    </div>
+    <div class="h-right">
+      <div id="userEmail">—</div>
+      <div id="userRole" class="role-pill">Verificando rol...</div>
+      <div class="top-buttons">
+        <button id="homeBtn" class="btn-small">Inicio</button>
+        <button id="logoutBtn" class="btn-small">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="layout">
+
+      <!-- LISTA DE ÓRDENES -->
+      <section class="card">
+        <div class="card-title">Órdenes</div>
+
+        <div class="filters">
+          <span>Filtrar:</span>
+          <button class="filter-pill active" data-filter="todas">Todas</button>
+          <button class="filter-pill" data-filter="abiertas">Abiertas</button>
+          <button class="filter-pill" data-filter="pendientes">Pendiente de pago</button>
+          <button class="filter-pill" data-filter="pagadas">Pagadas</button>
+        </div>
+
+        <div class="legend">
+          Ordenadas por fecha (más recientes arriba).  
+          Toca una orden para ver su detalle.
+        </div>
+
+        <div id="ordersList" class="orders-list"></div>
+      </section>
+
+      <!-- DETALLE DE ORDEN -->
+      <section class="card">
+        <div class="card-title">Detalle de la cuenta</div>
+        <div id="detailInfo" class="detail-section">
+          <div style="font-size:12px; opacity:0.8;">
+            Selecciona una orden de la lista para ver los detalles, método de pago y estado.
+          </div>
+        </div>
+
+        <label for="paymentStatusSelect">Estado de pago</label>
+        <select id="paymentStatusSelect" disabled>
+          <option value="pendiente">Pendiente</option>
+          <option value="pagado">Pagado</option>
+        </select>
+
+        <label for="paymentMethodSelect">Forma de pago</label>
+        <select id="paymentMethodSelect" disabled>
+          <option value="">— Seleccionar —</option>
+          <option value="efectivo">Efectivo</option>
+          <option value="tarjeta">Tarjeta</option>
+          <option value="transferencia">Transferencia</option>
+          <option value="vales">Vales</option>
+          <option value="mixto">Mixto</option>
+        </select>
+
+        <div id="itemsList" class="items-list"></div>
+        <div id="totalLine" class="total-line" style="display:none;">
+          <span>Total</span>
+          <span id="totalAmount">$0.00</span>
+        </div>
+
+        <button id="btnSave" class="btn-save" disabled>Guardar cambios</button>
+
+        <div id="statusBox" class="status-msg"></div>
+
+        <div class="legend" id="legendPermisos"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- =========================================== -->
+  <!--               FIREBASE JS                  -->
+  <!-- =========================================== -->
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      onSnapshot,
+      query,
+      orderBy,
+      updateDoc,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // DOM
+    const userEmailEl = document.getElementById("userEmail");
+    const userRoleEl = document.getElementById("userRole");
+    const legendPermisos = document.getElementById("legendPermisos");
+    const homeBtn = document.getElementById("homeBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    const filterPills = document.querySelectorAll(".filter-pill");
+    const ordersList = document.getElementById("ordersList");
+
+    const detailInfo = document.getElementById("detailInfo");
+    const paymentStatusSelect = document.getElementById("paymentStatusSelect");
+    const paymentMethodSelect = document.getElementById("paymentMethodSelect");
+    const itemsList = document.getElementById("itemsList");
+    const totalLine = document.getElementById("totalLine");
+    const totalAmount = document.getElementById("totalAmount");
+    const btnSave = document.getElementById("btnSave");
+    const statusBox = document.getElementById("statusBox");
+
+    let isAdmin = false;
+    let currentOrderId = null;
+    let allOrders = [];
+
+    function showStatus(msg, isError=false) {
+      statusBox.style.display = "block";
+      statusBox.textContent = msg;
+      statusBox.className = "status-msg " + (isError ? "status-error" : "status-ok");
+    }
+
+    homeBtn.onclick = () => {
+      window.location.href = "index.html";
+    };
+
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // Auth
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      userEmailEl.textContent = user.email || "(sin correo)";
+
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (!userDoc.exists()) {
+        userRoleEl.textContent = "Sin rol";
+        alert("Tu usuario no tiene rol asignado. Contacta al administrador.");
+        return;
+      }
+
+      const role = userDoc.data().role || "sin_rol";
+      userRoleEl.textContent = "Rol: " + role;
+
+      if (!["admin","caja"].includes(role)) {
+        alert("Este módulo es solo para Admin o Caja.");
+        window.location.href = "index.html";
+        return;
+      }
+
+      isAdmin = (role === "admin");
+      if (isAdmin) {
+        legendPermisos.textContent = "Tienes permisos de administrador: puedes cambiar estado de pago y forma de pago.";
+      } else {
+        legendPermisos.textContent = "Rol caja: solo lectura. No puedes modificar el estado de pago.";
+      }
+
+      if (isAdmin) {
+        paymentStatusSelect.disabled = false;
+        paymentMethodSelect.disabled = false;
+        btnSave.disabled = false;
+      }
+
+      listenOrders();
+    });
+
+    // Escuchar órdenes en tiempo real
+    function listenOrders() {
+      const ref = collection(db, "branches", BRANCH_ID, "orders");
+      const q = query(ref, orderBy("createdAt","desc"));
+
+      onSnapshot(q, (snap) => {
+        allOrders = [];
+        snap.forEach(docSnap => {
+          const d = docSnap.data();
+          allOrders.push({
+            id: docSnap.id,
+            ...d
+          });
+        });
+        renderOrders();
+      }, (err) => {
+        console.error(err);
+        showStatus("Error al cargar órdenes.", true);
+      });
+    }
+
+    // Filtros
+    filterPills.forEach(pill => {
+      pill.onclick = () => {
+        filterPills.forEach(p => p.classList.remove("active"));
+        pill.classList.add("active");
+        renderOrders();
+      };
+    });
+
+    function getActiveFilter() {
+      const active = Array.from(filterPills).find(p => p.classList.contains("active"));
+      return active ? active.dataset.filter : "todas";
+    }
+
+    // Renderizar lista de órdenes
+    function renderOrders() {
+      ordersList.innerHTML = "";
+
+      const filter = getActiveFilter();
+      let filtered = allOrders;
+
+      if (filter === "abiertas") {
+        filtered = allOrders.filter(o => o.status !== "cerrada");
+      } else if (filter === "pendientes") {
+        filtered = allOrders.filter(o => (o.paymentStatus || "pendiente") === "pendiente");
+      } else if (filter === "pagadas") {
+        filtered = allOrders.filter(o => (o.paymentStatus || "pendiente") === "pagado");
+      }
+
+      if (!filtered.length) {
+        ordersList.innerHTML = `<div style="font-size:12px; opacity:0.7; padding:6px 2px;">No hay órdenes que coincidan con el filtro.</div>`;
+        return;
+      }
+
+      filtered.forEach(o => {
+        const row = document.createElement("div");
+        row.className = "order-row";
+        row.dataset.id = o.id;
+
+        const status = o.status || "abierta";
+        const payStatus = o.paymentStatus || "pendiente";
+        const mesa = o.tableNumber || "Sin mesa";
+        const customerName = o.customerName || "";
+        const total = o.total ?? o.subtotal ?? 0;
+        const createdAt = o.createdAt ? o.createdAt.toDate() : null;
+
+        const statusClass =
+          status === "en_preparacion" ? "st-en_preparacion" :
+          status === "lista" ? "st-lista" :
+          status === "cerrada" ? "st-cerrada" :
+          "st-abierta";
+
+        const payClass =
+          payStatus === "pagado" ? "pay-pagado" : "pay-pendiente";
+
+        const timeStr = createdAt ? formatDateShort(createdAt) : "";
+
+        row.innerHTML = `
+          <div class="order-main">
+            <span>Mesa ${mesa}${customerName ? " · " + customerName : ""}</span>
+            <span>$${total.toFixed(2)}</span>
+          </div>
+          <div class="order-meta">
+            <span>
+              <span class="pill-status ${statusClass}">${status}</span>
+              &nbsp;
+              <span class="pay-pill ${payClass}">${payStatus}</span>
+            </span>
+            <span>${timeStr}</span>
+          </div>
+        `;
+
+        row.onclick = () => {
+          selectOrder(o.id);
+        };
+
+        if (o.id === currentOrderId) {
+          row.classList.add("selected");
+        }
+
+        ordersList.appendChild(row);
+      });
+    }
+
+    function formatDateShort(d) {
+      const day = d.getDate().toString().padStart(2,"0");
+      const month = (d.getMonth()+1).toString().padStart(2,"0");
+      const hours = d.getHours().toString().padStart(2,"0");
+      const mins = d.getMinutes().toString().padStart(2,"0");
+      return `${day}/${month} ${hours}:${mins}`;
+    }
+
+    // Seleccionar orden
+    async function selectOrder(orderId) {
+      currentOrderId = orderId;
+      const ref = doc(db, "branches", BRANCH_ID, "orders", orderId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        showStatus("La orden ya no existe.", true);
+        return;
+      }
+      const o = snap.data();
+
+      // Marcar seleccionada
+      Array.from(ordersList.children).forEach(row => {
+        row.classList.toggle("selected", row.dataset.id === orderId);
+      });
+
+      const mesa = o.tableNumber || "Sin mesa";
+      const customerName = o.customerName || "";
+      const status = o.status || "abierta";
+      const payStatus = o.paymentStatus || "pendiente";
+      const payMethod = o.paymentMethod || "";
+      const total = o.total ?? o.subtotal ?? 0;
+      const createdAt = o.createdAt ? o.createdAt.toDate() : null;
+
+      const statusClass =
+        status === "en_preparacion" ? "st-en_preparacion" :
+        status === "lista" ? "st-lista" :
+        status === "cerrada" ? "st-cerrada" :
+        "st-abierta";
+
+      const createdStr = createdAt ? createdAt.toLocaleString() : "sin fecha";
+
+      detailInfo.innerHTML = `
+        <div style="font-size:13px;">
+          <strong>Mesa:</strong> ${mesa}${customerName ? " · " + customerName : ""}<br/>
+          <strong>Estado:</strong> <span class="pill-status ${statusClass}">${status}</span><br/>
+          <strong>Creada:</strong> ${createdStr}<br/>
+          <strong>ID:</strong> ${orderId}
+        </div>
+      `;
+
+      paymentStatusSelect.value = payStatus;
+      paymentMethodSelect.value = payMethod;
+
+      // Cargar ítems
+      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
+      const itemsSnap = await getDocs(itemsRef);
+      itemsList.innerHTML = "";
+
+      let sum = 0;
+      itemsSnap.forEach(docSnap => {
+        const it = docSnap.data();
+        const price = it.price || 0;
+        sum += price;
+
+        const row = document.createElement("div");
+        row.className = "items-row";
+        row.innerHTML = `
+          <div class="items-row-main">
+            <div class="items-row-name">${it.productName || "Producto"}</div>
+            ${it.notes ? `<div class="items-row-notes">Nota: ${it.notes}</div>` : ""}
+          </div>
+          <div class="items-row-price">$${price.toFixed(2)}</div>
+        `;
+        itemsList.appendChild(row);
+      });
+
+      if (itemsSnap.size === 0) {
+        itemsList.innerHTML = `<div style="font-size:12px; opacity:0.7; padding:4px 0;">Esta orden no tiene productos registrados.</div>`;
+      }
+
+      totalLine.style.display = "flex";
+      totalAmount.textContent = "$" + total.toFixed(2);
+
+      showStatus("Orden cargada. Recuerda que solo Admin puede modificar.", !isAdmin);
+    }
+
+    // Guardar cambios (solo Admin)
+    btnSave.onclick = async () => {
+      if (!isAdmin) {
+        showStatus("No tienes permiso para modificar pagos.", true);
+        return;
+      }
+      if (!currentOrderId) {
+        showStatus("No hay orden seleccionada.", true);
+        return;
+      }
+
+      const payStatus = paymentStatusSelect.value;
+      const payMethod = paymentMethodSelect.value;
+
+      try {
+        const ref = doc(db, "branches", BRANCH_ID, "orders", currentOrderId);
+        await updateDoc(ref, {
+          paymentStatus: payStatus,
+          paymentMethod: payMethod,
+          updatedAt: new Date()
+        });
+        showStatus("Cambios guardados correctamente.");
+      } catch (err) {
+        console.error(err);
+        showStatus("Error al guardar cambios.", true);
+      }
+    };
+  </script>
+</body>
+</html>
