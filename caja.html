@@ -2,200 +2,385 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Caja – Cafecaro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cafecaro – Caja</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #050505;
-      color: #f5f5f5;
+      background: #f5f5f5;
+      color: #222;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
+
     header {
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
       padding: 10px 16px;
-      background: #111;
-      border-bottom: 1px solid #333;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
     }
-    header h1 { margin: 0; font-size: 18px; }
-    header .sub { font-size: 12px; opacity: 0.8; }
-    header .right { text-align: right; font-size: 12px; }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    header .sub {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    header .right {
+      text-align: right;
+      font-size: 12px;
+    }
 
     .role-pill {
-      padding: 4px 10px; border-radius: 999px; font-size: 11px; margin-top: 4px;
       display: inline-block;
+      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e3f2fd;
+      color: #0d47a1;
     }
-    .role-admin { background: #00c853; color: #000; }
-    .role-caja { background: #2962ff; color: #fff; }
 
-    .toolbar {
-      padding: 8px 16px; background: #111; border-bottom: 1px solid #222;
-      display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px;
-    }
-
-    select, input[type="date"] {
-      background: #222; color: #f5f5f5; border: 1px solid #333; border-radius: 6px;
-      padding: 4px 8px; font-size: 12px;
+    #logoutBtn {
+      margin-top: 4px;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #eeeeee;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
     }
 
     main {
       flex: 1;
-      display: grid;
-      grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
-    }
-
-    .panel-left {
-      border-right: 1px solid #222;
       display: flex;
       flex-direction: column;
+      padding: 8px;
+      gap: 8px;
     }
 
+    @media (min-width: 900px) {
+      main {
+        flex-direction: row;
+      }
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 10px;
+    }
+
+    @media (min-width: 900px) {
+      .panel-left {
+        flex: 0.9;
+        margin-right: 6px;
+      }
+      .panel-right {
+        flex: 1.1;
+        margin-left: 6px;
+      }
+    }
+
+    .panel h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    .small {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    /* Filtros / resumen */
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .chip.active {
+      border-color: #2962ff;
+      background: #e3f2fd;
+      color: #0d47a1;
+      font-weight: 600;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 8px;
+    }
+
+    @media (min-width: 900px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .stat-card {
+      border-radius: 10px;
+      border: 1px solid #eee;
+      padding: 8px;
+      font-size: 12px;
+      background: #fafafa;
+    }
+    .stat-label {
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+    .stat-value {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* Lista de órdenes */
     .orders-list {
-      padding: 8px; overflow-y: auto; flex: 1;
+      max-height: 60vh;
+      overflow-y: auto;
+      margin-top: 4px;
     }
 
     .order-row {
-      background: #121212; border-radius: 10px; border: 1px solid #333;
-      padding: 8px; margin-bottom: 6px; cursor: pointer; font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 4px;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      font-size: 12px;
     }
-    .order-row.selected { border-color: #00c853; }
-
-    .order-row-title { font-weight: 600; font-size: 13px; }
-    .order-row-meta { font-size: 11px; opacity: 0.8; }
-
-    .status-chip {
-      padding: 2px 6px; border-radius: 999px; font-size: 10px; text-transform: uppercase;
+    .order-row:nth-child(2n) {
+      background: #fafafa;
     }
-    .status-abierta { background: #ffab00; color: #000; }
-    .status-en_preparacion { background: #2962ff; color: #fff; }
-    .status-lista { background: #00c853; color: #000; }
-    .status-cerrada { background: #757575; color: #fff; }
+    .order-row.selected {
+      background: #e3f2fd;
+    }
 
-    .panel-right { padding: 10px 12px; display: flex; flex-direction: column; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 10px;
+      margin-right: 4px;
+    }
+    .badge-status-abierta { background: #e3f2fd; color: #0d47a1; }
+    .badge-status-en_preparacion { background: #fff3e0; color: #e65100; }
+    .badge-status-lista { background: #e8f5e9; color: #1b5e20; }
+    .badge-status-cerrada { background: #eeeeee; color: #424242; }
+    .badge-paid { background: #c8e6c9; color: #1b5e20; }
+    .badge-unpaid { background: #ffebee; color: #b71c1c; }
 
+    /* Detalle de orden */
     .detail-header {
-      display: flex; justify-content: space-between; align-items: flex-start;
-      border-bottom: 1px solid #222; padding-bottom: 8px; margin-bottom: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 13px;
+      margin-bottom: 6px;
     }
 
-    .detail-main-title { font-size: 16px; margin: 0; }
-    .detail-sub { font-size: 12px; opacity: 0.85; }
-    .detail-meta { font-size: 11px; opacity: 0.8; margin-top: 4px; }
-
-    .items-table {
-      margin-top: 6px; border-radius: 10px; border: 1px solid #222; overflow: hidden;
+    .detail-items {
+      max-height: 35vh;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 6px;
+      margin-bottom: 6px;
+      font-size: 12px;
     }
 
-    .items-header {
-      background: #151515; padding: 6px 8px; font-weight: 600;
-      display: grid; grid-template-columns: 2.5fr 0.8fr 0.9fr 1.1fr;
+    .detail-item-row {
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .detail-item-row:last-child {
+      border-bottom: none;
+    }
+    .detail-item-notes {
+      font-size: 11px;
+      opacity: 0.7;
+      margin-top: 2px;
     }
 
-    .items-row {
-      padding: 6px 8px;
-      display: grid;
-      grid-template-columns: 2.5fr 0.8fr 0.9fr 1.1fr;
+    .detail-footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 12px;
       align-items: center;
     }
 
-    .items-row:nth-child(odd) { background: #111; }
-    .items-row:nth-child(even) { background: #161616; }
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-small {
+      padding: 4px 10px;
+      font-size: 11px;
+    }
+    .btn-primary { background: #2962ff; color: #fff; }
+    .btn-success { background: #00c853; color: #000; }
+    .btn-warning { background: #ffb300; color: #000; }
+    .btn-neutral { background: #eeeeee; color: #333; }
+    .btn-danger { background: #ef5350; color: #fff; }
 
-    .items-row-qty input {
-      width: 50px; text-align: center; background: #222; border: 1px solid #333;
-      border-radius: 6px; color: #f5f5f5;
+    .btn[disabled] {
+      opacity: 0.5;
+      cursor: default;
     }
 
-    .items-row-status {
-      font-size: 11px; padding: 2px 6px; border-radius: 999px; text-align: center;
+    .status-bar {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
     }
-
-    .items-row-notes {
-      font-size: 11px; opacity: 0.8;
-    }
-
-    .totals-card {
-      margin-top: 8px; padding: 8px; border-radius: 10px; background: #101010;
-      border: 1px solid #333; display: grid; grid-template-columns: 1.2fr 1fr;
-    }
-
-    .actions { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }
-    .btn-primary { background: #00c853; color: #000; }
-    .btn-danger { background: #b71c1c; color: #fff; }
-    .btn-secondary { background: #333; color: #eee; }
-
-    .chat-card {
-      margin-top: 10px; padding: 8px; border-radius: 10px; background: #101010;
-      border: 1px solid #333; display: flex; flex-direction: column; gap: 6px;
-    }
-
-    .chat-messages {
-      max-height: 180px; overflow-y: auto; background: #151515;
-      padding: 8px; border-radius: 8px; display: flex; flex-direction: column; gap: 6px;
-    }
-
-    .msg { padding: 6px 8px; border-radius: 10px; max-width: 80%; font-size: 12px; }
-    .msg-cliente { background: #263238; align-self: flex-start; }
-    .msg-mesero { background: #00c853; color: #000; align-self: flex-end; }
-
-    .status-bar { padding: 6px 16px; background: #080808; font-size: 12px; }
-
   </style>
 </head>
 <body>
   <header>
     <div>
-      <h1>Caja – Cafecaro</h1>
-      <div class="sub">Control de ventas y comunicación</div>
+      <h1>Caja</h1>
+      <div class="sub" id="branchLabel">Sucursal: —</div>
     </div>
     <div class="right">
-      <div id="branchLabel"></div>
-      <div id="rolePill" class="role-pill role-caja">Modo caja (solo lectura)</div>
+      <div id="currentUserEmail">—</div>
+      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
+      <button id="logoutBtn">Salir</button>
     </div>
   </header>
 
-  <div class="toolbar">
-    <div>Fecha: <input type="date" id="dateFilter" /></div>
-    <div>
-      Estado:
-      <select id="statusFilter">
-        <option value="todos">Todos</option>
-        <option value="abierta">Abierta</option>
-        <option value="en_preparacion">En preparación</option>
-        <option value="lista">Lista</option>
-        <option value="cerrada">Cerrada</option>
-      </select>
-    </div>
-    <div style="opacity:0.6;">Entrar como admin: <code>?role=admin</code></div>
-  </div>
-
   <main>
-    <section class="panel-left">
-      <div id="ordersList" class="orders-list"></div>
+    <!-- Panel izquierdo: filtros + resumen + lista -->
+    <section class="panel panel-left">
+      <h2>Resumen de ventas</h2>
+      <p class="small">Filtra por fecha y revisa los movimientos de caja.</p>
+
+      <div class="filters-row">
+        <span class="small">Rango:</span>
+        <div id="chipHoy" class="chip active">Hoy</div>
+        <div id="chipTodos" class="chip">Todos</div>
+        <span class="small" id="todayLabel"></span>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Órdenes</div>
+          <div id="statOrders" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total vendido</div>
+          <div id="statTotal" class="stat-value">$0.00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pagadas</div>
+          <div id="statPaid" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pendientes</div>
+          <div id="statUnpaid" class="stat-value">0</div>
+        </div>
+      </div>
+
+      <div class="orders-list" id="ordersList"></div>
     </section>
 
-    <section class="panel-right">
-      <div id="detailContainer">
-        <p class="empty-detail">Selecciona una orden para ver su detalle.</p>
+    <!-- Panel derecho: detalle de orden -->
+    <section class="panel panel-right">
+      <h2>Detalle de orden</h2>
+      <p class="small" id="noOrderSelected">Selecciona una orden para ver sus detalles.</p>
+
+      <div id="detailPanel" style="display:none;">
+        <div class="detail-header">
+          <div>
+            <div><strong>Orden <span id="detailOrderIdShort"></span></strong></div>
+            <div>Mesa <span id="detailTable"></span> — <span id="detailCustomer"></span></div>
+            <div class="small">Fuente: <span id="detailSource"></span></div>
+          </div>
+          <div style="text-align:right;">
+            <div class="small">Estado:</div>
+            <div id="detailStatusBadge" class="badge"></div>
+            <div class="small">Pago: <span id="detailPaidBadge" class="badge"></span></div>
+            <div class="small">Creada: <span id="detailCreatedAt"></span></div>
+          </div>
+        </div>
+
+        <div class="detail-items" id="detailItems"></div>
+
+        <div class="detail-footer">
+          <div>
+            <div>Total orden: <strong id="detailTotal">$0.00</strong></div>
+            <div class="small">Método de pago: <span id="detailPaymentMethod">—</span></div>
+          </div>
+          <div id="detailButtons" style="display:flex;flex-wrap:wrap;gap:4px;">
+            <!-- botones se llenan por JS según rol -->
+          </div>
+        </div>
       </div>
     </section>
   </main>
 
-  <div id="statusText" class="status-bar">Cargando...</div>
+  <div id="globalStatus" class="status-bar">Conectando...</div>
 
+  <!-- ============================= -->
+  <!--     FIREBASE + LÓGICA        -->
+  <!-- ============================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import {
-      getFirestore, collection, doc, onSnapshot, query,
-      orderBy, updateDoc, serverTimestamp, getDocs, addDoc
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      doc,
+      getDoc,
+      collection,
+      query,
+      orderBy,
+      onSnapshot,
+      updateDoc,
+      serverTimestamp
     } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+    // === CONFIG FIREBASE ===
     const firebaseConfig = {
       apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
       authDomain: "cafecaro-af23b.firebaseapp.com",
@@ -208,401 +393,419 @@
     const BRANCH_ID = "cafecaro-centro";
 
     const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
     const db = getFirestore(app);
 
+    // DOM
     const branchLabel = document.getElementById("branchLabel");
-    branchLabel.textContent = `Sucursal: ${BRANCH_ID}`;
+    const currentUserEmailEl = document.getElementById("currentUserEmail");
+    const currentUserRoleEl = document.getElementById("currentUserRole");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalStatus = document.getElementById("globalStatus");
 
-    const params = new URLSearchParams(window.location.search);
-    const isAdmin = params.get("role") === "admin";
+    const chipHoy = document.getElementById("chipHoy");
+    const chipTodos = document.getElementById("chipTodos");
+    const todayLabel = document.getElementById("todayLabel");
 
-    const rolePill = document.getElementById("rolePill");
-    if (isAdmin) {
-      rolePill.textContent = "Modo administrador";
-      rolePill.classList.remove("role-caja");
-      rolePill.classList.add("role-admin");
-    }
+    const statOrders = document.getElementById("statOrders");
+    const statTotal = document.getElementById("statTotal");
+    const statPaid = document.getElementById("statPaid");
+    const statUnpaid = document.getElementById("statUnpaid");
 
-    const ordersList = document.getElementById("ordersList");
-    const detailContainer = document.getElementById("detailContainer");
-    const dateFilter = document.getElementById("dateFilter");
-    const statusFilter = document.getElementById("statusFilter");
-    const statusText = document.getElementById("statusText");
+    const ordersListEl = document.getElementById("ordersList");
 
-    function setStatus(msg) {
-      statusText.textContent = msg;
-    }
+    const noOrderSelectedEl = document.getElementById("noOrderSelected");
+    const detailPanelEl = document.getElementById("detailPanel");
 
-    function formatCurrency(n) {
-      return `$${(n || 0).toFixed(2)}`;
-    }
+    const detailOrderIdShortEl = document.getElementById("detailOrderIdShort");
+    const detailTableEl = document.getElementById("detailTable");
+    const detailCustomerEl = document.getElementById("detailCustomer");
+    const detailSourceEl = document.getElementById("detailSource");
+    const detailStatusBadgeEl = document.getElementById("detailStatusBadge");
+    const detailPaidBadgeEl = document.getElementById("detailPaidBadge");
+    const detailCreatedAtEl = document.getElementById("detailCreatedAt");
+    const detailItemsEl = document.getElementById("detailItems");
+    const detailTotalEl = document.getElementById("detailTotal");
+    const detailPaymentMethodEl = document.getElementById("detailPaymentMethod");
+    const detailButtonsEl = document.getElementById("detailButtons");
 
-    function formatDateTime(ts) {
-      if (!ts?.toDate) return "-";
-      const d = ts.toDate();
-      const p = (x)=> (x<10?"0"+x:x);
-      return `${p(d.getDate())}/${p(d.getMonth()+1)} ${p(d.getHours())}:${p(d.getMinutes())}`;
-    }
+    branchLabel.textContent = "Sucursal: " + BRANCH_ID;
 
+    let isAdmin = false;
+    let isCaja = false;
+    let allOrders = []; // array con {id, data}
+    let currentFilter = "hoy"; // "hoy" | "todos"
     let currentOrderId = null;
-    let currentOrders = new Map();
-    let unsubscribeOrders = null;
-    let unsubscribeMessages = null;
 
-    (function setDefaultDate() {
-      const d = new Date();
-      const yyyy = d.getFullYear();
-      const mm = String(d.getMonth()+1).padStart(2,"0");
-      const dd = String(d.getDate()).padStart(2,"0");
-      dateFilter.value = `${yyyy}-${mm}-${dd}`;
-    })();
+    // Fecha de hoy (para etiqueta)
+    const today = new Date();
+    todayLabel.textContent = today.toLocaleDateString("es-MX", {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
 
-    function listenOrders() {
-      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-      const qOrders = query(ordersRef, orderBy("createdAt","desc"));
-
-      unsubscribeOrders = onSnapshot(qOrders, snap => {
-        currentOrders.clear();
-        snap.forEach(docSnap => currentOrders.set(docSnap.id, docSnap.data()));
-        renderOrdersList();
-      }, err => console.error(err));
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg;
     }
 
-    function matchesFilters(order) {
-      const s = statusFilter.value;
-      if (s !== "todos" && order.status !== s) return false;
-
-      const dateVal = dateFilter.value;
-      if (dateVal && order.createdAt?.toDate) {
-        const d = order.createdAt.toDate();
-        const y = d.getFullYear();
-        const m = String(d.getMonth()+1).padStart(2,"0");
-        const day = String(d.getDate()).padStart(2,"0");
-        return `${y}-${m}-${day}` === dateVal;
-      }
-      return true;
-    }
-
-    function renderOrdersList() {
-      ordersList.innerHTML = "";
-
-      const filtered = [...currentOrders.entries()].filter(([id,data]) => matchesFilters(data));
-
-      if (filtered.length === 0) {
-        ordersList.innerHTML = "<p style='opacity:0.8;font-size:12px;'>No hay órdenes.</p>";
+    // === AUTH + ROL ===
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
         return;
       }
 
-      filtered.forEach(([id,data]) => {
-        const row = document.createElement("div");
-        row.className = "order-row" + (id === currentOrderId ? " selected" : "");
-        row.dataset.orderId = id;
+      currentUserEmailEl.textContent = user.email || "(sin correo)";
 
-        const mesa = data.tableNumber ?? "-";
-        const name = data.customerName ? ` – ${data.customerName}` : "";
-        const statusClass = `status-${data.status}`;
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userDocRef);
 
-        row.innerHTML = `
-          <div class="order-row-title">Mesa ${mesa}${name}</div>
-          <div class="order-row-meta">
-            #${id.substring(0,6)} · ${formatDateTime(data.createdAt)} · ${formatCurrency(data.total || data.subtotal || 0)}
-          </div>
-          <div class="status-chip ${statusClass}">${data.status}</div>
-        `;
-
-        row.onclick = () => {
-          currentOrderId = id;
-          renderOrdersList();
-          loadOrderDetail(id, data);
-        };
-
-        ordersList.appendChild(row);
-      });
-    }
-
-    dateFilter.onchange = renderOrdersList;
-    statusFilter.onchange = renderOrdersList;
-
-    async function loadOrderDetail(orderId, orderData) {
-      detailContainer.innerHTML = `<p style="opacity:0.7;">Cargando detalle...</p>`;
-
-      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
-      const snap = await getDocs(itemsRef);
-
-      const items = [];
-      snap.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
-
-      renderOrderDetail(orderId, orderData, items);
-      listenMessages(orderId);
-    }
-
-    function renderOrderDetail(orderId, orderData, items) {
-      detailContainer.innerHTML = "";
-
-      const subtotal = orderData.subtotal || 0;
-      const tax = orderData.tax || 0;
-      const disc = orderData.discount || 0;
-      const total = orderData.total != null ? orderData.total : subtotal + tax - disc;
-
-      const wrapper = document.createElement("div");
-
-      wrapper.innerHTML = `
-        <div class="detail-header">
-          <div>
-            <h2 class="detail-main-title">
-              Mesa ${orderData.tableNumber ?? "-"}${orderData.customerName ? " – " + orderData.customerName : ""}
-            </h2>
-            <div class="detail-sub">Pedido: <strong>${orderId}</strong></div>
-            <div class="detail-meta">
-              Creado: ${formatDateTime(orderData.createdAt)}<br>
-              Actualizado: ${formatDateTime(orderData.updatedAt)}
-            </div>
-          </div>
-          <div style="min-width:140px;">
-            <div style="font-size:11px;opacity:0.8;">Estado</div>
-            <select id="orderStatusSelect" ${!isAdmin ? "disabled" : ""}>
-              <option value="abierta">abierta</option>
-              <option value="en_preparacion">en_preparacion</option>
-              <option value="lista">lista</option>
-              <option value="cerrada">cerrada</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="items-table">
-          <div class="items-header">
-            <div>Producto</div>
-            <div>Cant.</div>
-            <div>P. unit</div>
-            <div>Total</div>
-          </div>
-          <div id="itemsBody"></div>
-        </div>
-      `;
-
-      detailContainer.appendChild(wrapper);
-
-      const itemsBody = wrapper.querySelector("#itemsBody");
-
-      // AQUI INICIA EL BLOQUE DONDE SE INSERTA CADA ITEM
-items.forEach(item => {
-        const lineTotal = item.totalPrice ?? (item.unitPrice || 0) * (item.qty || 1);
-
-        const row = document.createElement("div");
-        row.className = "items-row";
-
-        row.innerHTML = `
-          <div>
-            <div>${item.productName || "Producto"}</div>
-            ${item.notes ? `<div class="items-row-notes">Nota: ${item.notes}</div>` : ""}
-            <div class="items-row-status ${"status-" + (item.status || "pendiente")}">
-              ${item.status || "pendiente"}
-            </div>
-          </div>
-          <div class="items-row-qty">
-            <input type="number" min="1" value="${item.qty || 1}" data-item-id="${item.id}" ${!isAdmin ? "disabled" : ""}>
-          </div>
-          <div>${formatCurrency(item.unitPrice || 0)}</div>
-          <div>${formatCurrency(lineTotal)}</div>
-        `;
-
-        itemsBody.appendChild(row);
-      });
-
-      /* === Totales === */
-      const totals = document.createElement("div");
-      totals.className = "totals-card";
-      totals.innerHTML = `
-        <div>
-          <div class="totals-row">
-            <span>Subtotal</span>
-            <input type="number" id="subtotalInput" step="0.01" value="${subtotal}" ${!isAdmin ? "disabled" : ""}>
-          </div>
-          <div class="totals-row">
-            <span>Impuestos</span>
-            <input type="number" id="taxInput" step="0.01" value="${tax}" ${!isAdmin ? "disabled" : ""}>
-          </div>
-          <div class="totals-row">
-            <span>Descuento</span>
-            <input type="number" id="discountInput" step="0.01" value="${disc}" ${!isAdmin ? "disabled" : ""}>
-          </div>
-        </div>
-        <div class="totals-grand" id="totalDisplay">
-          ${formatCurrency(total)}
-        </div>
-      `;
-      detailContainer.appendChild(totals);
-
-      const subtotalInput = totals.querySelector("#subtotalInput");
-      const taxInput = totals.querySelector("#taxInput");
-      const discountInput = totals.querySelector("#discountInput");
-      const totalDisplay = totals.querySelector("#totalDisplay");
-
-      function updateTotal() {
-        const sub = parseFloat(subtotalInput.value)||0;
-        const tax = parseFloat(taxInput.value)||0;
-        const dis = parseFloat(discountInput.value)||0;
-        totalDisplay.textContent = formatCurrency(sub+tax-dis);
-      }
-
-      if (isAdmin) {
-        subtotalInput.oninput = updateTotal;
-        taxInput.oninput = updateTotal;
-        discountInput.oninput = updateTotal;
-      }
-
-      /* === ACCIONES === */
-      const actions = document.createElement("div");
-      actions.className = "actions";
-
-      if (isAdmin) {
-        actions.innerHTML = `
-          <button class="btn-primary" id="saveTotalsBtn">Guardar totales</button>
-          <button class="btn-secondary" id="recalcBtn">Recalcular</button>
-          <button class="btn-danger" id="closeOrderBtn">Cerrar orden</button>
-        `;
-      } else {
-        actions.innerHTML = `<span style="font-size:12px;opacity:0.8;">Modo caja: no editable</span>`;
-      }
-
-      detailContainer.appendChild(actions);
-
-      const statusSelect = wrapper.querySelector("#orderStatusSelect");
-      if (statusSelect) statusSelect.value = orderData.status;
-
-      if (isAdmin) {
-        document.getElementById("saveTotalsBtn").onclick = async () => {
-          const sub = parseFloat(subtotalInput.value)||0;
-          const tax = parseFloat(taxInput.value)||0;
-          const dis = parseFloat(discountInput.value)||0;
-
-          const orderRef = doc(db,"branches",BRANCH_ID,"orders",orderId);
-          await updateDoc(orderRef,{
-            subtotal:sub, tax:tax, discount:dis,
-            total: sub+tax-dis,
-            status: statusSelect.value,
-            updatedAt: serverTimestamp()
-          });
-          setStatus("Totales guardados.");
-        };
-
-        document.getElementById("recalcBtn").onclick = () => {
-          let newSub = 0;
-          items.forEach(it=>{
-            const line = it.totalPrice ?? (it.unitPrice||0)*(it.qty||1);
-            newSub += line;
-          });
-          subtotalInput.value = newSub;
-          updateTotal();
-        };
-
-        document.getElementById("closeOrderBtn").onclick = async () => {
-          if (!confirm("¿Cerrar orden?")) return;
-
-          const sub = parseFloat(subtotalInput.value)||0;
-          const tax = parseFloat(taxInput.value)||0;
-          const dis = parseFloat(discountInput.value)||0;
-
-          const orderRef = doc(db,"branches",BRANCH_ID,"orders",orderId);
-          await updateDoc(orderRef,{
-            status:"cerrada",
-            subtotal:sub, tax:tax, discount:dis,
-            total:sub+tax-dis,
-            updatedAt:serverTimestamp()
-          });
-          setStatus("Orden cerrada.");
-        };
-
-        statusSelect.onchange = async () => {
-          const orderRef = doc(db,"branches",BRANCH_ID,"orders",orderId);
-          await updateDoc(orderRef,{
-            status: statusSelect.value,
-            updatedAt: serverTimestamp()
-          });
-        };
-      }
-
-      /* ==== CHAT ==== */
-      const chatCard = document.createElement("div");
-      chatCard.className = "chat-card";
-      chatCard.innerHTML = `
-        <div class="chat-title">Chat con el cliente</div>
-        <div id="messagesList" class="chat-messages"></div>
-        <div class="chat-input-row">
-          <textarea id="messageInput" placeholder="Mensaje..." ${!isAdmin ? "disabled" : ""}></textarea>
-          <button id="sendMessageBtn" class="btn-primary" ${!isAdmin ? "disabled" : ""}>Enviar</button>
-        </div>
-      `;
-      detailContainer.appendChild(chatCard);
-
-      wrapper._chat = {
-        messagesList: chatCard.querySelector("#messagesList"),
-        messageInput: chatCard.querySelector("#messageInput"),
-        sendMessageBtn: chatCard.querySelector("#sendMessageBtn"),
-        orderId
-      };
-
-      if (isAdmin) {
-        wrapper._chat.sendMessageBtn.onclick = () => enviarMensaje(wrapper._chat);
-        wrapper._chat.messageInput.onkeydown = (e)=>{
-          if (e.key==="Enter" && !e.shiftKey) {
-            e.preventDefault();
-            enviarMensaje(wrapper._chat);
-          }
-        };
-      }
-    }
-
-    function listenMessages(orderId) {
-      if (unsubscribeMessages) unsubscribeMessages();
-
-      const msgsRef = collection(db,"branches",BRANCH_ID,"orders",orderId,"messages");
-      const qMsgs = query(msgsRef, orderBy("createdAt","asc"));
-
-      const wrapper = detailContainer.firstElementChild;
-      if (!wrapper || !wrapper._chat) return;
-
-      const {messagesList} = wrapper._chat;
-
-      unsubscribeMessages = onSnapshot(qMsgs, snap=>{
-        messagesList.innerHTML = "";
-
-        if (snap.size===0) {
-          messagesList.innerHTML = "<span style='opacity:0.7;'>Sin mensajes.</span>";
+        if (!snap.exists()) {
+          currentUserRoleEl.textContent = "Sin rol";
+          setGlobalStatus("Tu usuario no tiene rol asignado.");
+          alert("Tu usuario no tiene rol asignado. Contacta al administrador.");
           return;
         }
 
-        snap.forEach(docSnap=>{
-          const m = docSnap.data();
-          const div = document.createElement("div");
-          const client = m.sender==="cliente";
-          div.className = "msg " + (client ? "msg-cliente":"msg-mesero");
-          div.innerHTML = `
-            <div>${m.text}</div>
-            <div class="msg-meta">${client?"Cliente":"Staff"}</div>
-          `;
-          messagesList.appendChild(div);
+        const data = snap.data();
+        const role = data.role || "sin_rol";
+
+        isAdmin = role === "admin";
+        isCaja = role === "caja";
+
+        if (!(isAdmin || isCaja)) {
+          alert("Acceso restringido. Esta página es solo para rol 'admin' o 'caja'.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentUserRoleEl.textContent = "Rol: " + role;
+        setGlobalStatus("Conectado como " + role + ".");
+        listenOrders();
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Error al verificar tu rol.");
+      }
+    });
+
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // === ESCUCHAR ÓRDENES ===
+    function listenOrders() {
+      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+      const qOrders = query(ordersRef, orderBy("createdAt", "desc"));
+
+      onSnapshot(qOrders, (snap) => {
+        allOrders = [];
+        snap.forEach(docSnap => {
+          const data = docSnap.data();
+          allOrders.push({ id: docSnap.id, data });
         });
 
-        messagesList.scrollTop = messagesList.scrollHeight;
+        renderOrders();
+      }, (err) => {
+        console.error("Error leyendo órdenes en caja:", err);
+        setGlobalStatus("Error leyendo órdenes.");
       });
     }
 
-    async function enviarMensaje(chat) {
-      const text = chat.messageInput.value.trim();
-      if (!text) return;
+    // === FILTROS ===
+    chipHoy.onclick = () => {
+      currentFilter = "hoy";
+      chipHoy.classList.add("active");
+      chipTodos.classList.remove("active");
+      renderOrders();
+    };
 
-      const msgRef = collection(db,"branches",BRANCH_ID,"orders",chat.orderId,"messages");
-      await addDoc(msgRef,{
-        sender:"mesero",
-        text,
-        createdAt:serverTimestamp()
-      });
+    chipTodos.onclick = () => {
+      currentFilter = "todos";
+      chipTodos.classList.add("active");
+      chipHoy.classList.remove("active");
+      renderOrders();
+    };
 
-      chat.messageInput.value = "";
+    function orderMatchesFilter(order) {
+      if (currentFilter === "todos") return true;
+
+      const created = order.data.createdAt?.toDate
+        ? order.data.createdAt.toDate()
+        : null;
+      if (!created) return false;
+
+      const d = new Date(created);
+      return (
+        d.getFullYear() === today.getFullYear() &&
+        d.getMonth() === today.getMonth() &&
+        d.getDate() === today.getDate()
+      );
     }
 
-    listenOrders();
+    function formatCurrency(n) {
+      return "$" + (n || 0).toFixed(2);
+    }
+
+    function formatTime(date) {
+      if (!date) return "--:--";
+      return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    }
+
+    function getStatusBadgeClass(status) {
+      switch (status) {
+        case "abierta": return "badge badge-status-abierta";
+        case "en_preparacion": return "badge badge-status-en_preparacion";
+        case "lista": return "badge badge-status-lista";
+        case "cerrada": return "badge badge-status-cerrada";
+        default: return "badge";
+      }
+    }
+
+    function getPaidBadgeText(orderData) {
+      return orderData.paid ? "Pagada" : "Pendiente";
+    }
+
+    function getPaidBadgeClass(orderData) {
+      return orderData.paid ? "badge badge-paid" : "badge badge-unpaid";
+    }
+
+    // === RENDER ORDENES + STATS ===
+    function renderOrders() {
+      ordersListEl.innerHTML = "";
+      let filtered = allOrders.filter(orderMatchesFilter);
+
+      if (!filtered.length) {
+        ordersListEl.innerHTML = "<p class='small' style='padding:6px;'>No hay órdenes para este rango.</p>";
+      }
+
+      let total = 0;
+      let paidCount = 0;
+      let unpaidCount = 0;
+
+      filtered.forEach(({ id, data }) => {
+        const status = data.status || "abierta";
+        const totalOrder = data.total ?? data.subtotal ?? 0;
+        const created = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+
+        total += totalOrder;
+        if (data.paid) paidCount++; else unpaidCount++;
+
+        const row = document.createElement("div");
+        row.className = "order-row";
+        row.dataset.id = id;
+
+        row.innerHTML = `
+          <div>
+            <div><strong>Mesa ${data.tableNumber || "?"}</strong> – ${data.customerName || "Sin nombre"}</div>
+            <div class="small">
+              <span class="${getStatusBadgeClass(status)}">${status}</span>
+              <span class="${getPaidBadgeClass(data)}">${getPaidBadgeText(data)}</span>
+            </div>
+          </div>
+          <div style="text-align:right;">
+            <div>${formatCurrency(totalOrder)}</div>
+            <div class="small">${formatTime(created)}</div>
+          </div>
+        `;
+
+        row.addEventListener("click", () => selectOrder(id, data));
+        ordersListEl.appendChild(row);
+      });
+
+      statOrders.textContent = filtered.length;
+      statTotal.textContent = formatCurrency(total);
+      statPaid.textContent = paidCount;
+      statUnpaid.textContent = unpaidCount;
+
+      // Si la orden seleccionada ya no pasa filtro, limpiar detalle
+      if (currentOrderId) {
+        const stillExists = filtered.some(o => o.id === currentOrderId);
+        if (!stillExists) {
+          currentOrderId = null;
+          detailPanelEl.style.display = "none";
+          noOrderSelectedEl.style.display = "block";
+          document.querySelectorAll(".order-row").forEach(r => r.classList.remove("selected"));
+        } else {
+          // volver a marcar selección visual
+          document.querySelectorAll(".order-row").forEach(r => {
+            r.classList.toggle("selected", r.dataset.id === currentOrderId);
+          });
+        }
+      }
+    }
+
+    // === SELECCIONAR ORDEN ===
+    async function selectOrder(orderId, orderData) {
+      currentOrderId = orderId;
+      document.querySelectorAll(".order-row").forEach(r => {
+        r.classList.toggle("selected", r.dataset.id === orderId);
+      });
+
+      noOrderSelectedEl.style.display = "none";
+      detailPanelEl.style.display = "block";
+
+      detailOrderIdShortEl.textContent = orderId.slice(-6);
+      detailTableEl.textContent = orderData.tableNumber || "?";
+      detailCustomerEl.textContent = orderData.customerName || "Sin nombre";
+      detailSourceEl.textContent = orderData.source || "desconocido";
+
+      const status = orderData.status || "abierta";
+      detailStatusBadgeEl.className = getStatusBadgeClass(status);
+      detailStatusBadgeEl.textContent = status;
+
+      detailPaidBadgeEl.className = getPaidBadgeClass(orderData);
+      detailPaidBadgeEl.textContent = getPaidBadgeText(orderData);
+
+      const created = orderData.createdAt?.toDate ? orderData.createdAt.toDate() : null;
+      detailCreatedAtEl.textContent = formatTime(created);
+
+      detailTotalEl.textContent = formatCurrency(orderData.total ?? orderData.subtotal ?? 0);
+      detailPaymentMethodEl.textContent = orderData.paymentMethod || "—";
+
+      // Cargar items
+      await loadOrderItems(orderId);
+      renderDetailButtons(orderId, orderData);
+    }
+
+    async function loadOrderItems(orderId) {
+      detailItemsEl.innerHTML = "<p class='small'>Cargando productos...</p>";
+
+      try {
+        const itemsCol = collection(db, "branches", BRANCH_ID, "orders", orderId, "items");
+        const qItems = query(itemsCol, orderBy("createdAt", "asc"));
+
+        onSnapshot(qItems, (snap) => {
+          detailItemsEl.innerHTML = "";
+          if (snap.empty) {
+            detailItemsEl.innerHTML = "<p class='small'>Esta orden no tiene productos.</p>";
+            return;
+          }
+
+          snap.forEach(docSnap => {
+            const d = docSnap.data();
+            const amount = (d.unitPrice || 0) * (d.qty || 1);
+
+            const row = document.createElement("div");
+            row.className = "detail-item-row";
+            row.innerHTML = `
+              <div>${d.qty || 1} × <strong>${d.productName || "Producto"}</strong> – ${formatCurrency(amount)}</div>
+              ${d.notes ? `<div class="detail-item-notes">Nota: ${d.notes}</div>` : ""}
+            `;
+            detailItemsEl.appendChild(row);
+          });
+        });
+      } catch (err) {
+        console.error("Error cargando items:", err);
+        detailItemsEl.innerHTML = "<p class='small'>Error al cargar los productos.</p>";
+      }
+    }
+
+    // === BOTONES DE DETALLE (según rol) ===
+    function renderDetailButtons(orderId, orderData) {
+      detailButtonsEl.innerHTML = "";
+
+      const status = orderData.status || "abierta";
+      const paid = !!orderData.paid;
+
+      // Botones de estado solo para admin
+      if (isAdmin) {
+        const btnPreparacion = createButton("En preparación", "btn-small btn-warning", () =>
+          changeStatus(orderId, "en_preparacion")
+        );
+        const btnLista = createButton("Lista", "btn-small btn-success", () =>
+          changeStatus(orderId, "lista")
+        );
+        const btnCerrada = createButton("Cerrar", "btn-small btn-neutral", () =>
+          changeStatus(orderId, "cerrada")
+        );
+
+        detailButtonsEl.appendChild(btnPreparacion);
+        detailButtonsEl.appendChild(btnLista);
+        detailButtonsEl.appendChild(btnCerrada);
+      }
+
+      // Botones de pago para admin y caja
+      if (isAdmin || isCaja) {
+        const btnPagoEfectivo = createButton("Marcar pagado (efectivo)", "btn-small btn-primary", () =>
+          markPaid(orderId, "efectivo")
+        );
+        const btnPagoTarjeta = createButton("Marcar pagado (tarjeta)", "btn-small btn-primary", () =>
+          markPaid(orderId, "tarjeta")
+        );
+
+        if (paid) {
+          btnPagoEfectivo.disabled = true;
+          btnPagoTarjeta.disabled = true;
+        }
+
+        detailButtonsEl.appendChild(btnPagoEfectivo);
+        detailButtonsEl.appendChild(btnPagoTarjeta);
+      }
+
+      // Botón borrar orden solo admin (opcional, aquí solo la marcamos cerrada)
+      /*
+      if (isAdmin) {
+        const btnEliminar = createButton("Eliminar orden", "btn-small btn-danger", () =>
+          deleteOrder(orderId)
+        );
+        detailButtonsEl.appendChild(btnEliminar);
+      }
+      */
+    }
+
+    function createButton(label, className, onClick) {
+      const btn = document.createElement("button");
+      btn.className = "btn " + className;
+      btn.textContent = label;
+      btn.onclick = onClick;
+      return btn;
+    }
+
+    async function changeStatus(orderId, newStatus) {
+      try {
+        await updateDoc(doc(db, "branches", BRANCH_ID, "orders", orderId), {
+          status: newStatus,
+          updatedAt: serverTimestamp()
+        });
+        setGlobalStatus(`Orden ${orderId.slice(-6)} → ${newStatus}`);
+      } catch (err) {
+        console.error("Error cambiando estado:", err);
+        alert("No se pudo actualizar el estado de la orden.");
+      }
+    }
+
+    async function markPaid(orderId, method) {
+      try {
+        await updateDoc(doc(db, "branches", BRANCH_ID, "orders", orderId), {
+          paid: true,
+          paymentMethod: method,
+          paidAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        });
+        setGlobalStatus(`Orden ${orderId.slice(-6)} marcada pagada (${method}).`);
+      } catch (err) {
+        console.error("Error marcando pagada:", err);
+        alert("No se pudo marcar la orden como pagada.");
+      }
+    }
+
+    /*
+    // Solo si en el futuro quisieras eliminar físicamente órdenes
+    async function deleteOrder(orderId) {
+      if (!confirm("¿Seguro que deseas eliminar esta orden? Esta acción no se puede deshacer.")) return;
+      try {
+        await deleteDoc(doc(db, "branches", BRANCH_ID, "orders", orderId));
+        setGlobalStatus(`Orden ${orderId.slice(-6)} eliminada.`);
+      } catch (err) {
+        console.error("Error eliminando orden:", err);
+        alert("No se pudo eliminar la orden.");
+      }
+    }
+    */
   </script>
 </body>
 </html>
