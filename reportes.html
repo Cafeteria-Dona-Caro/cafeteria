@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafecaro – Reportes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      color: #222;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    header .sub {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    header .right {
+      text-align: right;
+      font-size: 12px;
+    }
+
+    .role-pill {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+
+    #logoutBtn {
+      margin-top: 4px;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: #eeeeee;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      gap: 8px;
+    }
+
+    @media (min-width: 900px) {
+      main {
+        flex-direction: row;
+      }
+    }
+
+    .panel {
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      padding: 10px;
+    }
+
+    @media (min-width: 900px) {
+      .panel-left {
+        flex: 0.9;
+        margin-right: 6px;
+      }
+      .panel-right {
+        flex: 1.1;
+        margin-left: 6px;
+      }
+    }
+
+    .panel h2 {
+      margin: 0 0 6px;
+      font-size: 16px;
+    }
+
+    .small {
+      font-size: 11px;
+      opacity: 0.7;
+    }
+
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 12px;
+    }
+
+    .chip {
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .chip.active {
+      border-color: #2962ff;
+      background: #e3f2fd;
+      color: #0d47a1;
+      font-weight: 600;
+    }
+
+    .date-inputs {
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      align-items:center;
+      font-size:12px;
+    }
+    .date-inputs input[type="date"] {
+      padding:4px 6px;
+      border-radius:8px;
+      border:1px solid #ddd;
+      font-size:12px;
+      font-family:inherit;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .btn-small { padding:4px 10px; font-size:11px; }
+    .btn-primary { background:#2962ff; color:#fff; }
+    .btn-neutral { background:#eeeeee; color:#333; }
+
+    .stats-grid {
+      display: grid;
+      gap: 8px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-top: 6px;
+    }
+
+    @media (min-width: 900px) {
+      .stats-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .stat-card {
+      border-radius: 10px;
+      border: 1px solid #eee;
+      padding: 8px;
+      font-size: 12px;
+      background: #fafafa;
+    }
+
+    .stat-label {
+      opacity: 0.7;
+      margin-bottom: 2px;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .stat-sub {
+      font-size: 11px;
+      opacity:0.7;
+      margin-top:2px;
+    }
+
+    .section-title {
+      font-size:13px;
+      font-weight:600;
+      margin:8px 0 4px;
+    }
+
+    /* Tabla de órdenes */
+    .orders-table-wrapper {
+      margin-top: 4px;
+      max-height: 55vh;
+      overflow:auto;
+      border-radius:10px;
+      border:1px solid #eee;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #fafafa;
+      z-index: 1;
+    }
+
+    th, td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #f0f0f0;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    tr:nth-child(2n) td {
+      background:#fafafa;
+    }
+
+    .badge {
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      margin-right:4px;
+    }
+    .badge-status-abierta { background:#e3f2fd; color:#0d47a1; }
+    .badge-status-en_preparacion { background:#fff3e0; color:#e65100; }
+    .badge-status-lista { background:#e8f5e9; color:#1b5e20; }
+    .badge-status-cerrada { background:#eeeeee; color:#424242; }
+
+    .badge-paid { background:#c8e6c9; color:#1b5e20; }
+    .badge-unpaid { background:#ffebee; color:#b71c1c; }
+
+    .status-bar {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-top: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    .info-box {
+      font-size:11px;
+      padding:6px 8px;
+      border-radius:8px;
+      border:1px dashed #ddd;
+      background:#fafafa;
+      margin-top:4px;
+    }
+
+    .tag {
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      font-size:10px;
+      background:#e3f2fd;
+      color:#0d47a1;
+      margin-right:4px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Reportes</h1>
+      <div class="sub" id="branchLabel">Sucursal: —</div>
+    </div>
+    <div class="right">
+      <div id="currentUserEmail">—</div>
+      <div id="currentUserRole" class="role-pill">Verificando rol...</div>
+      <button id="logoutBtn">Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Panel izquierdo: filtros y KPIs -->
+    <section class="panel panel-left">
+      <h2>Filtros y resumen</h2>
+      <p class="small">Analiza las ventas por rango de fechas. Solo admin y caja.</p>
+
+      <div class="filters-row">
+        <span class="small">Rango rápido:</span>
+        <div id="chipHoy" class="chip active">Hoy</div>
+        <div id="chipAyer" class="chip">Ayer</div>
+        <div id="chip7" class="chip">Últimos 7 días</div>
+        <div id="chipTodos" class="chip">Todos</div>
+      </div>
+
+      <div class="date-inputs">
+        <span class="small">Personalizado:</span>
+        <input type="date" id="dateFrom" />
+        <span>→</span>
+        <input type="date" id="dateTo" />
+        <button id="btnAplicarFechas" class="btn btn-small btn-neutral">Aplicar</button>
+      </div>
+
+      <div style="margin-top:4px;" class="small">
+        Rango aplicado: <span id="labelRango">Hoy</span>
+      </div>
+
+      <button id="btnActualizar" class="btn btn-small btn-primary" style="margin-top:6px;">
+        Actualizar datos
+      </button>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Órdenes</div>
+          <div id="statOrders" class="stat-value">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total vendido</div>
+          <div id="statTotal" class="stat-value">$0.00</div>
+          <div class="stat-sub" id="statPaidInfo">Pagado: $0.00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Pagadas</div>
+          <div id="statPaidCount" class="stat-value">0</div>
+          <div class="stat-sub" id="statUnpaidCount">Pendientes: 0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Ticket promedio</div>
+          <div id="statAvgTicket" class="stat-value">$0.00</div>
+          <div class="stat-sub" id="statAvgPaidTicket"></div>
+        </div>
+      </div>
+
+      <div class="section-title">Por método de pago</div>
+      <div class="info-box" id="paymentSummaryBox">
+        <span class="small">Aún no hay datos.</span>
+      </div>
+    </section>
+
+    <!-- Panel derecho: tabla de órdenes -->
+    <section class="panel panel-right">
+      <h2>Órdenes del rango</h2>
+      <p class="small">Detalle de órdenes incluidas en el cálculo.</p>
+
+      <div class="orders-table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Mesa</th>
+              <th>Cliente</th>
+              <th>Total</th>
+              <th>Estado</th>
+              <th>Pago</th>
+              <th>Método</th>
+              <th>Fuente</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <!-- filas dinámicas -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-box">
+        <span class="tag">TIP</span>
+        Los datos se calculan con base en la colección
+        <strong>branches/cafecaro-centro/orders</strong>.  
+        Si quieres limitar por sucursal, puedes duplicar esta página y cambiar <code>BRANCH_ID</code>.
+      </div>
+    </section>
+  </main>
+
+  <div id="globalStatus" class="status-bar">Conectando...</div>
+
+  <!-- ============================= -->
+  <!--     FIREBASE + LÓGICA        -->
+  <!-- ============================= -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+    import {
+      getFirestore,
+      collection,
+      doc,
+      getDoc,
+      query,
+      orderBy,
+      limit,
+      getDocs
+    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
+      authDomain: "cafecaro-af23b.firebaseapp.com",
+      projectId: "cafecaro-af23b",
+      storageBucket: "cafecaro-af23b.firebasestorage.app",
+      messagingSenderId: "534231921780",
+      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
+    };
+
+    const BRANCH_ID = "cafecaro-centro";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const branchLabel = document.getElementById("branchLabel");
+    const currentUserEmailEl = document.getElementById("currentUserEmail");
+    const currentUserRoleEl = document.getElementById("currentUserRole");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const globalStatus = document.getElementById("globalStatus");
+
+    const chipHoy = document.getElementById("chipHoy");
+    const chipAyer = document.getElementById("chipAyer");
+    const chip7 = document.getElementById("chip7");
+    const chipTodos = document.getElementById("chipTodos");
+    const dateFromInput = document.getElementById("dateFrom");
+    const dateToInput = document.getElementById("dateTo");
+    const btnAplicarFechas = document.getElementById("btnAplicarFechas");
+    const btnActualizar = document.getElementById("btnActualizar");
+    const labelRango = document.getElementById("labelRango");
+
+    const statOrders = document.getElementById("statOrders");
+    const statTotal = document.getElementById("statTotal");
+    const statPaidCount = document.getElementById("statPaidCount");
+    const statUnpaidCount = document.getElementById("statUnpaidCount");
+    const statPaidInfo = document.getElementById("statPaidInfo");
+    const statAvgTicket = document.getElementById("statAvgTicket");
+    const statAvgPaidTicket = document.getElementById("statAvgPaidTicket");
+
+    const paymentSummaryBox = document.getElementById("paymentSummaryBox");
+    const ordersTableBody = document.getElementById("ordersTableBody");
+
+    branchLabel.textContent = "Sucursal: " + BRANCH_ID;
+
+    let currentRangeMode = "hoy"; // "hoy" | "ayer" | "7" | "todos" | "custom"
+    let rangeFrom = null;
+    let rangeTo = null;
+    let allOrdersRaw = [];
+
+    function setGlobalStatus(msg) {
+      globalStatus.textContent = msg;
+    }
+
+    // === AUTH: solo admin y caja ===
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      currentUserEmailEl.textContent = user.email || "(sin correo)";
+
+      try {
+        const userDocRef = doc(db, "users", user.uid);
+        const snap = await getDoc(userDocRef);
+
+        if (!snap.exists()) {
+          currentUserRoleEl.textContent = "Sin rol";
+          setGlobalStatus("Sin rol. Contacta al administrador.");
+          alert("Tu usuario no tiene rol asignado.");
+          return;
+        }
+
+        const data = snap.data();
+        const role = data.role || "sin_rol";
+
+        if (!(role === "admin" || role === "caja")) {
+          alert("Acceso restringido. Este módulo es solo para admin o caja.");
+          window.location.href = "login.html";
+          return;
+        }
+
+        currentUserRoleEl.textContent = "Rol: " + role;
+        setGlobalStatus("Conectado como " + role + ".");
+        initDefaultDates();
+        await loadOrders();
+      } catch (err) {
+        console.error(err);
+        setGlobalStatus("Error al verificar tu rol.");
+      }
+    });
+
+    logoutBtn.onclick = async () => {
+      await signOut(auth);
+      window.location.href = "login.html";
+    };
+
+    // === Fechas por defecto ===
+    function initDefaultDates() {
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      dateFromInput.value = todayStr;
+      dateToInput.value = todayStr;
+
+      applyRangeMode("hoy");
+    }
+
+    function applyRangeMode(mode) {
+      currentRangeMode = mode;
+      chipHoy.classList.remove("active");
+      chipAyer.classList.remove("active");
+      chip7.classList.remove("active");
+      chipTodos.classList.remove("active");
+
+      const today = new Date();
+      let from, to;
+
+      function dateOnly(d) {
+        const nd = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        return nd;
+      }
+
+      if (mode === "hoy") {
+        chipHoy.classList.add("active");
+        from = dateOnly(today);
+        to = dateOnly(today);
+        labelRango.textContent = "Hoy";
+      } else if (mode === "ayer") {
+        chipAyer.classList.add("active");
+        const ayer = new Date(today);
+        ayer.setDate(today.getDate() - 1);
+        from = dateOnly(ayer);
+        to = dateOnly(ayer);
+        labelRango.textContent = "Ayer";
+      } else if (mode === "7") {
+        chip7.classList.add("active");
+        const start = new Date(today);
+        start.setDate(today.getDate() - 6);
+        from = dateOnly(start);
+        to = dateOnly(today);
+        labelRango.textContent = "Últimos 7 días";
+      } else if (mode === "todos") {
+        chipTodos.classList.add("active");
+        from = null;
+        to = null;
+        labelRango.textContent = "Todos";
+      } else if (mode === "custom") {
+        // Custom ya trae valores desde inputs
+        labelRango.textContent = `Personalizado: ${dateFromInput.value || "?"} → ${dateToInput.value || "?"}`;
+        const f = dateFromInput.value ? new Date(dateFromInput.value + "T00:00:00") : null;
+        const t = dateToInput.value ? new Date(dateToInput.value + "T00:00:00") : null;
+        from = f;
+        to = t;
+      }
+
+      rangeFrom = from;
+      rangeTo = to;
+    }
+
+    chipHoy.onclick = async () => {
+      applyRangeMode("hoy");
+      await loadOrders();
+    };
+    chipAyer.onclick = async () => {
+      applyRangeMode("ayer");
+      await loadOrders();
+    };
+    chip7.onclick = async () => {
+      applyRangeMode("7");
+      await loadOrders();
+    };
+    chipTodos.onclick = async () => {
+      applyRangeMode("todos");
+      await loadOrders();
+    };
+
+    btnAplicarFechas.onclick = async () => {
+      applyRangeMode("custom");
+      await loadOrders();
+    };
+
+    btnActualizar.onclick = async () => {
+      await loadOrders();
+    };
+
+    // === Cargar órdenes ===
+    async function loadOrders() {
+      try {
+        setGlobalStatus("Cargando órdenes...");
+        const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
+        const qOrders = query(ordersRef, orderBy("createdAt", "desc"), limit(500));
+
+        const snap = await getDocs(qOrders);
+        allOrdersRaw = [];
+        snap.forEach(docSnap => {
+          allOrdersRaw.push({ id: docSnap.id, data: docSnap.data() });
+        });
+
+        processAndRender();
+        setGlobalStatus("Datos cargados correctamente.");
+      } catch (err) {
+        console.error("Error cargando órdenes en reportes:", err);
+        setGlobalStatus("Error al cargar órdenes.");
+      }
+    }
+
+    function inCurrentRange(order) {
+      if (!rangeFrom && !rangeTo) return true;
+
+      const d = order.data.createdAt?.toDate ? order.data.createdAt.toDate() : null;
+      if (!d) return false;
+
+      const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+
+      if (rangeFrom && dateOnly < rangeFrom) return false;
+      if (rangeTo && dateOnly > rangeTo) return false;
+      return true;
+    }
+
+    function formatCurrency(n) {
+      return "$" + (n || 0).toFixed(2);
+    }
+
+    function formatDateTime(d) {
+      if (!d) return "--";
+      const datePart = d.toLocaleDateString("es-MX", {
+        year: "2-digit",
+        month: "2-digit",
+        day: "2-digit"
+      });
+      const timePart = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      return `${datePart} ${timePart}`;
+    }
+
+    function statusBadgeClass(status) {
+      switch (status) {
+        case "abierta": return "badge badge-status-abierta";
+        case "en_preparacion": return "badge badge-status-en_preparacion";
+        case "lista": return "badge badge-status-lista";
+        case "cerrada": return "badge badge-status-cerrada";
+        default: return "badge";
+      }
+    }
+
+    function processAndRender() {
+      const filtered = allOrdersRaw.filter(inCurrentRange);
+
+      // KPIs
+      let totalOrders = filtered.length;
+      let totalAmount = 0;
+      let totalPaidAmount = 0;
+      let paidCount = 0;
+      let unpaidCount = 0;
+
+      const paymentMap = {}; // { efectivo: {count, total}, tarjeta: {...}, otro: {...} }
+
+      filtered.forEach(({ data }) => {
+        const total = data.total ?? data.subtotal ?? 0;
+        totalAmount += total;
+
+        const isPaid = !!data.paid;
+        if (isPaid) {
+          paidCount++;
+          totalPaidAmount += total;
+        } else {
+          unpaidCount++;
+        }
+
+        const pm = (data.paymentMethod || "sin_registro").toLowerCase();
+        if (!paymentMap[pm]) {
+          paymentMap[pm] = { count: 0, total: 0 };
+        }
+        paymentMap[pm].count += 1;
+        paymentMap[pm].total += total;
+      });
+
+      const avgTicket = totalOrders > 0 ? totalAmount / totalOrders : 0;
+      const avgPaidTicket = paidCount > 0 ? totalPaidAmount / paidCount : 0;
+
+      statOrders.textContent = totalOrders;
+      statTotal.textContent = formatCurrency(totalAmount);
+      statPaidInfo.textContent = `Pagado: ${formatCurrency(totalPaidAmount)}`;
+      statPaidCount.textContent = paidCount;
+      statUnpaidCount.textContent = "Pendientes: " + unpaidCount;
+      statAvgTicket.textContent = formatCurrency(avgTicket);
+      statAvgPaidTicket.textContent = paidCount > 0
+        ? `Ticket promedio pagado: ${formatCurrency(avgPaidTicket)}`
+        : "Sin tickets pagados en el rango.";
+
+      // Payment summary
+      paymentSummaryBox.innerHTML = "";
+      if (Object.keys(paymentMap).length === 0) {
+        paymentSummaryBox.innerHTML = "<span class='small'>Aún no hay datos en este rango.</span>";
+      } else {
+        Object.entries(paymentMap).forEach(([pm, info]) => {
+          const div = document.createElement("div");
+          const label =
+            pm === "efectivo" ? "Efectivo" :
+            pm === "tarjeta" ? "Tarjeta" :
+            pm === "sin_registro" ? "Sin registro" :
+            pm.toUpperCase();
+
+          div.innerHTML = `
+            <div style="display:flex;justify-content:space-between;">
+              <span>${label}</span>
+              <span>${info.count} orden(es) – ${formatCurrency(info.total)}</span>
+            </div>
+          `;
+          paymentSummaryBox.appendChild(div);
+        });
+      }
+
+      // Tabla de órdenes
+      ordersTableBody.innerHTML = "";
+      if (!filtered.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 8;
+        td.innerHTML = "<span class='small'>No hay órdenes en este rango.</span>";
+        tr.appendChild(td);
+        ordersTableBody.appendChild(tr);
+        return;
+      }
+
+      filtered.forEach(({ id, data }) => {
+        const tr = document.createElement("tr");
+
+        const d = data.createdAt?.toDate ? data.createdAt.toDate() : null;
+        const total = data.total ?? data.subtotal ?? 0;
+        const status = data.status || "abierta";
+        const isPaid = !!data.paid;
+        const pm = data.paymentMethod || "—";
+        const source = data.source || "—";
+
+        const tdFecha = document.createElement("td");
+        tdFecha.textContent = formatDateTime(d);
+
+        const tdMesa = document.createElement("td");
+        tdMesa.textContent = data.tableNumber || "?";
+
+        const tdCliente = document.createElement("td");
+        tdCliente.textContent = data.customerName || "Sin nombre";
+
+        const tdTotal = document.createElement("td");
+        tdTotal.textContent = formatCurrency(total);
+
+        const tdStatus = document.createElement("td");
+        const spanStatus = document.createElement("span");
+        spanStatus.className = statusBadgeClass(status);
+        spanStatus.textContent = status;
+        tdStatus.appendChild(spanStatus);
+
+        const tdPago = document.createElement("td");
+        const spanPago = document.createElement("span");
+        spanPago.className = isPaid ? "badge badge-paid" : "badge badge-unpaid";
+        spanPago.textContent = isPaid ? "Pagada" : "Pendiente";
+        tdPago.appendChild(spanPago);
+
+        const tdMetodo = document.createElement("td");
+        tdMetodo.textContent = pm;
+
+        const tdFuente = document.createElement("td");
+        tdFuente.textContent = source === "cliente" ? "Cliente (QR)" :
+                               source === "mesero" ? "Mesero" :
+                               source || "—";
+
+        tr.appendChild(tdFecha);
+        tr.appendChild(tdMesa);
+        tr.appendChild(tdCliente);
+        tr.appendChild(tdTotal);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdPago);
+        tr.appendChild(tdMetodo);
+        tr.appendChild(tdFuente);
+
+        ordersTableBody.appendChild(tr);
+      });
+    }
+  </script>
+</body>
+</html>
