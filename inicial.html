@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cafecaro – Sistema POS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #ffcc80 0, #ffe0b2 35%, #fff8e1 100%);
+      color: #3e2723;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    header .sub {
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .logo-circle {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #5d4037;
+      color: #ffe0b2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      box-shadow: 0 2px 6px rgba(93,64,55,0.4);
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 12px 16px;
+      gap: 10px;
+    }
+
+    @media (min-width: 900px) {
+      main {
+        max-width: 1000px;
+        margin: 0 auto;
+      }
+    }
+
+    .hero-card {
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .hero-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .hero-text {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .hero-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .badge {
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #ffe0b2;
+      color: #4e342e;
+      font-weight: 600;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: #5d4037;
+      color: #ffe0b2;
+      box-shadow: 0 2px 6px rgba(93,64,55,0.5);
+    }
+
+    .btn-secondary {
+      background: #ffcc80;
+      color: #4e342e;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #d7ccc8;
+      color: #4e342e;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    @media (min-width: 600px) {
+      .hero-actions {
+        flex-direction: row;
+      }
+    }
+
+    .section {
+      background: rgba(255,255,255,0.92);
+      border-radius: 14px;
+      padding: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      font-size: 12px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .section-sub {
+      font-size: 11px;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 6px;
+    }
+
+    @media (min-width: 700px) {
+      .quick-grid {
+        grid-template-columns: repeat(3, minmax(0,1fr));
+      }
+    }
+
+    .quick-link {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1px solid #ffe0b2;
+      background: #fff8e1;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .quick-link-title {
+      font-weight: 600;
+    }
+
+    .quick-link-sub {
+      font-size: 11px;
+      opacity: 0.9;
+    }
+
+    .qr-box {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px dashed #d7ccc8;
+      background: #fffde7;
+      font-size: 11px;
+    }
+
+    .mono {
+      font-family: "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 11px;
+      background: #efebe9;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+
+    footer {
+      padding: 6px 12px 10px;
+      font-size: 10px;
+      opacity: 0.7;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Cafecaro POS</h1>
+      <div class="sub">Pedidos, mesas, cocina, caja y reportes en una sola web.</div>
+    </div>
+    <div class="logo-circle">
+      ☕
+    </div>
+  </header>
+
+  <main>
+    <!-- HERO PRINCIPAL -->
+    <section class="hero-card">
+      <div class="hero-title">¿Qué quieres hacer?</div>
+      <div class="hero-text">
+        Este es el panel central del sistema Cafecaro.  
+        Desde aquí puedes entrar como <strong>cliente</strong> (QR) o al panel de <strong>personal</strong>.
+      </div>
+
+      <div class="hero-badges">
+        <span class="badge">Mesas en tiempo real</span>
+        <span class="badge">KDS en cocina</span>
+        <span class="badge">Caja + reportes</span>
+      </div>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="cliente.html">
+          🚶 Cliente – Ver menú y pedir
+        </a>
+        <a class="btn btn-secondary" href="login.html">
+          👤 Personal – Iniciar sesión
+        </a>
+      </div>
+    </section>
+
+    <!-- ACCESOS RÁPIDOS -->
+    <section class="section">
+      <div class="section-title">Accesos rápidos (staff)</div>
+      <div class="section-sub">
+        Estos enlaces son útiles si ya estás logueado con tu correo/password de Cafecaro.
+      </div>
+
+      <div class="quick-grid">
+        <a class="quick-link" href="caja.html">
+          <span class="quick-link-title">Caja</span>
+          <span class="quick-link-sub">Cobrar, marcar pagado, ver tickets.</span>
+        </a>
+        <a class="quick-link" href="mesero.html">
+          <span class="quick-link-title">Mesero</span>
+          <span class="quick-link-sub">Levantar y editar órdenes por mesa.</span>
+        </a>
+        <a class="quick-link" href="kds-cocina.html">
+          <span class="quick-link-title">Cocina (KDS)</span>
+          <span class="quick-link-sub">Ver pedidos en tiempo real.</span>
+        </a>
+        <a class="quick-link" href="reportes.html">
+          <span class="quick-link-title">Reportes</span>
+          <span class="quick-link-sub">Ventas por día, ticket promedio.</span>
+        </a>
+        <a class="quick-link" href="admin-panel.html">
+          <span class="quick-link-title">Admin</span>
+          <span class="quick-link-sub">Roles, sucursales, usuarios.</span>
+        </a>
+        <a class="quick-link" href="mesero.html#chat">
+          <span class="quick-link-title">Mesas / Chat</span>
+          <span class="quick-link-sub">Hablar con mesas desde el mesero.</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- SECCIÓN QR -->
+    <section class="section">
+      <div class="section-title">QR para clientes</div>
+      <div class="section-sub">
+        Usa esta URL para generar el código QR que irá en las mesas.
+      </div>
+
+      <div class="qr-box">
+        <div>URL sugerida para QR:</div>
+        <div class="mono">
+          https://cafeteria-dona-caro.github.io/cafeteria/cliente.html
+        </div>
+        <div style="margin-top:4px;">
+          Cualquier cliente que escanee este QR verá el menú tipo Uber Eats y podrá levantar su pedido.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Cafecaro POS · Construido sobre Firebase · v1
+  </footer>
+</body>
+</html>
