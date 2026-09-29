@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es" class="auth-pendiente" data-personal>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mesero · Café de Caro</title>
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">☕</span>
+      <div>
+        <h1>Mesero</h1>
+        <p class="sub">Tomar y gestionar pedidos por mesa</p>
+      </div>
+    </a>
+    <nav id="navPersonal" class="nav" aria-label="Pantallas"></nav>
+    <div class="user-box">
+      <span id="indicadorVivo" class="vivo-indicador" title="Conectando…" role="status" aria-label="Estado de conexión en tiempo real"></span>
+      <span id="userEmail"></span>
+      <span id="userRole"></span>
+      <button id="logoutBtn" class="btn btn-fantasma btn-sm">Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid-2 lado-ancho">
+      <!-- Pedido actual -->
+      <section class="card">
+        <div class="card-title">Pedido de la mesa</div>
+
+        <form id="formMesa" class="grid-2" style="gap:.5rem;">
+          <div>
+            <label for="mesaInput" style="margin-top:0;">Mesa</label>
+            <input id="mesaInput" type="text" maxlength="10" placeholder="Ej. PB-01" autocomplete="off" list="listaMesas">
+            <datalist id="listaMesas"></datalist>
+          </div>
+          <div>
+            <label for="clienteInput" style="margin-top:0;">Cliente (opcional)</label>
+            <input id="clienteInput" type="text" maxlength="100" placeholder="Ej. Juan">
+          </div>
+          <label class="fila" style="margin:0;grid-column:1/-1;"><input id="paraLlevar" type="checkbox"> Para llevar (sin mesa)</label>
+          <button type="submit" class="btn btn-primario" style="grid-column:1/-1;">Abrir pedido</button>
+        </form>
+
+        <div id="infoOrden" class="fila-entre" style="margin-top:1rem;" hidden>
+          <div>
+            <div id="ordenTitulo" style="font-family:var(--fuente-titulos);font-weight:600;"></div>
+            <div id="ordenMeta" class="chico tenue"></div>
+          </div>
+          <div id="ordenEstado"></div>
+        </div>
+
+        <div id="items" class="lista" style="margin-top:1rem;"></div>
+        <div id="lineaTotal" class="total-linea" hidden><span>Total</span><span id="total">$0.00</span></div>
+
+        <button id="btnEntregada" class="btn btn-exito btn-bloque" style="margin-top:1rem;" hidden>Marcar como entregada</button>
+        <div id="statusBox" class="status" hidden></div>
+      </section>
+
+      <!-- Menú -->
+      <section class="card">
+        <div class="card-title">Agregar productos <span class="chico tenue">Toca para agregar 1</span></div>
+        <input id="buscar" type="search" placeholder="Buscar producto…" style="margin-bottom:.75rem;">
+        <div id="productos"><div class="vacio">Cargando menú…</div></div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="js/paginas/mesero.js"></script>
+</body>
+</html>

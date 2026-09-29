@@ -1,0 +1,639 @@
+[
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Café latte",
+    "descripcion": "Leche cremada, suave y sedosa, que se funde con un espresso intenso y aromático.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Capuccino",
+    "descripcion": "Espresso intenso, leche cremosa y una espuma espesa que corona cada sorbo con carácter y suavidad.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Espresso",
+    "descripcion": "Bebida intensa y aromática resultado de la extracción de nuestro mejor grano.",
+    "precio": 35,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Macchiato",
+    "descripcion": "Ideal para quienes disfrutan del sabor fuerte del café pero desean un toque de cremosidad sin opacar el espresso.",
+    "precio": 40,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Café de la casa",
+    "descripcion": "Método de infusión, sabor intenso.",
+    "precio": 35,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Café de olla",
+    "descripcion": "Tradicional bebida mexicana (café, piloncillo y canela).",
+    "precio": 35,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Café americano",
+    "descripcion": "Suave y aromático, preparado a partir de espresso y agua caliente.",
+    "precio": 35,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Café con anís",
+    "descripcion": "Reduce la ansiedad, controla los antojos de azúcar, mejora la digestión y protege tus vías respiratorias.",
+    "precio": 40,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Café con clavo",
+    "descripcion": "Suaviza los picos de ansiedad del café, mantiene la energía más estable y aporta antioxidantes.",
+    "precio": 40,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Café con romero",
+    "descripcion": "Aromático y relajante, ayuda a la concentración y digestión.",
+    "precio": 40,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Moka",
+    "descripcion": "Una mezcla de espresso, leche vaporizada y chocolate.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Affogato",
+    "descripcion": "Helado de vainilla bañado con espresso caliente.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Cafés clásicos",
+    "nombre": "Flat white",
+    "descripcion": "Espresso con leche vaporizada, textura suave y cremosa.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Saborizante caramelo",
+    "descripcion": "Extra para tu bebida.",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Saborizante avellana",
+    "descripcion": "Extra para tu bebida.",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Saborizante rol de canela",
+    "descripcion": "Extra para tu bebida.",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Saborizante vainilla",
+    "descripcion": "Extra para tu bebida.",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Saborizante coco",
+    "descripcion": "Extra para tu bebida.",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Saborizante crema irlandesa",
+    "descripcion": "Extra para tu bebida.",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Saborizante mazapán",
+    "descripcion": "Extra para tu bebida.",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Extras",
+    "nombre": "Carga extra de espresso",
+    "descripcion": "",
+    "precio": 10,
+    "disponible": true
+  },
+  {
+    "categoria": "Especialidades calientes",
+    "nombre": "Chai caliente",
+    "descripcion": "Preparado con té negro y una mezcla aromática de especias como canela, jengibre, clavo y cardamomo. Se combina con leche caliente para lograr un sabor intenso, especiado y ligeramente dulce.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Especialidades calientes",
+    "nombre": "Chocolate Doña Caro (leche)",
+    "descripcion": "Chocolate caliente preparado al momento con un toque artesanal que evoca el sabor del hogar.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Especialidades calientes",
+    "nombre": "Chocolate Doña Caro (agua)",
+    "descripcion": "Bebida tradicional de origen prehispánico, preparada con cacao molido y agua caliente. De sabor intenso y auténtico, conecta cada sorbo con la historia ancestral del cacao.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Especialidades calientes",
+    "nombre": "Tisana caliente",
+    "descripcion": "Infusión natural de frutas, flores y hierbas.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Especialidades calientes",
+    "nombre": "Expresso bombón",
+    "descripcion": "Bebida dulce que combina café con leche condensada.",
+    "precio": 45,
+    "disponible": true
+  },
+  {
+    "categoria": "Tés e infusiones",
+    "nombre": "Té de jengibre",
+    "descripcion": "",
+    "precio": 30,
+    "disponible": true
+  },
+  {
+    "categoria": "Tés e infusiones",
+    "nombre": "Té de canela",
+    "descripcion": "",
+    "precio": 30,
+    "disponible": true
+  },
+  {
+    "categoria": "Tés e infusiones",
+    "nombre": "Té de romero",
+    "descripcion": "",
+    "precio": 30,
+    "disponible": true
+  },
+  {
+    "categoria": "Tisanas frías",
+    "nombre": "Tisana fría frutos de la vida",
+    "descripcion": "Infusión fría natural con frutas y hierbas.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Tisanas frías",
+    "nombre": "Tisana fría frutos de la pasión",
+    "descripcion": "Infusión fría natural con frutas y hierbas.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Tisanas frías",
+    "nombre": "Tisana fría frutos tropicales",
+    "descripcion": "Infusión fría natural con frutas y hierbas.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Tisanas frías",
+    "nombre": "Tisana fría frutas caribeñas",
+    "descripcion": "Infusión fría natural con frutas y hierbas.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Soda italiana",
+    "nombre": "Soda italiana frutos rojos",
+    "descripcion": "Refrescante bebida italiana con un toque frutal.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Soda italiana",
+    "nombre": "Soda italiana coco",
+    "descripcion": "Refrescante bebida italiana con un toque frutal.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Soda italiana",
+    "nombre": "Soda italiana mojito",
+    "descripcion": "Refrescante bebida italiana con un toque frutal.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Soda italiana",
+    "nombre": "Soda italiana conga",
+    "descripcion": "Refrescante bebida italiana con un toque frutal.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Soda italiana",
+    "nombre": "Soda italiana fruta del dragón",
+    "descripcion": "Refrescante bebida italiana con un toque frutal.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Soda italiana",
+    "nombre": "Soda italiana mora azul",
+    "descripcion": "Refrescante bebida italiana con un toque frutal.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Bebidas frías",
+    "nombre": "Ice americano",
+    "descripcion": "Espresso con agua fría y hielo, refrescante y ligero.",
+    "precio": 40,
+    "disponible": true
+  },
+  {
+    "categoria": "Bebidas frías",
+    "nombre": "Cold brew",
+    "descripcion": "Extracción en frío por varias horas, suave y de baja acidez.",
+    "precio": 50,
+    "disponible": true
+  },
+  {
+    "categoria": "Bebidas frías",
+    "nombre": "Moka frío",
+    "descripcion": "Bebida de moka con hielo.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Bebidas frías",
+    "nombre": "Cerveza de raíz",
+    "descripcion": "Bebida artesanal, dulce y especiada.",
+    "precio": 60,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé Oreo",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé taro",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé algodón de azúcar",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé chocolate",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé chocolate blanco",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé caramelo",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé chai",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé capuccino",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé moka",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé mazapán",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé vainilla",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé chilate",
+    "descripcion": "Cacao, arroz, canela y especias. Tradición y frescura en cada sorbo.",
+    "precio": 70,
+    "disponible": true
+  },
+  {
+    "categoria": "Frappés",
+    "nombre": "Frappé de tisana",
+    "descripcion": "Frutas y hierbas infusionadas, mezcladas con hielo y un toque dulce.",
+    "precio": 70,
+    "disponible": true
+  },
+  {
+    "categoria": "Smoothies",
+    "nombre": "Smoothie limón",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Smoothies",
+    "nombre": "Smoothie maracuyá",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Smoothies",
+    "nombre": "Smoothie mango",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Smoothies",
+    "nombre": "Smoothie moras",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Smoothies",
+    "nombre": "Smoothie piña colada",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Smoothies",
+    "nombre": "Smoothie fresa",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Smoothies",
+    "nombre": "Smoothie plátano",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Lattes fríos",
+    "nombre": "Latte frío caramelo",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Lattes fríos",
+    "nombre": "Latte frío avellana",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Lattes fríos",
+    "nombre": "Latte frío crema irlandesa",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Lattes fríos",
+    "nombre": "Latte frío vainilla",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Lattes fríos",
+    "nombre": "Latte frío coco",
+    "descripcion": "",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Coctelería",
+    "nombre": "Carajillo",
+    "descripcion": "Espresso con licor, intenso y elegante.",
+    "precio": 85,
+    "disponible": true
+  },
+  {
+    "categoria": "Coctelería",
+    "nombre": "Café irlandés",
+    "descripcion": "Café, azúcar y whisky irlandés.",
+    "precio": 65,
+    "disponible": true
+  },
+  {
+    "categoria": "Coctelería",
+    "nombre": "Alfonso 13",
+    "descripcion": "Licor, crema, café y hielo. Suave y delicioso.",
+    "precio": 85,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Red velvet",
+    "descripcion": "Suave, aterciopelado y con un toque irresistible.",
+    "precio": 75,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Pastel de plátano",
+    "descripcion": "Casero, esponjoso y lleno de sabor.",
+    "precio": 75,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Trufa de chocolate",
+    "descripcion": "Intenso, cremoso y perfecto para los amantes del chocolate.",
+    "precio": 70,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Pastel de zanahoria",
+    "descripcion": "Especiado, suave y deliciosamente tradicional.",
+    "precio": 75,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Carlota de limón",
+    "descripcion": "Refrescante, cremosa y con el equilibrio perfecto de limón.",
+    "precio": 50,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Carlota de Oreo",
+    "descripcion": "Cremosa, con trozos de galleta Oreo y un sabor irresistible.",
+    "precio": 50,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Pastel de chocolate helado",
+    "descripcion": "Frío, intenso y totalmente irresistible.",
+    "precio": 80,
+    "disponible": true
+  },
+  {
+    "categoria": "Pasteles",
+    "nombre": "Helado de vainilla",
+    "descripcion": "Suave, cremoso y clásico, el complemento perfecto.",
+    "precio": 50,
+    "disponible": true
+  },
+  {
+    "categoria": "Pays",
+    "nombre": "Pay de queso",
+    "descripcion": "Clásico y suave.",
+    "precio": 40,
+    "disponible": true
+  },
+  {
+    "categoria": "Pays",
+    "nombre": "Pay de elote",
+    "descripcion": "Dulce y con sabor casero.",
+    "precio": 40,
+    "disponible": true
+  },
+  {
+    "categoria": "Pays",
+    "nombre": "Pay helado de limón",
+    "descripcion": "Refrescante, cremoso y perfecto para cualquier momento.",
+    "precio": 80,
+    "disponible": true
+  },
+  {
+    "categoria": "Chocolate de la casa",
+    "nombre": "Chocolate de la casa 1/4 kg",
+    "descripcion": "Molienda artesanal de chocolate con el auténtico sabor tradicional, ideal para preparar una bebida caliente.",
+    "precio": 100,
+    "disponible": true
+  },
+  {
+    "categoria": "Chocolate de la casa",
+    "nombre": "Chocolate de la casa 1/2 kg",
+    "descripcion": "Molienda artesanal de chocolate con el auténtico sabor tradicional, ideal para preparar una bebida caliente.",
+    "precio": 200,
+    "disponible": true
+  },
+  {
+    "categoria": "Chocolate de la casa",
+    "nombre": "Chocolate de la casa 1 kg",
+    "descripcion": "Molienda artesanal de chocolate con el auténtico sabor tradicional, ideal para preparar una bebida caliente.",
+    "precio": 400,
+    "disponible": true
+  },
+  {
+    "categoria": "Café de Atoyac",
+    "nombre": "Café de Atoyac 1/4 kg",
+    "descripcion": "Café artesanal de altura, con aroma intenso y sabor tradicional. Disponible molido o en grano.",
+    "precio": 100,
+    "disponible": true
+  },
+  {
+    "categoria": "Café de Atoyac",
+    "nombre": "Café de Atoyac 1/2 kg",
+    "descripcion": "Café artesanal de altura, con aroma intenso y sabor tradicional. Disponible molido o en grano.",
+    "precio": 200,
+    "disponible": true
+  },
+  {
+    "categoria": "Café de Atoyac",
+    "nombre": "Café de Atoyac 1 kg",
+    "descripcion": "Café artesanal de altura, con aroma intenso y sabor tradicional. Disponible molido o en grano.",
+    "precio": 395,
+    "disponible": true
+  },
+  {
+    "categoria": "Embotellados",
+    "nombre": "Agua mineral 600 ml",
+    "descripcion": "",
+    "precio": 30,
+    "disponible": true
+  },
+  {
+    "categoria": "Embotellados",
+    "nombre": "Coca-Cola 600 ml",
+    "descripcion": "",
+    "precio": 30,
+    "disponible": true
+  },
+  {
+    "categoria": "Embotellados",
+    "nombre": "Agua natural 600 ml",
+    "descripcion": "",
+    "precio": 15,
+    "disponible": true
+  }
+]

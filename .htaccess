@@ -1,20 +1,14 @@
 # ─────────────────────────────────────────────────────────────
-#  Café de Caro — cafedecaro.eniguala.com (Hostinger: PHP + MySQL)
+#  Café de Caro — cafedecaro.eniguala.com (Hostinger: PHP 8.3 + MariaDB)
+#
+#  /api/...   → api/router.php (ver api/.htaccess)
+#  todo lo demás → carpeta public/ (páginas, css, js, imágenes)
+#  config/, db/, README, .git… nunca se sirven.
 # ─────────────────────────────────────────────────────────────
 
 Options -Indexes
 ServerSignature Off
 DirectoryIndex index.html
-
-# ── Bloquear archivos que no deben ser públicos ──
-# (la API tiene además su propio api/.htaccess)
-<IfModule mod_alias.c>
-  RedirectMatch 404 (^|/)\.git(/|$)
-  RedirectMatch 404 (^|/)(node_modules|tools)(/|$)
-</IfModule>
-<FilesMatch "(^\.|\.(md|sql|log|pem|key|sh|bak|rules)$|^package(-lock)?\.json$)">
-  Require all denied
-</FilesMatch>
 
 # ── Nombres anteriores de las páginas (marcadores y códigos QR viejos) ──
 <IfModule mod_alias.c>
@@ -24,8 +18,29 @@ DirectoryIndex index.html
   RedirectMatch 301 ^(.*/)?inicial\.html$ $1index.html
 </IfModule>
 
-# HTTPS: actívalo en hPanel → Seguridad → SSL → "Forzar HTTPS"
-# (hacerlo aquí además puede causar un bucle de redirecciones).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Forzar HTTPS: mejor activarlo en hPanel → Seguridad → SSL → "Forzar HTTPS".
+  # Si hiciera falta aquí, descomentar (verificar que no cause un bucle):
+  # RewriteCond %{HTTPS} off
+  # RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # API: la maneja api/.htaccess
+  RewriteRule ^api(/|$) - [L]
+
+  # Raíz → página de inicio
+  RewriteRule ^$ public/index.html [L]
+
+  # Todo lo demás se busca dentro de public/ (una sola vez)
+  RewriteCond $1 !^public/
+  RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Doble seguro por si el rewrite no estuviera activo
+<FilesMatch "(^\.|\.(md|sql|log|pem|key|sh|bak)$|^config.*\.php$)">
+  Require all denied
+</FilesMatch>
 
 # ── Cabeceras de seguridad ──
 <IfModule mod_headers.c>
@@ -34,13 +49,14 @@ DirectoryIndex index.html
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
   Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
   Header always set Strict-Transport-Security "max-age=31536000"
-  # Solo se ejecutan scripts del propio sitio (ningún script en línea): freno extra contra XSS
-  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+  # Solo recursos del propio sitio: sin scripts en línea ni de terceros (freno extra contra XSS)
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
 </IfModule>
 
 # ── Tipos MIME ──
 AddType application/javascript .js
 AddType image/svg+xml .svg
+AddType font/woff2 .woff2
 
 # ── Caché ──
 # HTML, CSS, JS y JSON se revalidan siempre (los cambios se ven al publicar).
@@ -51,12 +67,12 @@ AddType image/svg+xml .svg
   <FilesMatch "^sw\.js$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
   </FilesMatch>
-  <FilesMatch "\.(png|svg|ico|webp|jpg|jpeg|woff2?)$">
-    Header set Cache-Control "public, max-age=2592000"
+  <FilesMatch "\.(png|svg|ico|webp|jpg|jpeg|woff2)$">
+    Header set Cache-Control "public, max-age=31536000"
   </FilesMatch>
 </IfModule>
 
-# ── Compresión ──
+# ── Compresión (NO se comprime text/event-stream: rompería el tiempo real) ──
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
 </IfModule>

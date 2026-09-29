@@ -1,7 +1,15 @@
-# Solo se pueden abrir los endpoints públicos de la API.
-# Bloquea: config.php, config.example.php, _inicio.php, _esquema.sql, etc.
-<FilesMatch "^(_|config)|\.(sql|md|log|bak)$">
-  Require all denied
-</FilesMatch>
-
+# Toda petición a /api/... pasa por router.php.
+# Ningún otro archivo de esta carpeta (lib/, auth/, ordenes/...) se puede abrir directamente.
 Options -Indexes
+# Las rutas /api/productos, /api/ordenes… coinciden con carpetas: no agregar "/" final
+DirectorySlash Off
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^ router.php [L,QSA]
+</IfModule>
+
+# Tiempo real (SSE): sin compresión ni búfer para que los eventos lleguen al instante
+<IfModule mod_setenvif.c>
+  SetEnvIf Request_URI "/sse/" no-gzip=1 dont-vary=1
+</IfModule>

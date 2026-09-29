@@ -1,99 +1,146 @@
-# Cafetería Doña Caro — Sistema de pedidos (PWA)
+# Cafecito de Doña Caro — Sistema de pedidos (PWA)
 
 Punto de venta y gestión de pedidos de **Cafetería Doña Caro**.
-Corre completo en el hosting (Hostinger Business): páginas HTML/CSS/JS + **API en PHP 8.3** + **MySQL/MariaDB**.
-No depende de servicios externos. Se instala como app (PWA) en celulares y tablets.
+Corre completo en el hosting (**Hostinger Business v3**): **PHP 8.3 + MariaDB**, HTML/CSS/JS sin frameworks.
+No usa servicios externos: ni bases de datos en la nube, ni CDNs, ni fuentes de terceros. Se instala como app (PWA).
 
 Producción: `https://cafedecaro.eniguala.com/`
 
 ## Pantallas
 
-| Archivo | Quién | Qué hace |
+| Página | Quién | Qué hace |
 |---|---|---|
-| `index.html` | Público | Landing y menú (de la base de datos; respaldo en `data/menu-inicial.json`) |
+| `index.html` | Público | Landing y carta completa con descripciones |
 | `cliente.html` | Cliente, sin sesión | Pedido desde la mesa. QR: `cliente.html?mesa=PB-01` |
 | `login.html` | Personal | Inicio de sesión; lleva a la pantalla de su rol |
-| `mesas.html` | admin, mesero, caja | Mapa de mesas (se actualiza cada 5 s) |
-| `mesero.html` | admin, mesero, caja | Abrir pedido por mesa, agregar/quitar productos, cerrar cuenta |
-| `cocina.html` | admin, cocina | Tablero de cocina: nuevos → en preparación → listos → entregado (cada 4 s, con sonido) |
-| `caja.html` | admin, caja | Cuentas y cobros (quién cobra se define en `api/config.php`) |
-| `reportes.html` | admin, caja | Ventas por periodo y forma de pago |
-| `admin.html` | admin | Usuarios (correo, contraseña, rol) y productos del menú |
+| `mesas.html` | admin, mesero | Mapa de mesas en **tiempo real** |
+| `mesero.html` | admin, mesero, caja | Abrir cuenta por mesa o para llevar, agregar/quitar productos, marcar entregada |
+| `cocina.html` | admin, cocina | Tablero de cocina en **tiempo real** con sonido: nuevas → en preparación → listas |
+| `caja.html` | admin, caja | Cobrar (forma de pago, descuento, cambio) y cancelar órdenes, en **tiempo real** |
+| `reportes.html` | admin | Ventas cobradas por periodo, por forma de pago y productos más vendidos |
+| `admin.html` | admin | Usuarios (correo, contraseña, rol, activo) y productos/categorías |
+
+Flujo de una orden: **abierta → en_preparacion → lista → entregada → cobrada** (o **cancelada**).
+Si se agrega un producto a una orden lista o entregada, vuelve a cocina como *abierta* y el producto nuevo se marca como NUEVO.
 
 ## Estructura
 
 ```
-├── *.html                  Pantallas (sin scripts en línea)
-├── css/estilos.css         Sistema de diseño (oscuro, mobile first)
-├── js/api.js               Llamadas a la API, token CSRF y consulta periódica
-├── js/auth-guard.js        Verificación de sesión/rol y encabezado común
-├── js/utils.js             h() para crear DOM seguro, formatos, estados
-├── js/paginas/*.js         Lógica de cada pantalla
-├── js/pwa.js · sw.js       Service Worker (PWA)
-├── api/                    Backend PHP
-│   ├── _inicio.php         Conexión, sesión, seguridad y utilidades (no accesible desde web)
-│   ├── _esquema.sql        Tablas de MySQL (no accesible desde web)
-│   ├── auth.php            Iniciar/cerrar sesión
-│   ├── productos.php       Menú
-│   ├── ordenes.php         Pedidos, cocina, cobros
-│   ├── usuarios.php        Personal
-│   ├── instalar.php        Instalación inicial (se bloquea sola al terminar)
-│   ├── config.example.php  Plantilla de configuración
-│   └── config.php          Datos de la base de datos (NO se sube a GitHub)
-├── data/menu-inicial.json  Menú base
-└── img/                    Logo e íconos
+cafedecaro/
+├── .htaccess              /api/* → api/router.php · todo lo demás → public/ · seguridad y caché
+├── config/
+│   ├── config.ejemplo.php Plantilla (sin credenciales)
+│   └── config.php         Credenciales reales (NO se versiona, no se sirve)
+├── api/
+│   ├── .htaccess          Todo pasa por router.php
+│   ├── router.php         Enrutador REST
+│   ├── instalar.php       Instalación inicial (se bloquea sola)
+│   ├── lib/               db.php · sesion.php · respuesta.php · validar.php · ordenes.php
+│   ├── auth/              login · logout · yo
+│   ├── productos/         listar · crear · editar · estado
+│   ├── ordenes/           crear · listar · detalle · estado · cobrar · agregar_item · quitar_item
+│   ├── mesas/             listar · mapa
+│   ├── reportes/          ventas
+│   ├── usuarios/          listar · crear · editar · eliminar
+│   └── sse/eventos.php    Tiempo real (Server-Sent Events)
+├── db/
+│   ├── esquema.sql        Tablas
+│   └── semilla.sql        Carta "Cafecito de Doña Caro" (91 productos, 16 categorías) y 18 mesas
+└── public/                Lo único que ve el navegador
+    ├── *.html · manifest.json · sw.js
+    ├── css/estilos.css    Sistema de diseño oscuro, mobile first
+    ├── fonts/             Inter y Outfit (alojadas aquí, licencia OFL)
+    ├── js/api.js · auth.js · sse.js · utils.js · pwa.js
+    ├── js/paginas/*.js    Lógica de cada pantalla (sin JavaScript en línea)
+    ├── data/menu-inicial.json  Carta de respaldo si la API no responde
+    └── img/               Logo e íconos
 ```
+
+## API
+
+| Método | Ruta | Rol | Descripción |
+|---|---|---|---|
+| POST | `/api/auth/login` | — | Iniciar sesión |
+| POST | `/api/auth/logout` | cualquiera | Cerrar sesión |
+| GET | `/api/auth/yo` | — | Usuario actual (o `null`) y token CSRF |
+| GET | `/api/productos` | — | Carta (solo disponibles); `?todos=1` para admin |
+| POST | `/api/productos` | admin | Crear producto (con categoría existente o nueva) |
+| PUT | `/api/productos/{id}` | admin | Editar nombre, precio, descripción, categoría |
+| PATCH | `/api/productos/{id}/estado` | admin | Disponible / no disponible |
+| POST | `/api/ordenes` | — / personal | Cliente: crea orden. Personal: abre o retoma la cuenta de la mesa |
+| GET | `/api/ordenes` | personal | Órdenes activas; filtros `estado`, `desde`, `hasta` |
+| GET | `/api/ordenes/{id}` | personal | Orden con ítems |
+| PATCH | `/api/ordenes/{id}/estado` | cocina, mesero, caja, admin | Cambiar estado (según rol) |
+| POST | `/api/ordenes/{id}/cobrar` | caja, admin | Cobrar: forma de pago y descuento |
+| POST | `/api/ordenes/{id}/items` | mesero, caja, admin | Agregar producto a la cuenta |
+| DELETE | `/api/ordenes/{id}/items/{item}` | mesero, caja, admin | Quitar producto (si cocina no lo empezó) |
+| GET | `/api/mesas` | — | Mesas |
+| GET | `/api/mesas/mapa` | mesero, admin | Mesas con sus órdenes activas |
+| GET | `/api/reportes/ventas` | admin | Ventas por fecha |
+| GET/POST/PUT/DELETE | `/api/usuarios[/{id}]` | admin | Personal |
+| GET | `/api/sse/eventos` | personal | Tiempo real (SSE) |
+
+Si el firewall del hosting bloqueara PUT/PATCH/DELETE, la API también los acepta como POST con la cabecera
+`X-HTTP-Method-Override: PUT|PATCH|DELETE`.
+
+## Tiempo real (SSE)
+
+Cada cambio en una orden o producto se guarda en la tabla `eventos`. Las pantallas del personal mantienen abierta
+una conexión a `/api/sse/eventos`, que revisa esa tabla dos veces por segundo y envía lo nuevo al instante.
+Cada conexión dura ~55 s y el navegador se reconecta solo, sin perder eventos (`Last-Event-ID`).
+El punto verde junto al nombre del usuario indica que la conexión está activa.
+
+Cada pantalla de cocina/caja/mesas/mesero abierta ocupa un proceso PHP mientras está conectada. Para una
+cafetería (unas cuantas tablets) es holgado para el plan Business; si hubiera muchas pantallas simultáneas y el
+hosting empezara a rechazar conexiones, esa es la causa.
+
+Los eventos de más de 24 h se borran solos. Opcional: CRON en hPanel cada hora con
+`DELETE FROM eventos WHERE creado_en < NOW() - INTERVAL 24 HOUR`.
 
 ## Seguridad
 
-- **Precios y totales los calcula el servidor** con los precios de la base de datos; lo que mande el navegador se ignora.
-- Contraseñas con `password_hash` (bcrypt). Bloqueo tras 8 intentos fallidos en 15 min por IP.
-- Sesión con cookie `HttpOnly` + `SameSite=Lax` y token **CSRF** en todas las acciones del personal.
-- Permisos por rol en cada endpoint de la API (la interfaz solo oculta pantallas).
-- Nadie puede cambiarse su propio rol, desactivarse ni eliminarse.
-- Pedidos de clientes: máximo 50 productos y 6 pedidos por IP cada 10 minutos (configurable).
-- Consultas preparadas (PDO) en todo el backend: sin inyección SQL.
-- Sin `innerHTML` con datos: todo el texto se inserta con `h()` / `textContent`.
-- `.htaccess` con Content-Security-Policy estricta (solo scripts del propio sitio) y bloqueo de
-  `api/config.php`, `api/_*.php`, `*.sql`, `*.md` y archivos ocultos.
+- **Precios y totales los calcula el servidor**: el navegador solo envía `producto_id`, `cantidad` y notas.
+- Consultas preparadas (PDO) en todo el backend; `strict_types` y enums de PHP 8.3.
+- Contraseñas con `password_hash(PASSWORD_BCRYPT)`. Bloqueo por IP tras **5 intentos fallidos en 15 min**.
+- Sesión con cookie `HttpOnly`, `Secure` (en HTTPS) y `SameSite=Strict`; token **CSRF** y verificación de `Origin`.
+- Permisos por rol en cada endpoint. Nadie puede cambiar su propio rol, desactivarse ni eliminarse.
+  Si el admin desactiva a alguien, su sesión deja de funcionar al instante.
+- Pedidos desde el QR: la mesa debe existir; máx. 50 productos y 6 pedidos por IP cada 10 min.
+- Sin `innerHTML` con datos: todo el texto se inserta como texto (`h()` / `textContent`).
+- Content-Security-Policy estricta: solo archivos del propio sitio, ningún script en línea.
+- `config/`, `db/`, `api/lib/`, `.git`, `README.md` no son accesibles desde el navegador.
 
 ## Instalación en Hostinger
 
 1. **Subdominio:** hPanel → Dominios → Subdominios → `cafedecaro.eniguala.com`.
-2. **Base de datos:** hPanel → Bases de datos → Administración → crea una base, un usuario y su contraseña.
-3. **Subir archivos** a la carpeta del subdominio (Administrador de archivos o *Git* en hPanel).
-4. **Configurar:** en el servidor, copia `api/config.example.php` como `api/config.php` y llena:
-   - `db_nombre`, `db_usuario`, `db_clave` (del paso 2; el host es `localhost`),
-   - `clave_instalacion`: un texto largo y secreto que solo tú conozcas.
-5. **Instalar:** abre `https://cafedecaro.eniguala.com/api/instalar.php`, escribe la clave de instalación,
-   tu correo y una contraseña. Se crean las tablas, tu usuario administrador y (opcional) el menú inicial.
-   Después el instalador queda bloqueado; si quieres, borra `api/instalar.php`.
-6. **SSL:** hPanel → Seguridad → SSL → activa el certificado y *Forzar HTTPS*.
-7. **PHP:** verifica en hPanel → Avanzado → Configuración de PHP que la versión sea 8.1 o mayor (8.3 recomendado).
-8. Entra a `login.html`, da de alta al personal en **Admin → Usuarios** y revisa precios en **Admin → Productos**.
-9. Imprime los QR de cada mesa con la URL `https://cafedecaro.eniguala.com/cliente.html?mesa=PB-01`.
+2. **Base de datos:** hPanel → Bases de datos → Administración → crea base, usuario y contraseña.
+3. **Subir** todo el repositorio a la carpeta del subdominio (Administrador de archivos o *Git* en hPanel).
+4. **Configurar:** copia `config/config.ejemplo.php` como `config/config.php` y llena los datos de la base
+   (host `127.0.0.1` o `localhost`) y una `clave_instalacion` larga y secreta.
+5. **Instalar** (elige una):
+   - **Recomendado:** abre `https://cafedecaro.eniguala.com/api/instalar`, escribe la clave de instalación,
+     tu correo y contraseña. Crea las tablas, carga la carta y las mesas, y tu usuario administrador.
+   - **Manual:** en phpMyAdmin importa `db/esquema.sql` y luego `db/semilla.sql`; después abre
+     `/api/instalar` solo para crear el administrador (las tablas ya existentes no se tocan).
 
-### Configuración opcional (`api/config.php`)
+   En cuanto existe un usuario, el instalador queda bloqueado.
+6. **PHP:** hPanel → Avanzado → Configuración de PHP → versión **8.3**.
+7. **SSL:** hPanel → Seguridad → SSL → activar y *Forzar HTTPS*.
+8. Entra a `login.html`, da de alta al personal en **Admin → Usuarios** y revisa la carta en **Admin → Productos**.
+9. Imprime los QR de cada mesa: `https://cafedecaro.eniguala.com/cliente.html?mesa=PB-01` (PB-01…PB-08, PA-01…PA-06, B-01…B-04).
 
-- `roles_cobro`: quién puede registrar cobros. Por defecto `['admin']`; usa `['admin', 'caja']` para que la caja cobre.
-- `max_pedidos_cliente_por_10min`: límite de pedidos por IP desde `cliente.html`.
+> Por qué no hay usuario admin en `semilla.sql`: una contraseña fija dentro de un archivo del repositorio
+> sería la puerta de entrada para cualquiera que la lea. El instalador la pide una sola vez.
 
 ### Al publicar cambios
 
-Sube `CACHE_VERSION` en `sw.js` (ej. `cafedecaro-v3`) para que las apps instaladas tomen la versión nueva.
+Sube `CACHE_VERSION` en `public/sw.js` (ej. `cafedecaro-v4`) para que las apps instaladas tomen la versión nueva.
 
 ### Respaldos
 
-Hostinger hace respaldos automáticos (hPanel → Archivos → Copias de seguridad). Para un respaldo manual de los
-pedidos: hPanel → Bases de datos → phpMyAdmin → Exportar.
+hPanel → Archivos → Copias de seguridad (automáticas), o phpMyAdmin → Exportar.
 
 ## Desarrollo local
 
-Requiere PHP ≥ 8.1 con `pdo_mysql` y un MySQL/MariaDB:
-
-```bash
-cp api/config.example.php api/config.php   # y edita los datos de tu base local
-php -S localhost:8080                      # abre http://localhost:8080/api/instalar.php
-```
-
-`php -S` no aplica el `.htaccess`; los bloqueos de archivos solo funcionan en Apache/LiteSpeed (Hostinger).
+PHP ≥ 8.3 con `pdo_mysql` y MariaDB/MySQL. El sitio necesita Apache/LiteSpeed (usa `.htaccess`):
+apunta el `DocumentRoot` a la carpeta del proyecto con `AllowOverride All` y `mod_rewrite`.

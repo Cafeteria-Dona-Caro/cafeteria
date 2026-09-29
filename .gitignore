@@ -1,7 +1,5 @@
 # Credenciales — NUNCA versionar
-api/config.php
-serviceAccountKey*.json
-*-firebase-adminsdk-*.json
+config/config.php
 *.pem
 *.key
 .env

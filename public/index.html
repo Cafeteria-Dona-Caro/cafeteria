@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Cafecito de Doña Caro · Café, Frappés, Pasteles y más</title>
+  <meta name="description" content="Menú de Cafetería Doña Caro, la cafetería más madrugadora. Calle Josefa Ortiz esquina con Zapata. Cafés calientes, frappés, sodas italianas, smoothies, chamoyadas y tisanas.">
+  <meta name="keywords" content="cafetería doña caro, menú café, frappe, smoothies, tisanas, sodas italianas, café de olla, chamoyadas, Josefa Ortiz, Zapata">
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <meta property="og:title" content="Cafecito de Doña Caro">
+  <meta property="og:description" content="La cafetería más madrugadora. Abierto de 7 am a 10 pm todos los días.">
+  <meta property="og:type" content="website">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
+</head>
+<body>
+  <section class="hero">
+    <img src="img/logo.svg" alt="" width="72" height="72" style="margin-bottom:.75rem;">
+    <p class="lema" style="margin:0;letter-spacing:.2em;text-transform:uppercase;">Cafecito de</p>
+    <h1>Doña Caro</h1>
+    <p class="lema">“Cada rebanada y cada taza cuentan una historia.”</p>
+    <div class="datos">
+      <span class="pill">📍 Calle Josefa Ortiz esq. Zapata</span>
+      <span class="pill">🕖 7 am a 10 pm · todos los días</span>
+    </div>
+    <div class="acciones">
+      <a class="btn btn-primario" href="cliente.html">Pedir desde mi mesa</a>
+      <a class="btn btn-fantasma" href="https://www.facebook.com/profile.php?id=61582088720241" target="_blank" rel="noopener noreferrer">Facebook</a>
+      <a class="btn btn-fantasma" href="https://www.instagram.com/cafe_de_caro" target="_blank" rel="noopener noreferrer">Instagram</a>
+    </div>
+  </section>
+
+  <main>
+    <div id="chips" class="chips" style="margin-bottom:1rem;"></div>
+    <div id="menu" class="menu-publico"><div class="vacio">Cargando menú…</div></div>
+  </main>
+
+  <footer class="pie">
+    <p>Cafetería Doña Caro · Calle Josefa Ortiz esquina con Zapata</p>
+    <p><a href="login.html">Acceso del personal</a></p>
+  </footer>
+
+  <script type="module" src="js/paginas/index.js"></script>
+</body>
+</html>

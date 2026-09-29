@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es" class="auth-pendiente" data-personal>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Caja · Café de Caro</title>
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">☕</span>
+      <div>
+        <h1>Caja</h1>
+        <p class="sub">Cobros y estado de las cuentas</p>
+      </div>
+    </a>
+    <nav id="navPersonal" class="nav" aria-label="Pantallas"></nav>
+    <div class="user-box">
+      <span id="indicadorVivo" class="vivo-indicador" title="Conectando…" role="status" aria-label="Estado de conexión en tiempo real"></span>
+      <span id="userEmail"></span>
+      <span id="userRole"></span>
+      <button id="logoutBtn" class="btn btn-fantasma btn-sm">Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="grid-2">
+      <section class="card">
+        <div class="card-title">Cuentas</div>
+        <div id="filtros" class="chips" style="margin-bottom:.75rem;">
+          <button class="chip activo" data-filtro="pendientes">Por cobrar</button>
+          <button class="chip" data-filtro="cobradas">Cobradas hoy</button>
+          <button class="chip" data-filtro="hoy">Todas de hoy</button>
+        </div>
+        <div id="ordenes" class="lista"><div class="vacio">Cargando órdenes…</div></div>
+      </section>
+
+      <section class="card">
+        <div class="card-title">Detalle de la cuenta</div>
+        <div id="detalleVacio" class="vacio">Selecciona una orden para ver su detalle.</div>
+
+        <div id="detalle" hidden>
+          <div class="fila-entre">
+            <div>
+              <div id="dTitulo" style="font-family:var(--fuente-titulos);font-weight:600;font-size:1.1rem;"></div>
+              <div id="dMeta" class="chico tenue"></div>
+            </div>
+            <div id="dPildoras" class="fila"></div>
+          </div>
+
+          <div id="dItems" class="lista" style="margin-top:1rem;"></div>
+          <div class="fila-entre chico tenue" style="margin-top:.75rem;"><span>Subtotal</span><span id="dSubtotal">$0.00</span></div>
+          <div class="total-linea"><span>Total</span><span id="dTotal">$0.00</span></div>
+
+          <form id="formCobro" class="grid-2" style="gap:.5rem;margin-top:.5rem;" hidden>
+            <div>
+              <label for="metodo">Forma de pago</label>
+              <select id="metodo" required></select>
+            </div>
+            <div>
+              <label for="descuento">Descuento ($)</label>
+              <input id="descuento" type="number" min="0" step="0.5" inputmode="decimal" placeholder="0">
+            </div>
+            <div hidden>
+              <label for="recibido">Recibido en efectivo ($)</label>
+              <input id="recibido" type="number" min="0" step="0.5" inputmode="decimal" placeholder="Para calcular el cambio">
+              <div id="cambio" class="chico" style="margin-top:.35rem;color:var(--estado-lista);"></div>
+            </div>
+            <button id="btnCobrar" type="submit" class="btn btn-primario" style="grid-column:1/-1;">Cobrar</button>
+          </form>
+          <button id="btnCancelar" class="btn btn-peligro btn-sm" style="margin-top:.75rem;" hidden>Cancelar orden</button>
+        </div>
+
+        <div id="statusBox" class="status" hidden></div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module" src="js/paginas/caja.js"></script>
+</body>
+</html>

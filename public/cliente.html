@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Haz tu pedido · Café de Caro</title>
+  <meta name="description" content="Pide desde tu mesa en Café de Caro.">
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preload" href="fonts/inter.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">☕</span>
+      <div>
+        <h1>Café de Caro</h1>
+        <p class="sub">Elige tus productos y envía tu pedido</p>
+      </div>
+    </a>
+  </header>
+
+  <main id="contenido" style="max-width:720px;">
+    <section class="card">
+      <div class="grid-2">
+        <div>
+          <label for="mesaInput" style="margin-top:0;">Número de mesa</label>
+          <input id="mesaInput" type="text" maxlength="10" placeholder="Ej. PB-01" autocomplete="off" list="listaMesas">
+          <datalist id="listaMesas"></datalist>
+        </div>
+        <div>
+          <label for="nombreInput" style="margin-top:0;">Tu nombre (opcional)</label>
+          <input id="nombreInput" type="text" maxlength="100" placeholder="Ej. Ana" autocomplete="given-name">
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:1rem;">
+      <div class="card-title">Menú</div>
+      <div id="chipsCategorias" class="chips" style="margin-bottom:.75rem;"></div>
+      <div id="productos"><div class="vacio">Cargando menú…</div></div>
+    </section>
+
+    <section id="carrito" class="card" style="margin-top:1rem;" hidden>
+      <div class="card-title">Tu pedido</div>
+      <div id="carritoItems" class="lista"></div>
+      <div class="total-linea"><span>Total</span><span id="carritoTotal">$0.00</span></div>
+      <button id="btnEnviar" class="btn btn-primario btn-bloque" style="margin-top:1rem;">Enviar pedido</button>
+      <p class="chico tenue" style="margin:.5rem 0 0;">El pago se realiza en caja al final de tu visita.</p>
+    </section>
+
+    <div id="statusBox" class="status" hidden></div>
+  </main>
+
+  <div id="barraCarrito" class="carrito-barra" hidden>
+    <div class="contenido fila-entre">
+      <div>
+        <div id="barraResumen" style="font-weight:600;"></div>
+        <div class="chico tenue">Revisa y envía tu pedido</div>
+      </div>
+      <a href="#carrito" class="btn btn-primario">Ver pedido</a>
+    </div>
+  </div>
+
+  <script type="module" src="js/paginas/cliente.js"></script>
+</body>
+</html>
