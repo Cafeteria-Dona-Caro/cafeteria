@@ -1,692 +1,323 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="auth-pendiente">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cafecaro – Mesero</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #f5f5f5;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      background: #ffffff;
-      padding: 10px 14px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    .h-left h1 {
-      margin: 0;
-      font-size: 18px;
-      color: #3e2723;
-    }
-
-    .h-left .sub {
-      font-size: 11px;
-      opacity: 0.7;
-    }
-
-    .h-right {
-      text-align: right;
-      font-size: 11px;
-    }
-
-    .role-pill {
-      display: inline-block;
-      margin-top: 3px;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: #e3f2fd;
-      color: #0d47a1;
-      font-weight: 600;
-    }
-
-    .top-buttons {
-      margin-top: 4px;
-      display: flex;
-      gap: 6px;
-      justify-content: flex-end;
-    }
-
-    .btn-small {
-      padding: 5px 9px;
-      font-size: 11px;
-      border-radius: 999px;
-      border: 1px solid #ccc;
-      background: #fafafa;
-      cursor: pointer;
-    }
-
-    main {
-      flex: 1;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .layout {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    @media (min-width: 900px) {
-      .layout {
-        display: grid;
-        grid-template-columns: 1.1fr 1.1fr;
-        gap: 12px;
-      }
-    }
-
-    .card {
-      background: #ffffff;
-      border-radius: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      padding: 10px 12px;
-      font-size: 13px;
-    }
-
-    .card-title {
-      font-weight: 700;
-      font-size: 14px;
-      color: #5d4037;
-      margin-bottom: 6px;
-    }
-
-    label {
-      display: block;
-      margin-top: 6px;
-      font-size: 12px;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      margin-top: 4px;
-      padding: 8px;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      font-family: inherit;
-      font-size: 13px;
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 60px;
-    }
-
-    .btn-main {
-      margin-top: 8px;
-      width: 100%;
-      padding: 10px;
-      border-radius: 999px;
-      border: none;
-      background: #5d4037;
-      color: #ffe0b2;
-      font-weight: 700;
-      cursor: pointer;
-      font-size: 13px;
-      box-shadow: 0 3px 8px rgba(93,64,55,0.5);
-    }
-
-    .btn-main:active {
-      transform: translateY(1px);
-    }
-
-    .status-pill {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 999px;
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-    .status-abierta { background: #ffecb3; color: #e65100; }
-    .status-en_preparacion { background: #e1f5fe; color: #0277bd; }
-    .status-lista { background: #e8f5e9; color: #2e7d32; }
-    .status-cerrada { background: #eceff1; color: #455a64; }
-
-    .order-summary {
-      margin-top: 6px;
-      font-size: 12px;
-      opacity: 0.85;
-    }
-
-    .items-list {
-      margin-top: 6px;
-      border-top: 1px solid #eee;
-      max-height: 260px;
-      overflow-y: auto;
-    }
-
-    .item-row {
-      padding: 6px 0;
-      border-bottom: 1px solid #f0f0f0;
-      display: flex;
-      justify-content: space-between;
-      gap: 6px;
-      font-size: 12px;
-    }
-
-    .item-main {
-      flex: 1;
-    }
-
-    .item-name {
-      font-weight: 600;
-    }
-
-    .item-notes {
-      font-size: 11px;
-      opacity: 0.75;
-    }
-
-    .item-price {
-      white-space: nowrap;
-      font-weight: 600;
-      color: #5d4037;
-    }
-
-    .total-line {
-      margin-top: 6px;
-      padding-top: 6px;
-      border-top: 1px solid #ddd;
-      font-size: 14px;
-      font-weight: 700;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .status-msg {
-      margin-top: 8px;
-      padding: 6px 8px;
-      border-radius: 10px;
-      font-size: 11px;
-      display: none;
-    }
-    .status-ok {
-      background: #e8f5e9;
-      color: #2e7d32;
-    }
-    .status-error {
-      background: #ffebee;
-      color: #b71c1c;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 8px;
-    }
-
-    @media (min-width: 700px) {
-      .products-grid {
-        grid-template-columns: repeat(3, minmax(0,1fr));
-      }
-    }
-
-    .product-card {
-      background: #fafafa;
-      border-radius: 12px;
-      padding: 8px;
-      border: 1px solid #eee;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      cursor: pointer;
-      transition: 0.1s;
-    }
-
-    .product-card:hover {
-      background: #fff3e0;
-      border-color: #ffb74d;
-    }
-
-    .product-name {
-      font-size: 13px;
-      font-weight: 600;
-      color: #4e342e;
-    }
-
-    .product-price {
-      font-size: 12px;
-      color: #6d4c41;
-      font-weight: 600;
-    }
-
-    .tiny {
-      font-size: 11px;
-      opacity: 0.7;
-    }
-
-    .btn-close {
-      margin-top: 6px;
-      width: 100%;
-      padding: 8px;
-      border-radius: 999px;
-      border: none;
-      font-size: 12px;
-      font-weight: 700;
-      background: #c62828;
-      color: #fff3e0;
-      cursor: pointer;
-    }
-
-    .btn-close[disabled] {
-      opacity: 0.5;
-      cursor: default;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mesero · Café de Caro</title>
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
 </head>
-
 <body>
-
-  <header>
-    <div class="h-left">
-      <h1>Mesero</h1>
-      <div class="sub">Tomar y gestionar pedidos por mesa</div>
-    </div>
-    <div class="h-right">
-      <div id="userEmail">—</div>
-      <div id="userRole" class="role-pill">Verificando rol...</div>
-      <div class="top-buttons">
-        <button id="homeBtn" class="btn-small">Inicio</button>
-        <button id="logoutBtn" class="btn-small">Salir</button>
+  <header class="app-header">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">☕</span>
+      <div>
+        <h1>Mesero</h1>
+        <p class="sub">Tomar y gestionar pedidos por mesa</p>
       </div>
+    </a>
+    <nav id="navPersonal" class="nav" aria-label="Pantallas"></nav>
+    <div class="user-box">
+      <span id="userEmail"></span>
+      <span id="userRole"></span>
+      <button id="logoutBtn" class="btn btn-fantasma btn-sm">Salir</button>
     </div>
   </header>
 
   <main>
-
-    <div class="layout">
-
-      <!-- LADO IZQUIERDO: MESA + PEDIDO ACTUAL -->
+    <div class="grid-2 lado-ancho">
+      <!-- Pedido actual -->
       <section class="card">
-        <div class="card-title">Datos de la mesa</div>
+        <div class="card-title">Pedido de la mesa</div>
 
-        <label for="tableNumberInput">Mesa</label>
-        <input id="tableNumberInput" type="text" placeholder="Ej. PB-01, PA-03, 12" />
+        <form id="formMesa" class="grid-2" style="gap:.5rem;">
+          <div>
+            <label for="mesaInput" style="margin-top:0;">Mesa</label>
+            <input id="mesaInput" type="text" maxlength="20" placeholder="Ej. PB-01" autocomplete="off">
+          </div>
+          <div>
+            <label for="clienteInput" style="margin-top:0;">Cliente (opcional)</label>
+            <input id="clienteInput" type="text" maxlength="60" placeholder="Ej. Juan">
+          </div>
+          <button type="submit" class="btn btn-primario" style="grid-column:1/-1;">Abrir pedido de la mesa</button>
+        </form>
 
-        <label for="customerNameInput">Nombre del cliente (opcional)</label>
-        <input id="customerNameInput" type="text" placeholder="Ej. Juan Pérez" />
-
-        <button id="btnLoadTable" class="btn-main">Cargar / Crear pedido</button>
-
-        <div id="orderInfo" class="order-summary"></div>
-        <div id="orderStatusPill"></div>
-
-        <button id="btnCloseOrder" class="btn-close" disabled>Cerrar cuenta</button>
-
-        <div class="card-title" style="margin-top:10px;">Ítems del pedido</div>
-        <div id="itemsList" class="items-list"></div>
-        <div id="orderTotalLine" class="total-line" style="display:none;">
-          <span>Total</span>
-          <span id="orderTotalAmount">$0.00</span>
+        <div id="infoOrden" class="fila-entre" style="margin-top:1rem;" hidden>
+          <div>
+            <div id="ordenTitulo" style="font-family:var(--fuente-titulos);font-weight:600;"></div>
+            <div id="ordenMeta" class="chico tenue"></div>
+          </div>
+          <div id="ordenEstado"></div>
         </div>
 
-        <div id="statusBox" class="status-msg"></div>
+        <div id="items" class="lista" style="margin-top:1rem;"></div>
+        <div id="lineaTotal" class="total-linea" hidden><span>Total</span><span id="total">$0.00</span></div>
+
+        <button id="btnCerrar" class="btn btn-ambar btn-bloque" style="margin-top:1rem;" disabled>Cerrar cuenta (pasar a caja)</button>
+        <div id="statusBox" class="status" hidden></div>
       </section>
 
-      <!-- LADO DERECHO: MENÚ PARA AGREGAR PRODUCTOS -->
+      <!-- Menú -->
       <section class="card">
-        <div class="card-title">Menú – Agregar al pedido</div>
-        <div class="tiny">Toca un producto para añadirlo directo al pedido actual.</div>
-        <div id="productsGrid" class="products-grid" style="margin-top:8px;"></div>
+        <div class="card-title">Agregar productos <span class="chico tenue">Toca para agregar 1</span></div>
+        <input id="buscar" type="search" placeholder="Buscar producto…" style="margin-bottom:.75rem;">
+        <div id="productos"><div class="vacio">Cargando menú…</div></div>
       </section>
-
     </div>
-
   </main>
 
-  <!-- =========================================== -->
-  <!--               FIREBASE JS                  -->
-  <!-- =========================================== -->
-
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import {
-      getAuth,
-      onAuthStateChanged,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+      getDocs, addDoc, updateDoc, deleteDoc, onSnapshot, query, where, orderBy, doc, serverTimestamp,
+      productosRef, ordenesRef, ordenRef, itemsRef
+    } from "./js/firebase-config.js";
+    import { verificarAcceso, montarEncabezado } from "./js/auth-guard.js";
     import {
-      getFirestore,
-      collection,
-      doc,
-      getDoc,
-      getDocs,
-      onSnapshot,
-      query,
-      where,
-      addDoc,
-      updateDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+      h, reemplazar, formatearPrecio, formatearHora, precioProducto, importeItem,
+      pildoraEstado, mostrarEstado
+    } from "./js/utils.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
-      authDomain: "cafecaro-af23b.firebaseapp.com",
-      projectId: "cafecaro-af23b",
-      storageBucket: "cafecaro-af23b.firebasestorage.app",
-      messagingSenderId: "534231921780",
-      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
-    };
+    const usuario = await verificarAcceso(["admin", "mesero", "caja"]);
+    montarEncabezado(usuario);
 
-    const BRANCH_ID = "cafecaro-centro";
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // DOM
-    const userEmailEl = document.getElementById("userEmail");
-    const userRoleEl = document.getElementById("userRole");
-    const homeBtn = document.getElementById("homeBtn");
-    const logoutBtn = document.getElementById("logoutBtn");
-
-    const tableNumberInput = document.getElementById("tableNumberInput");
-    const customerNameInput = document.getElementById("customerNameInput");
-    const btnLoadTable = document.getElementById("btnLoadTable");
-    const btnCloseOrder = document.getElementById("btnCloseOrder");
-
-    const orderInfo = document.getElementById("orderInfo");
-    const orderStatusPill = document.getElementById("orderStatusPill");
-    const itemsList = document.getElementById("itemsList");
-    const orderTotalLine = document.getElementById("orderTotalLine");
-    const orderTotalAmount = document.getElementById("orderTotalAmount");
+    const formMesa = document.getElementById("formMesa");
+    const mesaInput = document.getElementById("mesaInput");
+    const clienteInput = document.getElementById("clienteInput");
+    const infoOrden = document.getElementById("infoOrden");
+    const ordenTitulo = document.getElementById("ordenTitulo");
+    const ordenMeta = document.getElementById("ordenMeta");
+    const ordenEstado = document.getElementById("ordenEstado");
+    const itemsEl = document.getElementById("items");
+    const lineaTotal = document.getElementById("lineaTotal");
+    const totalEl = document.getElementById("total");
+    const btnCerrar = document.getElementById("btnCerrar");
     const statusBox = document.getElementById("statusBox");
-    const productsGrid = document.getElementById("productsGrid");
+    const productosEl = document.getElementById("productos");
+    const buscar = document.getElementById("buscar");
 
-    let currentOrderId = null;
-    let unsubscribeItems = null;
-    let currentOrderStatus = "abierta";
+    let ordenId = null;
+    let orden = null;
+    let desuscribirOrden = null;
+    let desuscribirItems = null;
+    let productos = [];
 
-    function showStatus(msg, isError = false) {
-      statusBox.style.display = "block";
-      statusBox.textContent = msg;
-      statusBox.className = "status-msg " + (isError ? "status-error" : "status-ok");
+    /* ─── Menú ─── */
+    async function cargarProductos() {
+      try {
+        const snap = await getDocs(productosRef());
+        productos = snap.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(p => p.isActive !== false && p.name)
+          .sort((a, b) => (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name));
+        pintarProductos();
+      } catch (err) {
+        console.error(err);
+        reemplazar(productosEl, h("div", { class: "vacio" }, "Error al cargar el menú."));
+      }
     }
 
-    homeBtn.onclick = () => {
-      window.location.href = "index.html";
-    };
-
-    logoutBtn.onclick = async () => {
-      await signOut(auth);
-      window.location.href = "login.html";
-    };
-
-    // Leer ?mesa= de la URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const mesaFromUrl = urlParams.get("mesa");
-    if (mesaFromUrl) {
-      tableNumberInput.value = mesaFromUrl;
+    function pintarProductos() {
+      const texto = buscar.value.trim().toLowerCase();
+      const visibles = productos.filter(p => !texto || p.name.toLowerCase().includes(texto));
+      if (!visibles.length) {
+        reemplazar(productosEl, h("div", { class: "vacio" }, "Sin resultados."));
+        return;
+      }
+      const grupos = new Map();
+      visibles.forEach(p => {
+        const c = p.category || "Otros";
+        if (!grupos.has(c)) grupos.set(c, []);
+        grupos.get(c).push(p);
+      });
+      const nodos = [];
+      for (const [cat, lista] of grupos) {
+        nodos.push(h("h3", { class: "categoria-titulo" }, cat));
+        nodos.push(h("div", { class: "productos-grid" }, lista.map(p =>
+          h("button", { class: "producto-card", onclick: () => agregarItem(p) },
+            h("span", { class: "nombre" }, p.name),
+            h("span", { class: "precio" }, formatearPrecio(precioProducto(p)))
+          )
+        )));
+      }
+      reemplazar(productosEl, nodos);
     }
 
-    // Auth
-    onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = "login.html";
+    buscar.addEventListener("input", pintarProductos);
+
+    async function agregarItem(p) {
+      if (!ordenId) {
+        mostrarEstado(statusBox, "Primero abre el pedido de una mesa.", "error");
+        mesaInput.focus();
         return;
       }
-      userEmailEl.textContent = user.email || "(sin correo)";
-
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (!userDoc.exists()) {
-        userRoleEl.textContent = "Sin rol";
-        alert("Tu usuario no tiene rol asignado. Contacta al administrador.");
+      if (orden?.status === "cerrada") {
+        mostrarEstado(statusBox, "La cuenta ya está cerrada. Abre un pedido nuevo para esta mesa.", "error");
         return;
       }
-      const role = userDoc.data().role || "sin_rol";
-      userRoleEl.textContent = "Rol: " + role;
+      try {
+        await addDoc(itemsRef(ordenId), {
+          productId: p.id,
+          productName: p.name,
+          price: precioProducto(p),
+          notes: "",
+          createdAt: serverTimestamp()
+        });
+        mostrarEstado(statusBox, `Agregado: ${p.name}`, "ok");
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusBox, "Error al agregar el producto.", "error");
+      }
+    }
 
-      const allowed = ["admin", "mesero", "caja"];
-      if (!allowed.includes(role)) {
-        alert("No tienes permiso para usar este módulo.");
-        window.location.href = "login.html";
+    /* ─── Abrir / crear pedido ─── */
+    formMesa.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const mesa = mesaInput.value.trim();
+      if (!mesa) {
+        mostrarEstado(statusBox, "Escribe el número de mesa.", "error");
         return;
       }
+      abrirPedido(mesa, clienteInput.value.trim());
+    });
 
-      // Cargar menú para agregar productos
-      loadProducts();
+    async function abrirPedido(mesa, cliente = "") {
+      desuscribirOrden?.();
+      desuscribirItems?.();
+      ordenId = null;
+      orden = null;
+      mostrarEstado(statusBox, `Buscando pedido de la mesa ${mesa}…`, "info");
 
-      // Si venía mesa en la URL, cargar automáticamente
-      if (mesaFromUrl) {
-        setTimeout(() => {
-          loadOrCreateOrderForTable(mesaFromUrl);
-        }, 300);
+      try {
+        const snap = await getDocs(query(ordenesRef(), where("tableNumber", "==", mesa)));
+        const abierta = snap.docs.find(d => (d.data().status || "abierta") !== "cerrada");
+
+        if (abierta) {
+          ordenId = abierta.id;
+          if (!clienteInput.value && abierta.data().customerName) {
+            clienteInput.value = abierta.data().customerName;
+          }
+          mostrarEstado(statusBox, `Pedido abierto de la mesa ${mesa}.`, "ok");
+        } else {
+          const nueva = await addDoc(ordenesRef(), {
+            tableNumber: mesa,
+            customerName: cliente,
+            status: "abierta",
+            source: "mesero",
+            paymentStatus: "pendiente",
+            subtotal: 0,
+            total: 0,
+            createdBy: usuario.uid,
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+          });
+          ordenId = nueva.id;
+          mostrarEstado(statusBox, `Nuevo pedido creado para la mesa ${mesa}.`, "ok");
+        }
+
+        const url = new URL(location.href);
+        url.searchParams.set("mesa", mesa);
+        history.replaceState(null, "", url);
+
+        escucharOrden();
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusBox, "No se pudo abrir el pedido.", "error");
+      }
+    }
+
+    function escucharOrden() {
+      const id = ordenId;
+      desuscribirOrden = onSnapshot(ordenRef(id), (snap) => {
+        if (!snap.exists()) return;
+        orden = snap.data();
+        infoOrden.hidden = false;
+        ordenTitulo.textContent = `Mesa ${orden.tableNumber || "—"}` + (orden.customerName ? ` · ${orden.customerName}` : "");
+        ordenMeta.textContent = `Pedido #${id.slice(-6)} · ${formatearHora(orden.createdAt)}` +
+          (orden.source === "cliente" ? " · pedido por QR" : "");
+        reemplazar(ordenEstado, pildoraEstado(orden.status || "abierta"));
+        btnCerrar.disabled = orden.status === "cerrada";
+      });
+
+      desuscribirItems = onSnapshot(query(itemsRef(id), orderBy("createdAt", "asc")), async (snap) => {
+        let total = 0;
+        const filas = snap.docs.map(d => {
+          const it = d.data();
+          total += importeItem(it);
+          return h("div", { class: "item-fila" },
+            h("div", { style: "min-width:0;" },
+              h("div", { class: "nombre" }, (it.qty > 1 ? `${it.qty} × ` : "") + (it.productName || "Producto")),
+              it.notes ? h("div", { class: "nota" }, "Nota: " + it.notes) : null
+            ),
+            h("div", { class: "fila" },
+              h("span", { class: "precio" }, formatearPrecio(importeItem(it))),
+              orden?.status !== "cerrada"
+                ? h("button", {
+                    class: "btn btn-fantasma btn-sm", "aria-label": "Quitar " + (it.productName || "producto"),
+                    onclick: () => quitarItem(d.id, it.productName)
+                  }, "✕")
+                : null
+            )
+          );
+        });
+
+        reemplazar(itemsEl, filas.length ? filas : h("div", { class: "vacio" }, "Aún no hay productos en este pedido."));
+        lineaTotal.hidden = false;
+        totalEl.textContent = formatearPrecio(total);
+
+        // Mantener el total de la orden sincronizado con sus ítems
+        if (orden && id === ordenId && orden.total !== total) {
+          try {
+            await updateDoc(ordenRef(id), { subtotal: total, total, updatedAt: serverTimestamp() });
+          } catch (err) {
+            console.error("No se pudo actualizar el total:", err);
+          }
+        }
+      });
+    }
+
+    async function quitarItem(itemId, nombre) {
+      if (!confirm(`¿Quitar "${nombre || "producto"}" del pedido?`)) return;
+      try {
+        await deleteDoc(doc(itemsRef(ordenId), itemId));
+        mostrarEstado(statusBox, "Producto quitado.", "ok");
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusBox, "No se pudo quitar el producto.", "error");
+      }
+    }
+
+    /* ─── Cerrar cuenta ─── */
+    btnCerrar.addEventListener("click", async () => {
+      if (!ordenId) return;
+      if (!confirm("¿Cerrar la cuenta de esta mesa? Ya no se podrán agregar productos.")) return;
+      try {
+        await updateDoc(ordenRef(ordenId), { status: "cerrada", updatedAt: serverTimestamp() });
+        mostrarEstado(statusBox, "Cuenta cerrada. Lista para cobrar en caja.", "ok");
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusBox, "Error al cerrar la cuenta.", "error");
       }
     });
 
-    // Cargar productos
-    async function loadProducts() {
-      productsGrid.innerHTML = "Cargando menú...";
-      try {
-        const ref = collection(db, "branches", BRANCH_ID, "products");
-        const snap = await getDocs(ref);
-        productsGrid.innerHTML = "";
+    await cargarProductos();
 
-        snap.forEach(docSnap => {
-          const p = docSnap.data();
-          const card = document.createElement("div");
-          card.className = "product-card";
-
-          card.innerHTML = `
-            <div class="product-name">${p.name}</div>
-            <div class="product-price">$${p.price.toFixed(2)}</div>
-            <div class="tiny">Tocar para agregar 1 unidad</div>
-          `;
-
-          card.onclick = () => {
-            if (!currentOrderId) {
-              showStatus("Primero carga o crea un pedido para una mesa.", true);
-              return;
-            }
-            if (currentOrderStatus === "cerrada") {
-              showStatus("La cuenta ya está cerrada. No puedes agregar más ítems.", true);
-              return;
-            }
-            addItemToOrder(docSnap.id, p.name, p.price);
-          };
-
-          productsGrid.appendChild(card);
-        });
-
-      } catch (err) {
-        console.error(err);
-        productsGrid.innerHTML = "Error al cargar menú.";
-      }
+    // Si venimos del mapa de mesas: mesero.html?mesa=PB-01
+    const mesaUrl = new URLSearchParams(location.search).get("mesa");
+    if (mesaUrl) {
+      mesaInput.value = mesaUrl.slice(0, 20);
+      abrirPedido(mesaInput.value);
     }
-
-    async function addItemToOrder(productId, productName, price) {
-      try {
-        await addDoc(
-          collection(db, "branches", BRANCH_ID, "orders", currentOrderId, "items"),
-          {
-            productId,
-            productName,
-            price,
-            notes: "",
-            createdAt: serverTimestamp()
-          }
-        );
-        showStatus("Producto agregado al pedido.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Error al agregar producto.", true);
-      }
-    }
-
-    // Cargar / crear pedido
-    btnLoadTable.onclick = () => {
-      const mesa = tableNumberInput.value.trim();
-      const cliente = customerNameInput.value.trim();
-
-      if (!mesa) {
-        showStatus("Debes ingresar una mesa.", true);
-        return;
-      }
-      loadOrCreateOrderForTable(mesa, cliente);
-    };
-
-    async function loadOrCreateOrderForTable(tableNumber, customerNameOverride = "") {
-      if (unsubscribeItems) {
-        unsubscribeItems();
-        unsubscribeItems = null;
-      }
-      currentOrderId = null;
-      itemsList.innerHTML = "";
-      orderTotalLine.style.display = "none";
-      orderInfo.textContent = "";
-      orderStatusPill.innerHTML = "";
-      btnCloseOrder.disabled = true;
-
-      showStatus("Buscando pedido de la mesa " + tableNumber + "...", false);
-
-      const ordersRef = collection(db, "branches", BRANCH_ID, "orders");
-      const q = query(ordersRef, where("tableNumber", "==", tableNumber));
-      const snap = await getDocs(q);
-
-      let openOrder = null;
-      snap.forEach(docSnap => {
-        const d = docSnap.data();
-        if (d.status !== "cerrada" && !openOrder) {
-          openOrder = { id: docSnap.id, data: d };
-        }
-      });
-
-      if (!openOrder) {
-        // Crear nueva orden
-        showStatus("No había pedido abierto. Creando uno nuevo...", false);
-        const newRef = await addDoc(ordersRef, {
-          tableNumber,
-          customerName: customerNameOverride || "",
-          status: "abierta",
-          source: "mesero",
-          subtotal: 0,
-          total: 0,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
-        currentOrderId = newRef.id;
-        currentOrderStatus = "abierta";
-      } else {
-        currentOrderId = openOrder.id;
-        currentOrderStatus = openOrder.data.status || "abierta";
-        if (!customerNameInput.value && openOrder.data.customerName) {
-          customerNameInput.value = openOrder.data.customerName;
-        }
-      }
-
-      // Suscribirse a ítems en tiempo real
-      subscribeItems(tableNumber);
-      updateOrderHeader(tableNumber);
-    }
-
-    function subscribeItems(tableNumber) {
-      if (!currentOrderId) return;
-
-      const itemsRef = collection(db, "branches", BRANCH_ID, "orders", currentOrderId, "items");
-      unsubscribeItems = onSnapshot(itemsRef, async (snap) => {
-        itemsList.innerHTML = "";
-        let total = 0;
-
-        snap.forEach(docSnap => {
-          const it = docSnap.data();
-          const row = document.createElement("div");
-          row.className = "item-row";
-
-          row.innerHTML = `
-            <div class="item-main">
-              <div class="item-name">${it.productName || "Producto"}</div>
-              ${it.notes ? `<div class="item-notes">Nota: ${it.notes}</div>` : ""}
-            </div>
-            <div class="item-price">$${(it.price || 0).toFixed(2)}</div>
-          `;
-
-          itemsList.appendChild(row);
-          total += (it.price || 0);
-        });
-
-        if (snap.size === 0) {
-          itemsList.innerHTML = `<div class="tiny" style="padding:6px 0;">Aún no hay productos en este pedido.</div>`;
-        }
-
-        orderTotalLine.style.display = "flex";
-        orderTotalAmount.textContent = "$" + total.toFixed(2);
-
-        // Actualizar totales en el documento principal
-        const orderRef = doc(db, "branches", BRANCH_ID, "orders", currentOrderId);
-        await updateDoc(orderRef, {
-          subtotal: total,
-          total: total,
-          updatedAt: serverTimestamp()
-        });
-
-        updateOrderHeader(tableNumber);
-      });
-    }
-
-    function updateOrderHeader(tableNumber) {
-      const status = currentOrderStatus || "abierta";
-      const mesa = tableNumberInput.value.trim() || tableNumber || "—";
-
-      let pillClass = "status-abierta";
-      let statusText = "Abierta";
-
-      if (status === "en_preparacion") {
-        pillClass = "status-en_preparacion";
-        statusText = "En preparación";
-      } else if (status === "lista") {
-        pillClass = "status-lista";
-        statusText = "Lista";
-      } else if (status === "cerrada") {
-        pillClass = "status-cerrada";
-        statusText = "Cerrada";
-      }
-
-      orderInfo.textContent =
-        `Mesa ${mesa} · Pedido #${currentOrderId || "—"} · Estado: ${statusText}`;
-
-      orderStatusPill.innerHTML =
-        `<span class="status-pill ${pillClass}">${statusText}</span>`;
-
-      btnCloseOrder.disabled = (status === "cerrada" || !currentOrderId);
-    }
-
-    // Cerrar cuenta
-    btnCloseOrder.onclick = async () => {
-      if (!currentOrderId) return;
-      try {
-        const orderRef = doc(db, "branches", BRANCH_ID, "orders", currentOrderId);
-        await updateDoc(orderRef, {
-          status: "cerrada",
-          updatedAt: serverTimestamp()
-        });
-        currentOrderStatus = "cerrada";
-        updateOrderHeader(tableNumberInput.value.trim());
-        showStatus("Cuenta cerrada. Listo para cobrar en caja.");
-      } catch (err) {
-        console.error(err);
-        showStatus("Error al cerrar la cuenta.", true);
-      }
-    };
   </script>
-
 </body>
 </html>

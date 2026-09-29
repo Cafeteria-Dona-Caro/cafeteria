@@ -1,0 +1,22 @@
+# Credenciales — NUNCA versionar
+serviceAccountKey*.json
+*-firebase-adminsdk-*.json
+*.pem
+*.key
+.env
+.env.*
+
+# Dependencias
+node_modules/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/

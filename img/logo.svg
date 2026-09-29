@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Café de Caro">
+  <defs>
+    <linearGradient id="fondo" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e94560"/>
+      <stop offset="1" stop-color="#f5a623"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#fondo)"/>
+  <!-- vapor -->
+  <g fill="none" stroke="#1a1a2e" stroke-width="18" stroke-linecap="round" opacity=".85">
+    <path d="M196 150c-18-22 18-40 0-66"/>
+    <path d="M256 150c-18-22 18-40 0-66"/>
+    <path d="M316 150c-18-22 18-40 0-66"/>
+  </g>
+  <!-- taza -->
+  <path d="M132 190h248v98c0 68-55 122-124 122s-124-54-124-122z" fill="#1a1a2e"/>
+  <path d="M380 214h18c33 0 56 24 56 53s-23 53-56 53h-30" fill="none" stroke="#1a1a2e" stroke-width="26" stroke-linecap="round"/>
+  <!-- plato -->
+  <rect x="104" y="424" width="304" height="26" rx="13" fill="#1a1a2e"/>
+</svg>

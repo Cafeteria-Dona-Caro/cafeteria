@@ -1,287 +1,164 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="auth-pendiente">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cafecaro – Mapa de Mesas</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: #fafafa;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-
-    header {
-      background: white;
-      padding: 14px 16px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 20px;
-      color: #3e2723;
-      font-weight: 700;
-    }
-
-    header .sub {
-      font-size: 12px;
-      opacity: 0.7;
-    }
-
-    main {
-      padding: 14px;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .filter-box {
-      background: white;
-      padding: 10px;
-      border-radius: 12px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-    }
-
-    .filter-btn {
-      padding: 8px 14px;
-      border-radius: 20px;
-      border: 1px solid #ddd;
-      background: #fff;
-      cursor: pointer;
-      font-size: 13px;
-    }
-
-    .filter-btn.active {
-      background: #5d4037;
-      color: #ffe0b2;
-      border-color: #5d4037;
-    }
-
-    .area-title {
-      font-size: 17px;
-      font-weight: 700;
-      color: #5d4037;
-      margin-top: 10px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0,1fr));
-      gap: 12px;
-    }
-
-    @media(min-width: 700px) {
-      .grid {
-        grid-template-columns: repeat(3, minmax(0,1fr));
-      }
-    }
-
-    .mesa-card {
-      background: white;
-      padding: 14px;
-      border-radius: 14px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      cursor: pointer;
-      transition: 0.15s;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      border-left: 8px solid #ddd;
-    }
-
-    .mesa-card:hover {
-      transform: scale(1.02);
-    }
-
-    .mesa-name {
-      font-size: 16px;
-      font-weight: 700;
-      color: #3e2723;
-    }
-
-    .mesa-status {
-      font-size: 13px;
-      opacity: 0.8;
-    }
-
-    /* COLORES SEGÚN STATUS */
-    .st-abierta { border-color: #ffb74d; }
-    .st-preparacion { border-color: #64b5f6; }
-    .st-listo { border-color: #81c784; }
-    .st-cerrada { border-color: #bdbdbd; }
-    .st-nopedido { border-color: #e0e0e0; }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Mesas · Café de Caro</title>
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
 </head>
-
 <body>
-
-  <header>
-    <h1>Mapa de Mesas</h1>
-    <div class="sub">Estado general · Planta baja · Alta · Balcón</div>
+  <header class="app-header">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">☕</span>
+      <div>
+        <h1>Mapa de mesas</h1>
+        <p class="sub">Planta baja · Planta alta · Balcón</p>
+      </div>
+    </a>
+    <nav id="navPersonal" class="nav" aria-label="Pantallas"></nav>
+    <div class="user-box">
+      <span id="userEmail"></span>
+      <span id="userRole"></span>
+      <button id="logoutBtn" class="btn btn-fantasma btn-sm">Salir</button>
+    </div>
   </header>
 
   <main>
-
-    <!-- filtros -->
-    <div class="filter-box">
-      <button class="filter-btn active" data-filter="all">Todas</button>
-      <button class="filter-btn" data-filter="PB">Planta baja</button>
-      <button class="filter-btn" data-filter="PA">Planta alta</button>
-      <button class="filter-btn" data-filter="B">Balcón</button>
+    <div class="pila" style="margin-bottom:1rem;">
+      <div id="filtros" class="chips">
+        <button class="chip activo" data-area="todas">Todas</button>
+        <button class="chip" data-area="PB">Planta baja</button>
+        <button class="chip" data-area="PA">Planta alta</button>
+        <button class="chip" data-area="B">Balcón</button>
+      </div>
+      <div class="fila chico">
+        <span class="pill estado-nueva">Nuevo</span>
+        <span class="pill estado-preparacion">En preparación</span>
+        <span class="pill estado-lista">Listo</span>
+        <span class="pill pago-pendiente">Por cobrar</span>
+      </div>
     </div>
-
-    <!-- contenedores -->
-    <div id="containerPB"></div>
-    <div id="containerPA"></div>
-    <div id="containerB"></div>
-
+    <div id="areas" class="pila" style="gap:1.5rem;"></div>
+    <div id="statusBox" class="status" hidden></div>
   </main>
 
-  <!-- =========================================== -->
-  <!--               FIREBASE JS                  -->
-  <!-- =========================================== -->
-
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      query,
-      orderBy,
-      onSnapshot,
-      limit,
-    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { onSnapshot, query, where, orderBy, Timestamp, ordenesRef } from "./js/firebase-config.js";
+    import { verificarAcceso, montarEncabezado } from "./js/auth-guard.js";
+    import { h, reemplazar, haceCuanto, formatearPrecio, mostrarEstado } from "./js/utils.js";
 
-    /* CONFIG */
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
-      authDomain: "cafecaro-af23b.firebaseapp.com",
-      projectId: "cafecaro-af23b",
-      storageBucket: "cafecaro-af23b.firebasestorage.app",
-      messagingSenderId: "534231921780",
-      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
-    };
+    const usuario = await verificarAcceso(["admin", "mesero", "caja"]);
+    montarEncabezado(usuario);
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    // Distribución del local
+    const AREAS = [
+      { id: "PB", nombre: "Planta baja", mesas: ["PB-01", "PB-02", "PB-03", "PB-04", "PB-05", "PB-06", "PB-07", "PB-08"] },
+      { id: "PA", nombre: "Planta alta", mesas: ["PA-01", "PA-02", "PA-03", "PA-04", "PA-05", "PA-06"] },
+      { id: "B",  nombre: "Balcón",      mesas: ["B-01", "B-02", "B-03", "B-04"] }
+    ];
 
-    const BRANCH_ID = "cafecaro-centro";
+    const areasEl = document.getElementById("areas");
+    const filtros = document.getElementById("filtros");
+    const statusBox = document.getElementById("statusBox");
 
-    /* AREAS */
-    const PB = ["PB-01","PB-02","PB-03","PB-04","PB-05","PB-06","PB-07","PB-08"];
-    const PA = ["PA-01","PA-02","PA-03","PA-04","PA-05","PA-06"];
-    const B  = ["B-01","B-02","B-03","B-04"];
+    let areaActiva = "todas";
+    let porMesa = null; // null = todavía no llegan los datos
 
-    const containerPB = document.getElementById("containerPB");
-    const containerPA = document.getElementById("containerPA");
-    const containerB = document.getElementById("containerB");
-
-    /* FILTRO */
-    const filterButtons = document.querySelectorAll(".filter-btn");
-
-    filterButtons.forEach(btn => {
-      btn.onclick = () => {
-        filterButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        const f = btn.dataset.filter;
-        document.getElementById("containerPB").style.display = (f === "all" || f === "PB") ? "block" : "none";
-        document.getElementById("containerPA").style.display = (f === "all" || f === "PA") ? "block" : "none";
-        document.getElementById("containerB").style.display = (f === "all" || f === "B") ? "block" : "none";
-      };
+    filtros.addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip");
+      if (!chip) return;
+      areaActiva = chip.dataset.area;
+      filtros.querySelectorAll(".chip").forEach(c => c.classList.toggle("activo", c === chip));
+      pintar();
     });
 
-    /* GENERAR TARJETAS */
-    function createMesaCard(name, status, time) {
-      const div = document.createElement("div");
-      div.className = `mesa-card st-${status}`;
-      div.onclick = () => {
-        window.location.href = `mesero.html?mesa=${name}`;
-      };
+    // Una sola suscripción a las órdenes de hoy (antes había una por mesa)
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-      div.innerHTML = `
-        <div class="mesa-name">${name}</div>
-        <div class="mesa-status">${statusText(status)} · ${time}</div>
-      `;
+    onSnapshot(
+      query(ordenesRef(), where("createdAt", ">=", Timestamp.fromDate(hoy)), orderBy("createdAt", "asc")),
+      (snap) => {
+        porMesa = new Map();
+        snap.docs.forEach(d => {
+          const o = d.data();
+          if (!o.tableNumber) return;
+          const estado = o.status || "abierta";
+          const porCobrar = estado === "cerrada" && (o.paymentStatus || "pendiente") !== "pagado";
+          // Solo interesan pedidos activos o cuentas cerradas sin cobrar
+          if (estado === "cerrada" && !porCobrar) {
+            porMesa.delete(o.tableNumber);
+            return;
+          }
+          porMesa.set(o.tableNumber, { ...o, porCobrar });
+        });
+        pintar();
+      },
+      (err) => {
+        console.error(err);
+        mostrarEstado(statusBox, "No se pudo leer el estado de las mesas.", "error");
+      }
+    );
 
-      return div;
-    }
+    // Refrescar el tiempo transcurrido
+    setInterval(pintar, 30000);
 
-    function statusText(st) {
-      switch (st) {
-        case "abierta": return "Pedido abierto";
-        case "preparacion": return "En preparación";
-        case "listo": return "Listo para entregar";
-        case "cerrada": return "Cuenta lista";
-        default: return "Sin pedido";
+    function infoMesa(o) {
+      if (!o) return { borde: "borde-libre", texto: "Libre" };
+      if (o.porCobrar) return { borde: "borde-cancelada", texto: "Por cobrar" };
+      switch (o.status || "abierta") {
+        case "en_preparacion": return { borde: "borde-preparacion", texto: "En preparación" };
+        case "lista": return { borde: "borde-lista", texto: "Listo para entregar" };
+        default: return { borde: "borde-nueva", texto: "Pedido abierto" };
       }
     }
 
-    function timeAgo(ts) {
-      if (!ts) return "";
-      const secs = Math.floor((Date.now() - ts.toMillis()) / 1000);
-      if (secs < 60) return secs + "s";
-      const mins = Math.floor(secs / 60);
-      if (mins < 60) return mins + "m";
-      const hrs = Math.floor(mins / 60);
-      return hrs + "h";
+    function pintar() {
+      if (!porMesa) {
+        reemplazar(areasEl, h("div", { class: "vacio" }, "Cargando mesas…"));
+        return;
+      }
+      const conocidas = new Set(AREAS.flatMap(a => a.mesas));
+      const otras = [...porMesa.keys()].filter(m => !conocidas.has(m)).sort();
+
+      const secciones = AREAS
+        .filter(a => areaActiva === "todas" || a.id === areaActiva)
+        .map(a => seccion(a.nombre, a.mesas));
+
+      // Mesas escritas a mano que no están en el mapa (p. ej. "12" o "Barra")
+      if (areaActiva === "todas" && otras.length) secciones.push(seccion("Otras mesas", otras));
+
+      reemplazar(areasEl, secciones);
     }
 
-    /* ESCUCHAR CAMBIOS EN TIEMPO REAL */
-    function listenMesa(mesa, container) {
-      const qRef = query(
-        collection(db, "branches", BRANCH_ID, "orders"),
-        orderBy("createdAt", "desc"),
-        limit(1)
+    function seccion(nombre, mesas) {
+      return h("section", {},
+        h("h2", { class: "categoria-titulo" }, nombre),
+        h("div", { class: "mesas-grid" }, mesas.map(m => {
+          const o = porMesa.get(m);
+          const info = infoMesa(o);
+          return h("a", { class: "mesa-card " + info.borde, href: "mesero.html?mesa=" + encodeURIComponent(m) },
+            h("span", { class: "nombre" }, m),
+            h("span", { class: "detalle" }, info.texto + (o ? ` · ${haceCuanto(o.createdAt)}` : "")),
+            o ? h("span", { class: "detalle" }, formatearPrecio(o.total ?? 0) + (o.customerName ? " · " + o.customerName : "")) : null
+          );
+        }))
       );
-
-      onSnapshot(qRef, (snap) => {
-        let status = "nopedido";
-        let time = "";
-
-        snap.forEach(docSnap => {
-          const d = docSnap.data();
-          if (d.tableNumber === mesa) {
-            status = d.status || "abierta";
-            time = timeAgo(d.createdAt);
-          }
-        });
-
-        const card = createMesaCard(mesa, status, time);
-        container.appendChild(card);
-      });
     }
 
-    /* RENDERIZAR TODAS LAS MESAS */
-    function renderAll() {
-      containerPB.innerHTML = `<div class="area-title">Planta Baja</div>`;
-      containerPA.innerHTML = `<div class="area-title">Planta Alta</div>`;
-      containerB.innerHTML = `<div class="area-title">Balcón</div>`;
-
-      PB.forEach(m => listenMesa(m, containerPB));
-      PA.forEach(m => listenMesa(m, containerPA));
-      B.forEach(m => listenMesa(m, containerB));
-    }
-
-    renderAll();
+    pintar();
   </script>
-
 </body>
 </html>

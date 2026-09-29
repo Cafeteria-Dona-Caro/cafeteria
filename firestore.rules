@@ -1,0 +1,143 @@
+rules_version = '2';
+
+// ─────────────────────────────────────────────────────────────
+//  Reglas de seguridad de Firestore — Café de Caro (cafecaro-af23b)
+//
+//  Esta es la protección REAL del sistema: la verificación de rol en
+//  el navegador (js/auth-guard.js) solo oculta pantallas.
+//
+//  Publicar:  Firebase Console → Firestore → Reglas → pegar → Publicar
+//        o:   firebase deploy --only firestore:rules
+//
+//  Modelo de datos:
+//    users/{uid}                                   { role, name, email, branchId }
+//    branches/{branchId}                           { name, code }
+//    branches/{branchId}/products/{id}             { name, category, basePrice, isActive }
+//    branches/{branchId}/orders/{id}               { tableNumber, status, source, total, paymentStatus, ... }
+//    branches/{branchId}/orders/{id}/items/{id}    { productId, productName, price, notes }
+//
+//  Estados de orden: abierta → en_preparacion → lista → cerrada
+// ─────────────────────────────────────────────────────────────
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Funciones auxiliares ──
+    function logueado() {
+      return request.auth != null;
+    }
+    function rutaPerfil() {
+      return /databases/$(database)/documents/users/$(request.auth.uid);
+    }
+    function tieneRol(roles) {
+      return logueado() && exists(rutaPerfil()) && get(rutaPerfil()).data.role in roles;
+    }
+    function esAdmin() {
+      return tieneRol(['admin']);
+    }
+    function esPersonal() {
+      return tieneRol(['admin', 'caja', 'mesero', 'cocina']);
+    }
+    function cambia(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasAny(campos);
+    }
+    function textoCorto(valor, max) {
+      return valor is string && valor.size() <= max;
+    }
+
+    // ── Usuarios (perfil y rol) ──
+    match /users/{uid} {
+      function rolValido() {
+        return request.resource.data.role in ['admin', 'caja', 'mesero', 'cocina'];
+      }
+
+      // Cada quien lee su propio perfil (necesario para el login); el admin lee todos
+      allow read: if (logueado() && request.auth.uid == uid) || esAdmin();
+      // Solo el admin da de alta y modifica perfiles…
+      allow create: if esAdmin() && uid != request.auth.uid && rolValido();
+      // …y nadie puede cambiar su propio rol (evita que el admin se quite el acceso)
+      allow update: if esAdmin() && rolValido() && (uid != request.auth.uid || !cambia(['role']));
+      allow delete: if esAdmin() && uid != request.auth.uid;
+    }
+
+    // ── Sucursales ──
+    match /branches/{branchId} {
+      allow read: if true;
+      allow write: if esAdmin();
+
+      // ── Productos (menú público) ──
+      match /products/{productId} {
+        function productoValido() {
+          let d = request.resource.data;
+          return d.name is string && d.name.size() > 0 && d.name.size() <= 80
+            && textoCorto(d.get('category', ''), 60)
+            && d.get('basePrice', 0) is number && d.get('basePrice', 0) >= 0
+            && d.get('isActive', true) is bool;
+        }
+
+        allow read: if true;
+        allow create, update: if esAdmin() && productoValido();
+        allow delete: if esAdmin();
+      }
+
+      // ── Órdenes ──
+      match /orders/{orderId} {
+        // Pedido hecho por un cliente sin sesión (cliente.html).
+        // El total va en 0: el personal lo calcula a partir de los ítems,
+        // cuyo precio se valida contra el menú (ver /items abajo).
+        function pedidoClienteValido() {
+          let d = request.resource.data;
+          return d.keys().hasOnly(['tableNumber', 'customerName', 'status', 'source',
+                                   'subtotal', 'total', 'itemsCount', 'createdAt', 'updatedAt'])
+            && d.source == 'cliente'
+            && d.status == 'abierta'
+            && d.tableNumber is string && d.tableNumber.size() > 0 && d.tableNumber.size() <= 20
+            && textoCorto(d.get('customerName', ''), 60)
+            && d.subtotal == 0 && d.total == 0
+            && d.itemsCount is int && d.itemsCount > 0 && d.itemsCount <= 50
+            && d.createdAt == request.time
+            && d.updatedAt == request.time;
+        }
+
+        // Solo el admin registra cobros
+        function pagoPermitido() {
+          return request.resource.data.get('paymentStatus', 'pendiente') == 'pendiente' || esAdmin();
+        }
+
+        allow read: if esPersonal();
+        allow create: if (esPersonal() && pagoPermitido()) || pedidoClienteValido();
+        allow update: if esPersonal() && (!cambia(['paymentStatus', 'paymentMethod', 'paidAt']) || esAdmin());
+        allow delete: if esAdmin();
+
+        // ── Ítems de la orden ──
+        match /items/{itemId} {
+          // Un cliente solo puede agregar ítems a SU pedido recién creado (5 min),
+          // con el precio y nombre exactos del menú.
+          function itemClienteValido() {
+            let orden = getAfter(/databases/$(database)/documents/branches/$(branchId)/orders/$(orderId)).data;
+            let d = request.resource.data;
+            let prod = get(/databases/$(database)/documents/branches/$(branchId)/products/$(d.productId)).data;
+            return orden.source == 'cliente'
+              && orden.status == 'abierta'
+              && request.time < orden.createdAt + duration.value(5, 'm')
+              && d.keys().hasOnly(['productId', 'productName', 'price', 'notes', 'createdAt'])
+              && prod.get('isActive', true) == true
+              && d.price == prod.get('basePrice', prod.get('price', -1))
+              && d.productName == prod.name
+              && textoCorto(d.notes, 140)
+              && d.createdAt == request.time;
+          }
+
+          allow read: if esPersonal();
+          allow create: if esPersonal() || itemClienteValido();
+          allow update, delete: if esPersonal();
+        }
+      }
+    }
+
+    // ── Todo lo demás: denegado ──
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

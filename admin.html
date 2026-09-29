@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="es" class="auth-pendiente">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Admin · Café de Caro</title>
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="index.html">
+      <span class="brand-logo">☕</span>
+      <div>
+        <h1>Administración</h1>
+        <p class="sub">Usuarios, roles y menú</p>
+      </div>
+    </a>
+    <nav id="navPersonal" class="nav" aria-label="Pantallas"></nav>
+    <div class="user-box">
+      <span id="userEmail"></span>
+      <span id="userRole"></span>
+      <button id="logoutBtn" class="btn btn-fantasma btn-sm">Salir</button>
+    </div>
+  </header>
+
+  <main>
+    <div class="tabs" role="tablist">
+      <button class="tab activo" role="tab" data-tab="usuarios">Usuarios</button>
+      <button class="tab" role="tab" data-tab="productos">Productos</button>
+    </div>
+
+    <!-- ═════════ USUARIOS ═════════ -->
+    <div id="tab-usuarios" class="pila" style="gap:1rem;">
+      <section class="card">
+        <div class="kpis">
+          <div class="kpi"><div class="etiqueta">Admin</div><div id="cAdmin" class="valor">0</div></div>
+          <div class="kpi"><div class="etiqueta">Caja</div><div id="cCaja" class="valor">0</div></div>
+          <div class="kpi"><div class="etiqueta">Meseros</div><div id="cMesero" class="valor">0</div></div>
+          <div class="kpi"><div class="etiqueta">Cocina</div><div id="cCocina" class="valor">0</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-title">Crear o actualizar usuario</div>
+        <p class="chico tenue">
+          1. Crea la cuenta en <strong>Firebase Console → Authentication</strong> (correo y contraseña).<br>
+          2. Copia su <strong>UID</strong> y pégalo aquí para asignarle un rol.
+        </p>
+        <form id="formUsuario" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end;">
+          <div><label for="uUid">UID</label><input id="uUid" required maxlength="128" placeholder="Ej. ZYxQwErTy123…"></div>
+          <div><label for="uNombre">Nombre</label><input id="uNombre" maxlength="80" placeholder="Ej. Juan Pérez"></div>
+          <div><label for="uEmail">Correo</label><input id="uEmail" type="email" maxlength="120" placeholder="empleado@cafecaro.com"></div>
+          <div>
+            <label for="uRol">Rol</label>
+            <select id="uRol">
+              <option value="mesero">Mesero</option>
+              <option value="caja">Caja</option>
+              <option value="cocina">Cocina</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div><label for="uSucursal">Sucursal</label><input id="uSucursal" maxlength="60"></div>
+          <div class="fila">
+            <button type="submit" class="btn btn-primario">Guardar</button>
+            <button type="reset" class="btn btn-fantasma">Limpiar</button>
+          </div>
+        </form>
+        <div id="statusUsuarios" class="status" hidden></div>
+      </section>
+
+      <section class="card">
+        <div class="card-title">Personal registrado</div>
+        <div class="tabla-wrap">
+          <table>
+            <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Sucursal</th><th>UID</th><th></th></tr></thead>
+            <tbody id="tablaUsuarios"><tr><td colspan="6" class="vacio">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- ═════════ PRODUCTOS ═════════ -->
+    <div id="tab-productos" class="pila" style="gap:1rem;" hidden>
+      <section class="card">
+        <div class="card-title">Agregar producto</div>
+        <form id="formProducto" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr));align-items:end;">
+          <div><label for="pNombre">Nombre</label><input id="pNombre" required maxlength="80"></div>
+          <div><label for="pCategoria">Categoría</label><input id="pCategoria" required maxlength="60" list="listaCategorias"></div>
+          <div><label for="pPrecio">Precio (MXN)</label><input id="pPrecio" type="number" required min="0" step="0.5" inputmode="decimal"></div>
+          <button type="submit" class="btn btn-primario">Agregar</button>
+        </form>
+        <datalist id="listaCategorias"></datalist>
+        <div class="fila" style="margin-top:1rem;">
+          <button id="btnImportar" class="btn btn-fantasma">Importar menú inicial</button>
+          <span class="chico tenue">Agrega los productos de <code>data/menu-inicial.json</code> que aún no existan. No sobrescribe precios.</span>
+        </div>
+        <div id="avisoDuplicados" class="status status-error" hidden></div>
+        <div id="statusProductos" class="status" hidden></div>
+      </section>
+
+      <section class="card">
+        <div class="card-title">Menú actual <span id="conteoProductos" class="chico tenue"></span></div>
+        <input id="buscarProducto" type="search" placeholder="Buscar…" style="margin-bottom:.75rem;">
+        <div class="tabla-wrap">
+          <table>
+            <thead><tr><th>Producto</th><th>Categoría</th><th class="num">Precio</th><th>Activo</th><th></th></tr></thead>
+            <tbody id="tablaProductos"><tr><td colspan="5" class="vacio">Cargando…</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script type="module">
+    import {
+      db, doc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp,
+      SUCURSAL_ID, usuariosRef, productosRef
+    } from "./js/firebase-config.js";
+    import { verificarAcceso, montarEncabezado, ROLES } from "./js/auth-guard.js";
+    import { h, reemplazar, formatearPrecio, precioProducto, slugify, mostrarEstado } from "./js/utils.js";
+
+    const usuario = await verificarAcceso(["admin"]);
+    montarEncabezado(usuario);
+
+    /* ─── Pestañas ─── */
+    const tabs = document.querySelectorAll(".tab");
+    tabs.forEach(t => t.addEventListener("click", () => {
+      tabs.forEach(x => x.classList.toggle("activo", x === t));
+      document.getElementById("tab-usuarios").hidden = t.dataset.tab !== "usuarios";
+      document.getElementById("tab-productos").hidden = t.dataset.tab !== "productos";
+    }));
+
+    /* ═════════ USUARIOS ═════════ */
+    const formUsuario = document.getElementById("formUsuario");
+    const uUid = document.getElementById("uUid");
+    const uNombre = document.getElementById("uNombre");
+    const uEmail = document.getElementById("uEmail");
+    const uRol = document.getElementById("uRol");
+    const uSucursal = document.getElementById("uSucursal");
+    const statusUsuarios = document.getElementById("statusUsuarios");
+    const tablaUsuarios = document.getElementById("tablaUsuarios");
+    uSucursal.placeholder = SUCURSAL_ID;
+
+    onSnapshot(usuariosRef(), (snap) => {
+      const usuarios = snap.docs.map(d => ({ uid: d.id, ...d.data() }))
+        .sort((a, b) => (a.role || "").localeCompare(b.role || "") || (a.name || a.email || "").localeCompare(b.name || b.email || ""));
+
+      const cuenta = { admin: 0, caja: 0, mesero: 0, cocina: 0 };
+      usuarios.forEach(u => { if (u.role in cuenta) cuenta[u.role]++; });
+      document.getElementById("cAdmin").textContent = cuenta.admin;
+      document.getElementById("cCaja").textContent = cuenta.caja;
+      document.getElementById("cMesero").textContent = cuenta.mesero;
+      document.getElementById("cCocina").textContent = cuenta.cocina;
+
+      if (!usuarios.length) {
+        reemplazar(tablaUsuarios, h("tr", {}, h("td", { colspan: "6", class: "vacio" }, "No hay usuarios registrados.")));
+        return;
+      }
+      reemplazar(tablaUsuarios, usuarios.map(filaUsuario));
+    }, (err) => {
+      console.error(err);
+      mostrarEstado(statusUsuarios, "Error al cargar usuarios.", "error");
+    });
+
+    function filaUsuario(u) {
+      const esYo = u.uid === usuario.uid;
+
+      const selectRol = h("select", {
+        disabled: esYo, title: esYo ? "No puedes cambiar tu propio rol" : "",
+        style: "min-height:40px;",
+        onchange: async (e) => {
+          try {
+            await updateDoc(doc(db, "users", u.uid), { role: e.target.value, updatedAt: serverTimestamp() });
+            mostrarEstado(statusUsuarios, `Rol de ${u.email || u.uid} → ${e.target.value}`, "ok");
+          } catch (err) {
+            console.error(err);
+            mostrarEstado(statusUsuarios, "No se pudo cambiar el rol.", "error");
+          }
+        }
+      }, ROLES.map(r => h("option", { value: r }, r)));
+      selectRol.value = u.role;
+
+      return h("tr", {},
+        h("td", {}, u.name || "—", esYo ? h("span", { class: "chico tenue" }, " (tú)") : null),
+        h("td", {}, u.email || "—"),
+        h("td", {}, selectRol),
+        h("td", {}, u.branchId || SUCURSAL_ID),
+        h("td", { class: "mono tenue" }, u.uid),
+        h("td", { class: "num" },
+          h("div", { class: "fila", style: "justify-content:flex-end;flex-wrap:nowrap;" },
+            h("button", { class: "btn btn-fantasma btn-sm", onclick: () => editarUsuario(u) }, "Editar"),
+            esYo ? null : h("button", {
+              class: "btn btn-peligro btn-sm",
+              onclick: () => borrarUsuario(u)
+            }, "Quitar acceso")
+          )
+        )
+      );
+    }
+
+    function editarUsuario(u) {
+      uUid.value = u.uid;
+      uNombre.value = u.name || "";
+      uEmail.value = u.email || "";
+      uRol.value = u.role || "mesero";
+      uRol.disabled = u.uid === usuario.uid;
+      uSucursal.value = u.branchId || "";
+      formUsuario.scrollIntoView({ behavior: "smooth", block: "center" });
+      mostrarEstado(statusUsuarios, "Editando a " + (u.name || u.email || u.uid), "info");
+    }
+
+    async function borrarUsuario(u) {
+      if (!confirm(`¿Quitar el acceso de ${u.email || u.uid}?\nSe borra su rol; la cuenta de Authentication sigue existiendo.`)) return;
+      try {
+        await deleteDoc(doc(db, "users", u.uid));
+        mostrarEstado(statusUsuarios, "Acceso eliminado.", "ok");
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusUsuarios, "No se pudo eliminar.", "error");
+      }
+    }
+
+    formUsuario.addEventListener("reset", () => {
+      uRol.disabled = false;
+      statusUsuarios.hidden = true;
+    });
+
+    formUsuario.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const uid = uUid.value.trim();
+      if (!uid || uid.includes("/")) {
+        mostrarEstado(statusUsuarios, "Escribe un UID válido.", "error");
+        return;
+      }
+      const datos = {
+        name: uNombre.value.trim(),
+        email: uEmail.value.trim(),
+        branchId: uSucursal.value.trim() || SUCURSAL_ID,
+        updatedAt: serverTimestamp()
+      };
+      if (uid !== usuario.uid) datos.role = uRol.value;
+
+      const boton = formUsuario.querySelector("button[type=submit]");
+      boton.disabled = true;
+      try {
+        await setDoc(doc(db, "users", uid), datos, { merge: true });
+        formUsuario.reset();
+        mostrarEstado(statusUsuarios, "Usuario guardado.", "ok");
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusUsuarios, "No se pudo guardar el usuario.", "error");
+      } finally {
+        boton.disabled = false;
+      }
+    });
+
+    /* ═════════ PRODUCTOS ═════════ */
+    const formProducto = document.getElementById("formProducto");
+    const pNombre = document.getElementById("pNombre");
+    const pCategoria = document.getElementById("pCategoria");
+    const pPrecio = document.getElementById("pPrecio");
+    const listaCategorias = document.getElementById("listaCategorias");
+    const btnImportar = document.getElementById("btnImportar");
+    const avisoDuplicados = document.getElementById("avisoDuplicados");
+    const statusProductos = document.getElementById("statusProductos");
+    const tablaProductos = document.getElementById("tablaProductos");
+    const buscarProducto = document.getElementById("buscarProducto");
+    const conteoProductos = document.getElementById("conteoProductos");
+
+    let productos = [];
+    const claveProducto = (p) => `${(p.category || "").trim().toLowerCase()}|${(p.name || "").trim().toLowerCase()}`;
+
+    onSnapshot(productosRef(), (snap) => {
+      productos = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+        .sort((a, b) => (a.category || "").localeCompare(b.category || "") || (a.name || "").localeCompare(b.name || ""));
+      conteoProductos.textContent = `${productos.length} productos`;
+      reemplazar(listaCategorias, [...new Set(productos.map(p => p.category).filter(Boolean))].map(c => h("option", { value: c })));
+      revisarDuplicados();
+      pintarProductos();
+    }, (err) => {
+      console.error(err);
+      mostrarEstado(statusProductos, "Error al cargar productos.", "error");
+    });
+
+    buscarProducto.addEventListener("input", pintarProductos);
+
+    function pintarProductos() {
+      const texto = buscarProducto.value.trim().toLowerCase();
+      const visibles = productos.filter(p => !texto ||
+        (p.name || "").toLowerCase().includes(texto) || (p.category || "").toLowerCase().includes(texto));
+      if (!visibles.length) {
+        reemplazar(tablaProductos, h("tr", {}, h("td", { colspan: "5", class: "vacio" },
+          productos.length ? "Sin resultados." : "No hay productos. Usa “Importar menú inicial”.")));
+        return;
+      }
+      reemplazar(tablaProductos, visibles.map(filaProducto));
+    }
+
+    function filaProducto(p) {
+      const precio = h("input", {
+        type: "number", min: "0", step: "0.5", inputmode: "decimal",
+        value: String(precioProducto(p)), style: "width:110px;min-height:40px;text-align:right;"
+      });
+      const activo = h("input", { type: "checkbox", checked: p.isActive !== false, "aria-label": "Activo" });
+
+      const guardar = async (cambios, mensaje) => {
+        try {
+          await updateDoc(doc(productosRef(), p.id), { ...cambios, updatedAt: serverTimestamp() });
+          mostrarEstado(statusProductos, mensaje, "ok");
+        } catch (err) {
+          console.error(err);
+          mostrarEstado(statusProductos, "No se pudo guardar el producto.", "error");
+        }
+      };
+
+      precio.addEventListener("change", () => {
+        const valor = Number(precio.value);
+        if (!(valor >= 0)) { precio.value = String(precioProducto(p)); return; }
+        guardar({ basePrice: valor }, `${p.name}: ${formatearPrecio(valor)}`);
+      });
+      activo.addEventListener("change", () =>
+        guardar({ isActive: activo.checked }, `${p.name} ${activo.checked ? "activado" : "desactivado"}`));
+
+      return h("tr", {},
+        h("td", {}, p.name || "—"),
+        h("td", { class: "tenue" }, p.category || "—"),
+        h("td", { class: "num" }, precio),
+        h("td", {}, activo),
+        h("td", { class: "num" }, h("button", {
+          class: "btn btn-peligro btn-sm",
+          onclick: async () => {
+            if (!confirm(`¿Eliminar "${p.name}" del menú?`)) return;
+            try {
+              await deleteDoc(doc(productosRef(), p.id));
+              mostrarEstado(statusProductos, "Producto eliminado.", "ok");
+            } catch (err) {
+              console.error(err);
+              mostrarEstado(statusProductos, "No se pudo eliminar.", "error");
+            }
+          }
+        }, "Eliminar"))
+      );
+    }
+
+    // Detecta productos repetidos (mismo nombre y categoría), típicos de correr el seeder viejo varias veces
+    function revisarDuplicados() {
+      const grupos = new Map();
+      productos.forEach(p => {
+        const k = claveProducto(p);
+        if (!grupos.has(k)) grupos.set(k, []);
+        grupos.get(k).push(p);
+      });
+      const sobrantes = [...grupos.values()].filter(g => g.length > 1).flatMap(g => g.slice(1));
+      if (!sobrantes.length) {
+        avisoDuplicados.hidden = true;
+        return;
+      }
+      reemplazar(avisoDuplicados,
+        `Hay ${sobrantes.length} productos repetidos (mismo nombre y categoría). `,
+        h("button", {
+          class: "btn btn-peligro btn-sm",
+          onclick: async () => {
+            if (!confirm(`¿Eliminar ${sobrantes.length} productos repetidos? Se conserva uno de cada uno.`)) return;
+            try {
+              for (let i = 0; i < sobrantes.length; i += 400) {
+                const lote = writeBatch(db);
+                sobrantes.slice(i, i + 400).forEach(p => lote.delete(doc(productosRef(), p.id)));
+                await lote.commit();
+              }
+              mostrarEstado(statusProductos, "Repetidos eliminados.", "ok");
+            } catch (err) {
+              console.error(err);
+              mostrarEstado(statusProductos, "No se pudieron eliminar los repetidos.", "error");
+            }
+          }
+        }, "Eliminar repetidos")
+      );
+      avisoDuplicados.hidden = false;
+    }
+
+    formProducto.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nuevo = {
+        name: pNombre.value.trim(),
+        category: pCategoria.value.trim(),
+        basePrice: Number(pPrecio.value),
+        printableName: pNombre.value.trim(),
+        isActive: true
+      };
+      if (!nuevo.name || !nuevo.category || !(nuevo.basePrice >= 0)) {
+        mostrarEstado(statusProductos, "Completa nombre, categoría y precio.", "error");
+        return;
+      }
+      if (productos.some(p => claveProducto(p) === claveProducto(nuevo))) {
+        mostrarEstado(statusProductos, "Ya existe un producto con ese nombre en esa categoría.", "error");
+        return;
+      }
+      const boton = formProducto.querySelector("button[type=submit]");
+      boton.disabled = true;
+      try {
+        const id = slugify(`${nuevo.category} ${nuevo.name}`);
+        await setDoc(doc(productosRef(), id), { ...nuevo, createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+        formProducto.reset();
+        mostrarEstado(statusProductos, `Agregado: ${nuevo.name}`, "ok");
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusProductos, "No se pudo agregar el producto.", "error");
+      } finally {
+        boton.disabled = false;
+      }
+    });
+
+    btnImportar.addEventListener("click", async () => {
+      btnImportar.disabled = true;
+      try {
+        const resp = await fetch("data/menu-inicial.json", { cache: "no-store" });
+        if (!resp.ok) throw new Error("HTTP " + resp.status);
+        const menu = await resp.json();
+        const existentes = new Set(productos.map(claveProducto));
+        const faltantes = menu.filter(p => !existentes.has(claveProducto(p)));
+
+        if (!faltantes.length) {
+          mostrarEstado(statusProductos, "El menú ya está completo: no hay nada que importar.", "info");
+          return;
+        }
+        if (!confirm(`Se agregarán ${faltantes.length} productos. ¿Continuar?`)) return;
+
+        const lote = writeBatch(db);
+        faltantes.forEach(p => {
+          lote.set(doc(productosRef(), slugify(`${p.category} ${p.name}`)), {
+            ...p, createdAt: serverTimestamp(), updatedAt: serverTimestamp()
+          });
+        });
+        await lote.commit();
+        mostrarEstado(statusProductos, `${faltantes.length} productos importados.`, "ok");
+      } catch (err) {
+        console.error(err);
+        mostrarEstado(statusProductos, "No se pudo importar el menú.", "error");
+      } finally {
+        btnImportar.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

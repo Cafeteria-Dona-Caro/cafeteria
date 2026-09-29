@@ -1,260 +1,111 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Cafecaro – Iniciar sesión</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-
-  <style>
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: radial-gradient(circle at top, #ffcc80 0%, #ffe0b2 40%, #fff8e1 100%);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      color: #4e342e;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 380px;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(3px);
-      border-radius: 18px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      padding: 20px 18px;
-    }
-
-    .header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 12px;
-      gap: 10px;
-    }
-
-    .logo-circle {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: #5d4037;
-      color: #ffe0b2;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 700;
-      box-shadow: 0 2px 7px rgba(93,64,55,0.5);
-    }
-
-    h1 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 700;
-    }
-
-    .sub {
-      font-size: 11px;
-      opacity: 0.7;
-    }
-
-    label {
-      font-size: 12px;
-      margin-top: 10px;
-      display: block;
-    }
-
-    input {
-      width: 100%;
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 10px;
-      border: 1px solid #d7ccc8;
-      background: #fffdf7;
-      margin-top: 3px;
-      font-family: inherit;
-    }
-
-    input:focus {
-      border-color: #ffb74d;
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(255,183,77,0.3);
-    }
-
-    .btn {
-      margin-top: 16px;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #ffe0b2;
-      background: #5d4037;
-      cursor: pointer;
-      box-shadow: 0 3px 7px rgba(93,64,55,0.5);
-    }
-
-    .btn:active {
-      transform: translateY(1px);
-    }
-
-    .error-box {
-      display: none;
-      margin-top: 10px;
-      padding: 8px 10px;
-      background: #ffebee;
-      color: #b71c1c;
-      border: 1px solid #ffcdd2;
-      border-radius: 10px;
-      font-size: 12px;
-    }
-
-    .help {
-      margin-top: 10px;
-      font-size: 12px;
-      text-align: center;
-      opacity: 0.85;
-    }
-
-    .help span {
-      color: #5d4037;
-      font-weight: 600;
-      text-decoration: underline;
-      cursor: pointer;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Iniciar sesión · Café de Caro</title>
+  <meta name="theme-color" content="#e94560">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CafeDeCaro">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="img/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="img/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap">
+  <link rel="stylesheet" href="css/estilos.css">
+  <script src="js/pwa.js" defer></script>
 </head>
-
 <body>
-
-  <div class="card">
-
-    <div class="header">
-      <div class="logo-circle">☕</div>
-      <div>
-        <h1>Iniciar sesión</h1>
-        <div class="sub">Sistema Cafecaro POS</div>
+  <main class="centrado">
+    <form id="loginForm" class="card caja-login" novalidate>
+      <div class="brand" style="margin-bottom:1rem;">
+        <span class="brand-logo">☕</span>
+        <div>
+          <h1>Iniciar sesión</h1>
+          <p class="sub">Personal de Café de Caro</p>
+        </div>
       </div>
-    </div>
 
-    <label for="emailInput">Correo</label>
-    <input id="emailInput" type="email" placeholder="ej: mesero@cafecaro.com" />
+      <label for="emailInput">Correo</label>
+      <input id="emailInput" type="email" autocomplete="username" placeholder="mesero@cafecaro.com" required>
 
-    <label for="passwordInput">Contraseña</label>
-    <input id="passwordInput" type="password" placeholder="********" />
+      <label for="passwordInput">Contraseña</label>
+      <input id="passwordInput" type="password" autocomplete="current-password" placeholder="••••••••" required>
 
-    <button id="loginBtn" class="btn">Entrar</button>
+      <button id="loginBtn" type="submit" class="btn btn-primario btn-bloque" style="margin-top:1.25rem;">Entrar</button>
 
-    <div id="errorBox" class="error-box"></div>
+      <div id="statusBox" class="status" hidden></div>
 
-    <div class="help">
-      ¿Eres cliente?  
-      <span onclick="window.location.href='cliente.html'">Haz tu pedido aquí</span>
-    </div>
-
-  </div>
-
-  <!-- =========================================== -->
-  <!--                 FIREBASE JS                 -->
-  <!-- =========================================== -->
+      <p class="chico tenue centro" style="margin:1.25rem 0 0;">
+        ¿Eres cliente? <a href="cliente.html">Haz tu pedido aquí</a> · <a href="index.html">Ver menú</a>
+      </p>
+    </form>
+  </main>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-    import {
-      getFirestore,
-      doc,
-      getDoc
-    } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+    import { auth, signInWithEmailAndPassword, signOut } from "./js/firebase-config.js";
+    import { obtenerSesion, INICIO_POR_ROL } from "./js/auth-guard.js";
+    import { mostrarEstado } from "./js/utils.js";
 
-    /* =========== FIREBASE CONFIG =========== */
-    const firebaseConfig = {
-      apiKey: "AIzaSyDbxe3uCqt-VnhgFW8sd8uJZ5Wg8oQ0b6Y",
-      authDomain: "cafecaro-af23b.firebaseapp.com",
-      projectId: "cafecaro-af23b",
-      storageBucket: "cafecaro-af23b.firebasestorage.app",
-      messagingSenderId: "534231921780",
-      appId: "1:534231921780:web:f3702e23c024c14c0c8d21"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    const loginBtn = document.getElementById("loginBtn");
+    const form = document.getElementById("loginForm");
     const emailInput = document.getElementById("emailInput");
     const passwordInput = document.getElementById("passwordInput");
-    const errorBox = document.getElementById("errorBox");
+    const loginBtn = document.getElementById("loginBtn");
+    const statusBox = document.getElementById("statusBox");
 
-    function showError(msg) {
-      errorBox.textContent = msg;
-      errorBox.style.display = "block";
+    if (new URLSearchParams(location.search).get("error") === "sin-rol") {
+      mostrarEstado(statusBox, "Tu cuenta no tiene un rol asignado. Pide al administrador que te lo asigne.", "error");
     }
 
-    /* ================= LOGIN ================= */
-    loginBtn.onclick = async () => {
+    function redirigir(role) {
+      const destino = INICIO_POR_ROL[role];
+      if (destino) {
+        window.location.replace(destino);
+        return true;
+      }
+      return false;
+    }
+
+    // Si ya hay sesión con rol válido, entrar directo
+    const sesion = await obtenerSesion();
+    if (sesion?.perfil?.role) redirigir(sesion.perfil.role);
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
       const email = emailInput.value.trim();
-      const pass = passwordInput.value.trim();
+      const pass = passwordInput.value;
 
       if (!email || !pass) {
-        showError("Debes ingresar correo y contraseña.");
+        mostrarEstado(statusBox, "Escribe tu correo y contraseña.", "error");
         return;
       }
 
+      loginBtn.disabled = true;
+      mostrarEstado(statusBox, "Entrando…", "info");
+
       try {
-        const cred = await signInWithEmailAndPassword(auth, email, pass);
-        const user = cred.user;
-
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (!userDoc.exists()) {
-          showError("Tu cuenta no tiene un rol asignado. Contacta al administrador.");
-          return;
+        await signInWithEmailAndPassword(auth, email, pass);
+        const s = await obtenerSesion();
+        if (!s?.perfil?.role || !redirigir(s.perfil.role)) {
+          await signOut(auth);
+          mostrarEstado(statusBox, "Tu cuenta no tiene un rol asignado. Contacta al administrador.", "error");
         }
-
-        redirectByRole(userDoc.data().role);
-
       } catch (err) {
         console.error(err);
-        showError("Correo o contraseña incorrectos.");
+        const code = err?.code || "";
+        const msg = code === "auth/too-many-requests"
+          ? "Demasiados intentos. Espera unos minutos."
+          : code === "auth/network-request-failed"
+            ? "Sin conexión. Revisa tu internet."
+            : "Correo o contraseña incorrectos.";
+        mostrarEstado(statusBox, msg, "error");
+      } finally {
+        loginBtn.disabled = false;
       }
-    };
-
-    /* ========== AUTOLOGIN SI YA ESTÁ LOGUEADO ========== */
-    onAuthStateChanged(auth, async user => {
-      if (!user) return;
-      const snap = await getDoc(doc(db, "users", user.uid));
-      if (snap.exists()) redirectByRole(snap.data().role);
     });
-
-    /* ========== REDIRECCIÓN POR ROL ========== */
-    function redirectByRole(role) {
-      switch (role) {
-        case "admin":
-          window.location.href = "admin-panel.html";
-          break;
-        case "caja":
-          window.location.href = "caja.html";
-          break;
-        case "mesero":
-          window.location.href = "mesero.html";
-          break;
-        case "cocina":
-          window.location.href = "kds-cocina.html";
-          break;
-        default:
-          showError("Rol desconocido. Notifica al administrador.");
-      }
-    }
   </script>
-
 </body>
 </html>

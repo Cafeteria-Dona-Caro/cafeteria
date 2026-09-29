@@ -1,0 +1,31 @@
+{
+  "name": "Café de Caro — Sistema de Operación",
+  "short_name": "CafeDeCaro",
+  "description": "Punto de venta y gestión de pedidos de Cafetería Doña Caro",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1a1a2e",
+  "theme_color": "#e94560",
+  "lang": "es-MX",
+  "dir": "ltr",
+  "categories": ["business", "food"],
+  "icons": [
+    { "src": "img/icon-72.png",  "sizes": "72x72",   "type": "image/png" },
+    { "src": "img/icon-96.png",  "sizes": "96x96",   "type": "image/png" },
+    { "src": "img/icon-128.png", "sizes": "128x128", "type": "image/png" },
+    { "src": "img/icon-144.png", "sizes": "144x144", "type": "image/png" },
+    { "src": "img/icon-152.png", "sizes": "152x152", "type": "image/png" },
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-384.png", "sizes": "384x384", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Mesas",  "url": "mesas.html",  "icons": [{ "src": "img/icon-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Cocina", "url": "cocina.html", "icons": [{ "src": "img/icon-96.png", "sizes": "96x96", "type": "image/png" }] },
+    { "name": "Caja",   "url": "caja.html",   "icons": [{ "src": "img/icon-96.png", "sizes": "96x96", "type": "image/png" }] }
+  ]
+}
