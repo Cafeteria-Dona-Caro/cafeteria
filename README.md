@@ -1,98 +1,99 @@
 # Cafetería Doña Caro — Sistema de pedidos (PWA)
 
 Punto de venta y gestión de pedidos de **Cafetería Doña Caro**.
-Es un sitio **estático** (HTML + CSS + JS) que usa **Firebase** (Authentication + Firestore) como backend.
-Se instala como app (PWA) en celulares y tablets.
+Corre completo en el hosting (Hostinger Business): páginas HTML/CSS/JS + **API en PHP 8.3** + **MySQL/MariaDB**.
+No depende de servicios externos. Se instala como app (PWA) en celulares y tablets.
 
-Producción: `https://cafedecaro.eniguala.com/` (Hostinger Business, sitio estático).
+Producción: `https://cafedecaro.eniguala.com/`
 
 ## Pantallas
 
 | Archivo | Quién | Qué hace |
 |---|---|---|
-| `index.html` | Público | Landing y menú (se lee de Firestore; respaldo en `data/menu-inicial.json`) |
+| `index.html` | Público | Landing y menú (de la base de datos; respaldo en `data/menu-inicial.json`) |
 | `cliente.html` | Cliente, sin sesión | Pedido desde la mesa. QR: `cliente.html?mesa=PB-01` |
-| `login.html` | Personal | Inicio de sesión; redirige según el rol |
-| `mesas.html` | admin, mesero, caja | Mapa de mesas en tiempo real |
+| `login.html` | Personal | Inicio de sesión; lleva a la pantalla de su rol |
+| `mesas.html` | admin, mesero, caja | Mapa de mesas (se actualiza cada 5 s) |
 | `mesero.html` | admin, mesero, caja | Abrir pedido por mesa, agregar/quitar productos, cerrar cuenta |
-| `cocina.html` | admin, cocina | Tablero de cocina (KDS): nuevos → en preparación → listos → entregado |
-| `caja.html` | admin, caja | Cuentas y cobros (solo **admin** registra pagos) |
+| `cocina.html` | admin, cocina | Tablero de cocina: nuevos → en preparación → listos → entregado (cada 4 s, con sonido) |
+| `caja.html` | admin, caja | Cuentas y cobros (quién cobra se define en `api/config.php`) |
 | `reportes.html` | admin, caja | Ventas por periodo y forma de pago |
-| `admin.html` | admin | Usuarios/roles y productos del menú |
-| `offline.html` | — | Se muestra sin conexión |
-
-Tras iniciar sesión: admin → `admin.html`, caja → `caja.html`, mesero → `mesas.html`, cocina → `cocina.html`.
+| `admin.html` | admin | Usuarios (correo, contraseña, rol) y productos del menú |
 
 ## Estructura
 
 ```
-├── *.html                  Pantallas
+├── *.html                  Pantallas (sin scripts en línea)
 ├── css/estilos.css         Sistema de diseño (oscuro, mobile first)
-├── js/firebase-config.js   Configuración de Firebase (único lugar donde se importa el SDK)
+├── js/api.js               Llamadas a la API, token CSRF y consulta periódica
 ├── js/auth-guard.js        Verificación de sesión/rol y encabezado común
 ├── js/utils.js             h() para crear DOM seguro, formatos, estados
-├── js/pwa.js               Registro del Service Worker
-├── data/menu-inicial.json  Menú base (para importar desde admin.html)
-├── img/                    Logo e íconos de la PWA
-├── manifest.json · sw.js   PWA
-├── .htaccess               Seguridad y caché en Hostinger
-├── firestore.rules         Reglas de seguridad de Firestore (se publican en Firebase)
-└── tools/seedMenu.js       Carga del menú por línea de comandos (opcional, no se publica)
+├── js/paginas/*.js         Lógica de cada pantalla
+├── js/pwa.js · sw.js       Service Worker (PWA)
+├── api/                    Backend PHP
+│   ├── _inicio.php         Conexión, sesión, seguridad y utilidades (no accesible desde web)
+│   ├── _esquema.sql        Tablas de MySQL (no accesible desde web)
+│   ├── auth.php            Iniciar/cerrar sesión
+│   ├── productos.php       Menú
+│   ├── ordenes.php         Pedidos, cocina, cobros
+│   ├── usuarios.php        Personal
+│   ├── instalar.php        Instalación inicial (se bloquea sola al terminar)
+│   ├── config.example.php  Plantilla de configuración
+│   └── config.php          Datos de la base de datos (NO se sube a GitHub)
+├── data/menu-inicial.json  Menú base
+└── img/                    Logo e íconos
 ```
-
-## Datos (Firestore)
-
-```
-users/{uid}                                  role: admin | caja | mesero | cocina
-branches/cafecaro-centro/products/{id}       name, category, basePrice, isActive
-branches/cafecaro-centro/orders/{id}         tableNumber, status, source, total, paymentStatus, paymentMethod
-branches/cafecaro-centro/orders/{id}/items   productId, productName, price, notes
-```
-
-Estados de una orden: `abierta` → `en_preparacion` → `lista` → `cerrada`.
-El ID de la sucursal está en `js/firebase-config.js` (`SUCURSAL_ID`).
 
 ## Seguridad
 
-- **La protección real está en `firestore.rules`.** La verificación de rol en el navegador solo oculta pantallas.
-  Publica las reglas en *Firebase Console → Firestore → Reglas* (o `firebase deploy --only firestore:rules`)
-  cada vez que cambien.
-- Los clientes sin sesión solo pueden crear un pedido en estado `abierta` con total 0. El precio y el nombre
-  de cada producto se validan contra el menú. Nadie más que el admin puede marcar un pedido como pagado.
-- Nunca insertes datos de Firestore o del usuario con `innerHTML`; usa `h()` de `js/utils.js` o `textContent`.
-- Nunca subas claves de servicio (`serviceAccountKey.json`, etc.) al repositorio ni al servidor. Ya están en `.gitignore`.
-- La `apiKey` de `firebase-config.js` es pública por diseño en Firebase; no es un secreto.
+- **Precios y totales los calcula el servidor** con los precios de la base de datos; lo que mande el navegador se ignora.
+- Contraseñas con `password_hash` (bcrypt). Bloqueo tras 8 intentos fallidos en 15 min por IP.
+- Sesión con cookie `HttpOnly` + `SameSite=Lax` y token **CSRF** en todas las acciones del personal.
+- Permisos por rol en cada endpoint de la API (la interfaz solo oculta pantallas).
+- Nadie puede cambiarse su propio rol, desactivarse ni eliminarse.
+- Pedidos de clientes: máximo 50 productos y 6 pedidos por IP cada 10 minutos (configurable).
+- Consultas preparadas (PDO) en todo el backend: sin inyección SQL.
+- Sin `innerHTML` con datos: todo el texto se inserta con `h()` / `textContent`.
+- `.htaccess` con Content-Security-Policy estricta (solo scripts del propio sitio) y bloqueo de
+  `api/config.php`, `api/_*.php`, `*.sql`, `*.md` y archivos ocultos.
 
-## Primer uso
+## Instalación en Hostinger
 
-1. Publica `firestore.rules` en Firebase.
-2. Crea tu cuenta en *Firebase Console → Authentication* y, en *Firestore*, crea el documento
-   `users/{tu UID}` con el campo `role: "admin"` (solo esta vez; después todo se hace desde `admin.html`).
-3. Entra a `admin.html` → **Productos** → **Importar menú inicial** (o revisa/ajusta los precios).
-4. En **Usuarios**, da de alta al personal: primero en Authentication, luego su UID y rol aquí.
-5. Genera los códigos QR de cada mesa con la URL `https://cafedecaro.eniguala.com/cliente.html?mesa=PB-01`.
+1. **Subdominio:** hPanel → Dominios → Subdominios → `cafedecaro.eniguala.com`.
+2. **Base de datos:** hPanel → Bases de datos → Administración → crea una base, un usuario y su contraseña.
+3. **Subir archivos** a la carpeta del subdominio (Administrador de archivos o *Git* en hPanel).
+4. **Configurar:** en el servidor, copia `api/config.example.php` como `api/config.php` y llena:
+   - `db_nombre`, `db_usuario`, `db_clave` (del paso 2; el host es `localhost`),
+   - `clave_instalacion`: un texto largo y secreto que solo tú conozcas.
+5. **Instalar:** abre `https://cafedecaro.eniguala.com/api/instalar.php`, escribe la clave de instalación,
+   tu correo y una contraseña. Se crean las tablas, tu usuario administrador y (opcional) el menú inicial.
+   Después el instalador queda bloqueado; si quieres, borra `api/instalar.php`.
+6. **SSL:** hPanel → Seguridad → SSL → activa el certificado y *Forzar HTTPS*.
+7. **PHP:** verifica en hPanel → Avanzado → Configuración de PHP que la versión sea 8.1 o mayor (8.3 recomendado).
+8. Entra a `login.html`, da de alta al personal en **Admin → Usuarios** y revisa precios en **Admin → Productos**.
+9. Imprime los QR de cada mesa con la URL `https://cafedecaro.eniguala.com/cliente.html?mesa=PB-01`.
 
-## Despliegue en Hostinger
+### Configuración opcional (`api/config.php`)
 
-- Subdominio `cafedecaro.eniguala.com` como sitio estático. Todas las rutas son relativas, así que también
-  funciona dentro de una subcarpeta.
-- Sube el contenido del repositorio a la carpeta del subdominio (Administrador de archivos o *Git* en hPanel).
-- **No hace falta subir:** `tools/`, `node_modules/`, `package*.json`, `firestore.rules`, `README.md`.
-  Si se suben (por ejemplo con el despliegue por Git), `.htaccess` los bloquea.
-- Activa *SSL → Forzar HTTPS* en hPanel.
-- En *Firebase Console → Authentication → Settings → Authorized domains* agrega `cafedecaro.eniguala.com`.
-- **Cada vez que publiques cambios**, sube `CACHE_VERSION` en `sw.js` (ej. `cafedecaro-v2`) para que las
-  apps instaladas descarguen la versión nueva.
+- `roles_cobro`: quién puede registrar cobros. Por defecto `['admin']`; usa `['admin', 'caja']` para que la caja cobre.
+- `max_pedidos_cliente_por_10min`: límite de pedidos por IP desde `cliente.html`.
+
+### Al publicar cambios
+
+Sube `CACHE_VERSION` en `sw.js` (ej. `cafedecaro-v3`) para que las apps instaladas tomen la versión nueva.
+
+### Respaldos
+
+Hostinger hace respaldos automáticos (hPanel → Archivos → Copias de seguridad). Para un respaldo manual de los
+pedidos: hPanel → Bases de datos → phpMyAdmin → Exportar.
 
 ## Desarrollo local
 
-```bash
-npm run serve        # http://localhost:8080
-```
-
-Carga del menú desde la terminal (opcional, requiere una clave de servicio guardada FUERA del repo):
+Requiere PHP ≥ 8.1 con `pdo_mysql` y un MySQL/MariaDB:
 
 ```bash
-npm install
-GOOGLE_APPLICATION_CREDENTIALS=~/claves/cafecaro.json npm run seed
+cp api/config.example.php api/config.php   # y edita los datos de tu base local
+php -S localhost:8080                      # abre http://localhost:8080/api/instalar.php
 ```
+
+`php -S` no aplica el `.htaccess`; los bloqueos de archivos solo funcionan en Apache/LiteSpeed (Hostinger).

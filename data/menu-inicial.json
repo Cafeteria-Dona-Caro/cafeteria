@@ -1,359 +1,308 @@
 [
   {
-    "name": "Café de la casa",
-    "category": "Cafés calientes",
-    "basePrice": 35,
-    "printableName": "Café de la casa",
-    "isActive": true
+    "nombre": "Café de la casa",
+    "categoria": "Cafés calientes",
+    "precio": 35,
+    "activo": true
   },
   {
-    "name": "Café de olla",
-    "category": "Cafés calientes",
-    "basePrice": 35,
-    "printableName": "Café de olla",
-    "isActive": true
+    "nombre": "Café de olla",
+    "categoria": "Cafés calientes",
+    "precio": 35,
+    "activo": true
   },
   {
-    "name": "Café americano",
-    "category": "Cafés calientes",
-    "basePrice": 35,
-    "printableName": "Americano",
-    "isActive": true
+    "nombre": "Café americano",
+    "categoria": "Cafés calientes",
+    "precio": 35,
+    "activo": true
   },
   {
-    "name": "Café americano doble",
-    "category": "Cafés calientes",
-    "basePrice": 40,
-    "printableName": "Americano doble",
-    "isActive": true
+    "nombre": "Café americano doble",
+    "categoria": "Cafés calientes",
+    "precio": 40,
+    "activo": true
   },
   {
-    "name": "Expresso sencillo",
-    "category": "Cafés calientes",
-    "basePrice": 35,
-    "printableName": "Expresso sencillo",
-    "isActive": true
+    "nombre": "Expresso sencillo",
+    "categoria": "Cafés calientes",
+    "precio": 35,
+    "activo": true
   },
   {
-    "name": "Expresso doble",
-    "category": "Cafés calientes",
-    "basePrice": 45,
-    "printableName": "Expresso doble",
-    "isActive": true
+    "nombre": "Expresso doble",
+    "categoria": "Cafés calientes",
+    "precio": 45,
+    "activo": true
   },
   {
-    "name": "Expresso cortado",
-    "category": "Cafés calientes",
-    "basePrice": 40,
-    "printableName": "Expresso cortado",
-    "isActive": true
+    "nombre": "Expresso cortado",
+    "categoria": "Cafés calientes",
+    "precio": 40,
+    "activo": true
   },
   {
-    "name": "Cappuccino",
-    "category": "Cafés calientes",
-    "basePrice": 60,
-    "printableName": "Cappuccino",
-    "isActive": true
+    "nombre": "Cappuccino",
+    "categoria": "Cafés calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Cappuccino con sabor (Avellana, Rol de canela, Crema irlandesa, Vainilla)",
-    "category": "Cafés calientes",
-    "basePrice": 70,
-    "printableName": "Cappuccino sabor",
-    "isActive": true
+    "nombre": "Cappuccino con sabor (Avellana, Rol de canela, Crema irlandesa, Vainilla)",
+    "categoria": "Cafés calientes",
+    "precio": 70,
+    "activo": true
   },
   {
-    "name": "Moka",
-    "category": "Cafés calientes",
-    "basePrice": 60,
-    "printableName": "Moka",
-    "isActive": true
+    "nombre": "Moka",
+    "categoria": "Cafés calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Café latte",
-    "category": "Cafés calientes",
-    "basePrice": 65,
-    "printableName": "Latte",
-    "isActive": true
+    "nombre": "Café latte",
+    "categoria": "Cafés calientes",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Affogato",
-    "category": "Cafés calientes",
-    "basePrice": 65,
-    "printableName": "Affogato",
-    "isActive": true
+    "nombre": "Affogato",
+    "categoria": "Cafés calientes",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Chocolate (agua o leche)",
-    "category": "Cafés calientes",
-    "basePrice": 55,
-    "printableName": "Chocolate",
-    "isActive": true
+    "nombre": "Chocolate (agua o leche)",
+    "categoria": "Cafés calientes",
+    "precio": 55,
+    "activo": true
   },
   {
-    "name": "Chai caliente",
-    "category": "Cafés calientes",
-    "basePrice": 60,
-    "printableName": "Chai caliente",
-    "isActive": true
+    "nombre": "Chai caliente",
+    "categoria": "Cafés calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Café de anís",
-    "category": "Cafés calientes",
-    "basePrice": 40,
-    "printableName": "Café de anís",
-    "isActive": true
+    "nombre": "Café de anís",
+    "categoria": "Cafés calientes",
+    "precio": 40,
+    "activo": true
   },
   {
-    "name": "Café de clavo",
-    "category": "Cafés calientes",
-    "basePrice": 40,
-    "printableName": "Café de clavo",
-    "isActive": true
+    "nombre": "Café de clavo",
+    "categoria": "Cafés calientes",
+    "precio": 40,
+    "activo": true
   },
   {
-    "name": "Frutos de la vida",
-    "category": "Tisanas calientes",
-    "basePrice": 60,
-    "printableName": "Tisana frutos de la vida",
-    "isActive": true
+    "nombre": "Frutos de la vida",
+    "categoria": "Tisanas calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Maracuyá",
-    "category": "Tisanas calientes",
-    "basePrice": 60,
-    "printableName": "Tisana maracuyá",
-    "isActive": true
+    "nombre": "Maracuyá",
+    "categoria": "Tisanas calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Frutos tropicales",
-    "category": "Tisanas calientes",
-    "basePrice": 60,
-    "printableName": "Tisana frutos tropicales",
-    "isActive": true
+    "nombre": "Frutos tropicales",
+    "categoria": "Tisanas calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Frutos de la pasión",
-    "category": "Tisanas calientes",
-    "basePrice": 60,
-    "printableName": "Tisana frutos de la pasión",
-    "isActive": true
+    "nombre": "Frutos de la pasión",
+    "categoria": "Tisanas calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Fruta caribeña",
-    "category": "Tisanas calientes",
-    "basePrice": 60,
-    "printableName": "Tisana fruta caribeña",
-    "isActive": true
+    "nombre": "Fruta caribeña",
+    "categoria": "Tisanas calientes",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Frutos de la vida",
-    "category": "Tisanas frías",
-    "basePrice": 65,
-    "printableName": "Tisana fría frutos de la vida",
-    "isActive": true
+    "nombre": "Frutos de la vida",
+    "categoria": "Tisanas frías",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Maracuyá",
-    "category": "Tisanas frías",
-    "basePrice": 65,
-    "printableName": "Tisana fría maracuyá",
-    "isActive": true
+    "nombre": "Maracuyá",
+    "categoria": "Tisanas frías",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Frutos tropicales",
-    "category": "Tisanas frías",
-    "basePrice": 65,
-    "printableName": "Tisana fría frutos tropicales",
-    "isActive": true
+    "nombre": "Frutos tropicales",
+    "categoria": "Tisanas frías",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Frutos de la pasión",
-    "category": "Tisanas frías",
-    "basePrice": 65,
-    "printableName": "Tisana fría frutos de la pasión",
-    "isActive": true
+    "nombre": "Frutos de la pasión",
+    "categoria": "Tisanas frías",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Fruta caribeña",
-    "category": "Tisanas frías",
-    "basePrice": 65,
-    "printableName": "Tisana fría fruta caribeña",
-    "isActive": true
+    "nombre": "Fruta caribeña",
+    "categoria": "Tisanas frías",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Frutos rojos",
-    "category": "Sodas italianas",
-    "basePrice": 65,
-    "printableName": "Soda frutos rojos",
-    "isActive": true
+    "nombre": "Frutos rojos",
+    "categoria": "Sodas italianas",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Coco",
-    "category": "Sodas italianas",
-    "basePrice": 65,
-    "printableName": "Soda coco",
-    "isActive": true
+    "nombre": "Coco",
+    "categoria": "Sodas italianas",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Mojito",
-    "category": "Sodas italianas",
-    "basePrice": 65,
-    "printableName": "Soda mojito",
-    "isActive": true
+    "nombre": "Mojito",
+    "categoria": "Sodas italianas",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Conga",
-    "category": "Sodas italianas",
-    "basePrice": 65,
-    "printableName": "Soda conga",
-    "isActive": true
+    "nombre": "Conga",
+    "categoria": "Sodas italianas",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Fruta del dragón",
-    "category": "Sodas italianas",
-    "basePrice": 65,
-    "printableName": "Soda fruta del dragón",
-    "isActive": true
+    "nombre": "Fruta del dragón",
+    "categoria": "Sodas italianas",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Mora azul",
-    "category": "Sodas italianas",
-    "basePrice": 65,
-    "printableName": "Soda mora azul",
-    "isActive": true
+    "nombre": "Mora azul",
+    "categoria": "Sodas italianas",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Latte frío",
-    "category": "Cafés fríos",
-    "basePrice": 65,
-    "printableName": "Latte frío",
-    "isActive": true
+    "nombre": "Latte frío",
+    "categoria": "Cafés fríos",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Moka frío",
-    "category": "Cafés fríos",
-    "basePrice": 60,
-    "printableName": "Moka frío",
-    "isActive": true
+    "nombre": "Moka frío",
+    "categoria": "Cafés fríos",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Oreo",
-    "category": "Frappe",
-    "basePrice": 65,
-    "printableName": "Frappe Oreo",
-    "isActive": true
+    "nombre": "Oreo",
+    "categoria": "Frappe",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Mazapán",
-    "category": "Frappe",
-    "basePrice": 65,
-    "printableName": "Frappe Mazapán",
-    "isActive": true
+    "nombre": "Mazapán",
+    "categoria": "Frappe",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Moka",
-    "category": "Frappe",
-    "basePrice": 65,
-    "printableName": "Frappe Moka",
-    "isActive": true
+    "nombre": "Moka",
+    "categoria": "Frappe",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Vainilla",
-    "category": "Frappe",
-    "basePrice": 60,
-    "printableName": "Frappe Vainilla",
-    "isActive": true
+    "nombre": "Vainilla",
+    "categoria": "Frappe",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Caramelo",
-    "category": "Frappe",
-    "basePrice": 60,
-    "printableName": "Frappe Caramelo",
-    "isActive": true
+    "nombre": "Caramelo",
+    "categoria": "Frappe",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Chocolate",
-    "category": "Frappe",
-    "basePrice": 65,
-    "printableName": "Frappe Chocolate",
-    "isActive": true
+    "nombre": "Chocolate",
+    "categoria": "Frappe",
+    "precio": 65,
+    "activo": true
   },
   {
-    "name": "Fresa",
-    "category": "Smoothies",
-    "basePrice": 55,
-    "printableName": "Smoothie fresa",
-    "isActive": true
+    "nombre": "Fresa",
+    "categoria": "Smoothies",
+    "precio": 55,
+    "activo": true
   },
   {
-    "name": "Plátano",
-    "category": "Smoothies",
-    "basePrice": 55,
-    "printableName": "Smoothie plátano",
-    "isActive": true
+    "nombre": "Plátano",
+    "categoria": "Smoothies",
+    "precio": 55,
+    "activo": true
   },
   {
-    "name": "Mango",
-    "category": "Smoothies",
-    "basePrice": 55,
-    "printableName": "Smoothie mango",
-    "isActive": true
+    "nombre": "Mango",
+    "categoria": "Smoothies",
+    "precio": 55,
+    "activo": true
   },
   {
-    "name": "Mango",
-    "category": "Chamoyadas",
-    "basePrice": 60,
-    "printableName": "Chamoyada mango",
-    "isActive": true
+    "nombre": "Mango",
+    "categoria": "Chamoyadas",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Tamarindo",
-    "category": "Chamoyadas",
-    "basePrice": 60,
-    "printableName": "Chamoyada tamarindo",
-    "isActive": true
+    "nombre": "Tamarindo",
+    "categoria": "Chamoyadas",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Fresa",
-    "category": "Chamoyadas",
-    "basePrice": 60,
-    "printableName": "Chamoyada fresa",
-    "isActive": true
+    "nombre": "Fresa",
+    "categoria": "Chamoyadas",
+    "precio": 60,
+    "activo": true
   },
   {
-    "name": "Agua embotellada",
-    "category": "Embotellados y helados",
-    "basePrice": 18,
-    "printableName": "Agua embotellada",
-    "isActive": true
+    "nombre": "Agua embotellada",
+    "categoria": "Embotellados y helados",
+    "precio": 18,
+    "activo": true
   },
   {
-    "name": "Pepsi",
-    "category": "Embotellados y helados",
-    "basePrice": 20,
-    "printableName": "Pepsi",
-    "isActive": true
+    "nombre": "Pepsi",
+    "categoria": "Embotellados y helados",
+    "precio": 20,
+    "activo": true
   },
   {
-    "name": "Mirinda",
-    "category": "Embotellados y helados",
-    "basePrice": 20,
-    "printableName": "Mirinda",
-    "isActive": true
+    "nombre": "Mirinda",
+    "categoria": "Embotellados y helados",
+    "precio": 20,
+    "activo": true
   },
   {
-    "name": "7UP",
-    "category": "Embotellados y helados",
-    "basePrice": 20,
-    "printableName": "7UP",
-    "isActive": true
+    "nombre": "7UP",
+    "categoria": "Embotellados y helados",
+    "precio": 20,
+    "activo": true
   },
   {
-    "name": "Helado bola",
-    "category": "Embotellados y helados",
-    "basePrice": 20,
-    "printableName": "Helado bola",
-    "isActive": true
+    "nombre": "Helado bola",
+    "categoria": "Embotellados y helados",
+    "precio": 20,
+    "activo": true
   }
 ]

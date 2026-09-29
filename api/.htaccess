@@ -1,0 +1,7 @@
+# Solo se pueden abrir los endpoints públicos de la API.
+# Bloquea: config.php, config.example.php, _inicio.php, _esquema.sql, etc.
+<FilesMatch "^(_|config)|\.(sql|md|log|bak)$">
+  Require all denied
+</FilesMatch>
+
+Options -Indexes

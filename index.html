@@ -49,67 +49,6 @@
     <p><a href="login.html">Acceso del personal</a></p>
   </footer>
 
-  <script type="module">
-    import { h, reemplazar, formatearPrecio, precioProducto } from "./js/utils.js";
-
-    const chipsEl = document.getElementById("chips");
-    const menuEl = document.getElementById("menu");
-
-    let productos = [];
-    let categoriaActiva = "Todo";
-
-    // Fuente de verdad: Firestore. Si no hay conexión o el menú está vacío,
-    // se usa data/menu-inicial.json como respaldo.
-    async function cargar() {
-      try {
-        const { getDocs, productosRef } = await import("./js/firebase-config.js");
-        const snap = await getDocs(productosRef());
-        productos = snap.docs.map(d => d.data());
-      } catch (err) {
-        console.warn("Menú desde Firestore no disponible:", err);
-      }
-      if (!productos.length) {
-        try {
-          productos = await (await fetch("data/menu-inicial.json")).json();
-        } catch (err) {
-          console.error(err);
-        }
-      }
-      productos = productos
-        .filter(p => p.isActive !== false && p.name)
-        .sort((a, b) => (a.category || "").localeCompare(b.category || "") || a.name.localeCompare(b.name));
-      pintar();
-    }
-
-    function pintar() {
-      if (!productos.length) {
-        reemplazar(menuEl, h("div", { class: "vacio" }, "No pudimos cargar el menú. Intenta de nuevo más tarde."));
-        return;
-      }
-      const categorias = [...new Set(productos.map(p => p.category || "Otros"))];
-
-      reemplazar(chipsEl, ["Todo", ...categorias].map(c =>
-        h("button", {
-          class: "chip" + (c === categoriaActiva ? " activo" : ""),
-          onclick: () => { categoriaActiva = c; pintar(); }
-        }, c)
-      ));
-
-      reemplazar(menuEl, categorias
-        .filter(c => categoriaActiva === "Todo" || c === categoriaActiva)
-        .map(c => h("section", { class: "card" },
-          h("h2", {}, c),
-          productos.filter(p => (p.category || "Otros") === c).map(p =>
-            h("div", { class: "menu-item" },
-              h("span", {}, p.name),
-              h("span", { class: "precio" }, formatearPrecio(precioProducto(p)))
-            )
-          )
-        ))
-      );
-    }
-
-    cargar();
-  </script>
+  <script type="module" src="js/paginas/index.js"></script>
 </body>
 </html>

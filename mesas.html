@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="auth-pendiente">
+<html lang="es" class="auth-pendiente" data-personal>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -54,111 +54,6 @@
     <div id="statusBox" class="status" hidden></div>
   </main>
 
-  <script type="module">
-    import { onSnapshot, query, where, orderBy, Timestamp, ordenesRef } from "./js/firebase-config.js";
-    import { verificarAcceso, montarEncabezado } from "./js/auth-guard.js";
-    import { h, reemplazar, haceCuanto, formatearPrecio, mostrarEstado } from "./js/utils.js";
-
-    const usuario = await verificarAcceso(["admin", "mesero", "caja"]);
-    montarEncabezado(usuario);
-
-    // Distribución del local
-    const AREAS = [
-      { id: "PB", nombre: "Planta baja", mesas: ["PB-01", "PB-02", "PB-03", "PB-04", "PB-05", "PB-06", "PB-07", "PB-08"] },
-      { id: "PA", nombre: "Planta alta", mesas: ["PA-01", "PA-02", "PA-03", "PA-04", "PA-05", "PA-06"] },
-      { id: "B",  nombre: "Balcón",      mesas: ["B-01", "B-02", "B-03", "B-04"] }
-    ];
-
-    const areasEl = document.getElementById("areas");
-    const filtros = document.getElementById("filtros");
-    const statusBox = document.getElementById("statusBox");
-
-    let areaActiva = "todas";
-    let porMesa = null; // null = todavía no llegan los datos
-
-    filtros.addEventListener("click", (e) => {
-      const chip = e.target.closest(".chip");
-      if (!chip) return;
-      areaActiva = chip.dataset.area;
-      filtros.querySelectorAll(".chip").forEach(c => c.classList.toggle("activo", c === chip));
-      pintar();
-    });
-
-    // Una sola suscripción a las órdenes de hoy (antes había una por mesa)
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    onSnapshot(
-      query(ordenesRef(), where("createdAt", ">=", Timestamp.fromDate(hoy)), orderBy("createdAt", "asc")),
-      (snap) => {
-        porMesa = new Map();
-        snap.docs.forEach(d => {
-          const o = d.data();
-          if (!o.tableNumber) return;
-          const estado = o.status || "abierta";
-          const porCobrar = estado === "cerrada" && (o.paymentStatus || "pendiente") !== "pagado";
-          // Solo interesan pedidos activos o cuentas cerradas sin cobrar
-          if (estado === "cerrada" && !porCobrar) {
-            porMesa.delete(o.tableNumber);
-            return;
-          }
-          porMesa.set(o.tableNumber, { ...o, porCobrar });
-        });
-        pintar();
-      },
-      (err) => {
-        console.error(err);
-        mostrarEstado(statusBox, "No se pudo leer el estado de las mesas.", "error");
-      }
-    );
-
-    // Refrescar el tiempo transcurrido
-    setInterval(pintar, 30000);
-
-    function infoMesa(o) {
-      if (!o) return { borde: "borde-libre", texto: "Libre" };
-      if (o.porCobrar) return { borde: "borde-cancelada", texto: "Por cobrar" };
-      switch (o.status || "abierta") {
-        case "en_preparacion": return { borde: "borde-preparacion", texto: "En preparación" };
-        case "lista": return { borde: "borde-lista", texto: "Listo para entregar" };
-        default: return { borde: "borde-nueva", texto: "Pedido abierto" };
-      }
-    }
-
-    function pintar() {
-      if (!porMesa) {
-        reemplazar(areasEl, h("div", { class: "vacio" }, "Cargando mesas…"));
-        return;
-      }
-      const conocidas = new Set(AREAS.flatMap(a => a.mesas));
-      const otras = [...porMesa.keys()].filter(m => !conocidas.has(m)).sort();
-
-      const secciones = AREAS
-        .filter(a => areaActiva === "todas" || a.id === areaActiva)
-        .map(a => seccion(a.nombre, a.mesas));
-
-      // Mesas escritas a mano que no están en el mapa (p. ej. "12" o "Barra")
-      if (areaActiva === "todas" && otras.length) secciones.push(seccion("Otras mesas", otras));
-
-      reemplazar(areasEl, secciones);
-    }
-
-    function seccion(nombre, mesas) {
-      return h("section", {},
-        h("h2", { class: "categoria-titulo" }, nombre),
-        h("div", { class: "mesas-grid" }, mesas.map(m => {
-          const o = porMesa.get(m);
-          const info = infoMesa(o);
-          return h("a", { class: "mesa-card " + info.borde, href: "mesero.html?mesa=" + encodeURIComponent(m) },
-            h("span", { class: "nombre" }, m),
-            h("span", { class: "detalle" }, info.texto + (o ? ` · ${haceCuanto(o.createdAt)}` : "")),
-            o ? h("span", { class: "detalle" }, formatearPrecio(o.total ?? 0) + (o.customerName ? " · " + o.customerName : "")) : null
-          );
-        }))
-      );
-    }
-
-    pintar();
-  </script>
+  <script type="module" src="js/paginas/mesas.js"></script>
 </body>
 </html>

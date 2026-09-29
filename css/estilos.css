@@ -597,3 +597,7 @@ td.num, th.num { text-align: right; white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Campos dentro de listas */
+.nota-input { min-height: 40px; margin-top: .35rem; }
+.input-precio { width: 110px; min-height: 40px; text-align: right; }

@@ -45,67 +45,6 @@
     </form>
   </main>
 
-  <script type="module">
-    import { auth, signInWithEmailAndPassword, signOut } from "./js/firebase-config.js";
-    import { obtenerSesion, INICIO_POR_ROL } from "./js/auth-guard.js";
-    import { mostrarEstado } from "./js/utils.js";
-
-    const form = document.getElementById("loginForm");
-    const emailInput = document.getElementById("emailInput");
-    const passwordInput = document.getElementById("passwordInput");
-    const loginBtn = document.getElementById("loginBtn");
-    const statusBox = document.getElementById("statusBox");
-
-    if (new URLSearchParams(location.search).get("error") === "sin-rol") {
-      mostrarEstado(statusBox, "Tu cuenta no tiene un rol asignado. Pide al administrador que te lo asigne.", "error");
-    }
-
-    function redirigir(role) {
-      const destino = INICIO_POR_ROL[role];
-      if (destino) {
-        window.location.replace(destino);
-        return true;
-      }
-      return false;
-    }
-
-    // Si ya hay sesión con rol válido, entrar directo
-    const sesion = await obtenerSesion();
-    if (sesion?.perfil?.role) redirigir(sesion.perfil.role);
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = emailInput.value.trim();
-      const pass = passwordInput.value;
-
-      if (!email || !pass) {
-        mostrarEstado(statusBox, "Escribe tu correo y contraseña.", "error");
-        return;
-      }
-
-      loginBtn.disabled = true;
-      mostrarEstado(statusBox, "Entrando…", "info");
-
-      try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        const s = await obtenerSesion();
-        if (!s?.perfil?.role || !redirigir(s.perfil.role)) {
-          await signOut(auth);
-          mostrarEstado(statusBox, "Tu cuenta no tiene un rol asignado. Contacta al administrador.", "error");
-        }
-      } catch (err) {
-        console.error(err);
-        const code = err?.code || "";
-        const msg = code === "auth/too-many-requests"
-          ? "Demasiados intentos. Espera unos minutos."
-          : code === "auth/network-request-failed"
-            ? "Sin conexión. Revisa tu internet."
-            : "Correo o contraseña incorrectos.";
-        mostrarEstado(statusBox, msg, "error");
-      } finally {
-        loginBtn.disabled = false;
-      }
-    });
-  </script>
+  <script type="module" src="js/paginas/login.js"></script>
 </body>
 </html>

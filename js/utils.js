@@ -1,6 +1,6 @@
 // js/utils.js
-// Utilidades compartidas. Regla del proyecto: nunca interpolar datos de
-// Firestore o del usuario dentro de innerHTML. Usa h() o textContent.
+// Utilidades compartidas. Regla del proyecto: nunca interpolar datos de la
+// base de datos o del usuario dentro de innerHTML. Usa h() o textContent.
 
 /**
  * Crea un elemento del DOM de forma segura.
@@ -52,12 +52,11 @@ export function formatearPrecio(cantidad) {
   return formatoMXN.format(Number(cantidad) || 0);
 }
 
-/** Convierte un Timestamp de Firestore (o Date) a Date. */
+/** Convierte una fecha ISO de la API (UTC, "2026-09-29T18:05:00Z") o un Date a Date. */
 export function aFecha(valor) {
   if (!valor) return null;
-  if (valor instanceof Date) return valor;
-  if (typeof valor.toDate === "function") return valor.toDate();
-  return null;
+  const fecha = valor instanceof Date ? valor : new Date(valor);
+  return isNaN(fecha) ? null : fecha;
 }
 
 /** Fecha y hora legibles: "29 sep 2026, 14:05". */
@@ -88,26 +87,20 @@ export function haceCuanto(valor) {
   return Math.floor(min / 60) + "h";
 }
 
-/**
- * Precio de un producto. El seeder guarda `basePrice`; versiones anteriores
- * de la app leían `price`. Se aceptan ambos.
- */
-export function precioProducto(p) {
-  return Number(p?.basePrice ?? p?.price ?? 0);
-}
-
 /** Importe de un ítem de orden (precio unitario × cantidad). */
 export function importeItem(it) {
-  return Number(it?.price ?? it?.unitPrice ?? 0) * Number(it?.qty || 1);
+  return Number(it?.precio || 0) * Number(it?.cantidad || 1);
 }
 
-/** Genera un ID estable a partir de un nombre: "Café de olla" → "cafe-de-olla". */
-export function slugify(texto) {
-  return String(texto || "")
-    .normalize("NFD").replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
+/** Agrupa productos por categoría conservando el orden: Map<categoria, producto[]>. */
+export function agruparPorCategoria(productos) {
+  const grupos = new Map();
+  for (const p of productos) {
+    const c = p.categoria || "Otros";
+    if (!grupos.has(c)) grupos.set(c, []);
+    grupos.get(c).push(p);
+  }
+  return grupos;
 }
 
 // ── Estados de orden ──
@@ -115,7 +108,7 @@ export const ESTADOS_ORDEN = {
   abierta:        { texto: "Nueva",          clase: "estado-nueva" },
   en_preparacion: { texto: "En preparación", clase: "estado-preparacion" },
   lista:          { texto: "Lista",          clase: "estado-lista" },
-  cerrada:        { texto: "Entregada",      clase: "estado-entregada" },
+  cerrada:        { texto: "Cerrada",        clase: "estado-entregada" },
   cancelada:      { texto: "Cancelada",      clase: "estado-cancelada" }
 };
 

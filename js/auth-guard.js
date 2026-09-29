@@ -1,8 +1,8 @@
 // js/auth-guard.js
 // Verificación de sesión y rol: un solo lugar para todas las pantallas del personal.
-// OJO: esto solo controla la interfaz. La seguridad real está en firestore.rules.
+// OJO: esto solo controla la interfaz. La seguridad real está en la API PHP (api/).
 
-import { auth, db, doc, getDoc, onAuthStateChanged, signOut } from "./firebase-config.js";
+import { apiGet, apiPost } from "./api.js";
 import { h, reemplazar } from "./utils.js";
 
 export const ROLES = ["admin", "caja", "mesero", "cocina"];
@@ -29,66 +29,55 @@ function ir(pagina) {
   window.location.replace(pagina);
 }
 
-/**
- * Espera a que Firebase resuelva la sesión y devuelve { user, perfil } o null.
- * perfil es el documento users/{uid} (o null si no existe).
- */
-export function obtenerSesion() {
-  return new Promise((resolve) => {
-    const cancelar = onAuthStateChanged(auth, async (user) => {
-      cancelar();
-      if (!user) return resolve(null);
-      try {
-        const snap = await getDoc(doc(db, "users", user.uid));
-        resolve({ user, perfil: snap.exists() ? snap.data() : null });
-      } catch (err) {
-        console.error("No se pudo leer el perfil:", err);
-        resolve({ user, perfil: null });
-      }
-    });
-  });
+/** Devuelve el usuario con sesión ({ id, email, nombre, rol }) o null. */
+export async function obtenerSesion() {
+  const { usuario } = await apiGet("auth.php");
+  return usuario;
 }
 
 /**
  * Verifica que el usuario esté logueado y tenga uno de los roles permitidos.
  * Si no cumple, redirige y la promesa nunca se resuelve (la página no sigue).
  * @param {string[]} rolesPermitidos — ej: ["admin", "caja"]
- * @returns {Promise<{uid: string, email: string, role: string, perfil: object}>}
  */
 export async function verificarAcceso(rolesPermitidos) {
-  const sesion = await obtenerSesion();
   const nunca = new Promise(() => {});
+  let usuario;
+  try {
+    usuario = await obtenerSesion();
+  } catch (err) {
+    console.error(err);
+    if (err.status) {
+      // El servidor respondió con un error (p. ej. falta configurar la base de datos)
+      document.documentElement.classList.remove("auth-pendiente");
+      document.querySelector("main")?.replaceChildren(h("div", { class: "status status-error" }, err.message));
+      return nunca;
+    }
+    const aqui = location.pathname.split("/").pop() + location.search;
+    ir("offline.html?volver=" + encodeURIComponent(aqui));
+    return nunca;
+  }
 
-  if (!sesion) {
+  if (!usuario) {
     ir("login.html");
     return nunca;
   }
-
-  const role = sesion.perfil?.role;
-  if (!role || !ROLES.includes(role)) {
-    await signOut(auth);
-    ir("login.html?error=sin-rol");
-    return nunca;
-  }
-
-  if (!rolesPermitidos.includes(role)) {
+  if (!rolesPermitidos.includes(usuario.rol)) {
     // Tiene sesión pero no permiso: lo mandamos a su pantalla
-    ir(INICIO_POR_ROL[role] || "login.html");
+    ir(INICIO_POR_ROL[usuario.rol] || "login.html");
     return nunca;
   }
 
   document.documentElement.classList.remove("auth-pendiente");
-  return {
-    uid: sesion.user.uid,
-    email: sesion.user.email || "",
-    role,
-    perfil: sesion.perfil
-  };
+  return usuario;
 }
 
 export async function cerrarSesion() {
-  await signOut(auth);
-  ir("login.html");
+  try {
+    await apiPost("auth.php", { accion: "salir" });
+  } finally {
+    ir("login.html");
+  }
 }
 
 /**
@@ -99,24 +88,23 @@ export function montarEncabezado(usuario) {
   const actual = location.pathname.split("/").pop() || "index.html";
 
   const correo = document.getElementById("userEmail");
-  if (correo) correo.textContent = usuario.email || "(sin correo)";
+  if (correo) correo.textContent = usuario.nombre || usuario.email;
 
   const rol = document.getElementById("userRole");
   if (rol) {
-    rol.textContent = usuario.role;
-    rol.className = "pill rol-" + usuario.role;
+    rol.textContent = usuario.rol;
+    rol.className = "pill rol-" + usuario.rol;
   }
 
   const nav = document.getElementById("navPersonal");
   if (nav) {
-    const enlaces = PANTALLAS
-      .filter(p => p.roles.includes(usuario.role))
+    reemplazar(nav, PANTALLAS
+      .filter(p => p.roles.includes(usuario.rol))
       .map(p => h("a", {
         href: p.archivo,
         class: "nav-link" + (p.archivo === actual ? " activo" : ""),
         "aria-current": p.archivo === actual ? "page" : null
-      }, p.titulo));
-    reemplazar(nav, enlaces);
+      }, p.titulo)));
   }
 
   const salir = document.getElementById("logoutBtn");
